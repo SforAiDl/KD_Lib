@@ -3,11 +3,11 @@ KD_Lib
 ======
 
 
-.. image:: https://img.shields.io/travis/Het-Shah/KD_Lib.svg
-        :target: https://travis-ci.org/Het-Shah/KD_Lib
+.. image:: https://img.shields.io/travis/SforAiDl/KD_Lib.svg
+        :target: https://travis-ci.org/SforAiDl/KD_Lib
 
-.. image:: https://codecov.io/gh/Het-Shah/KD_Lib/branch/master/graph/badge.svg
-        :target: https://codecov.io/gh/Het-Shah/KD_Lib
+.. image:: https://codecov.io/gh/SforAiDl/KD_Lib/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/SforAiDl/KD_Lib
 
 .. image:: https://readthedocs.org/projects/KD-Lib/badge/?version=latest
         :target: https://KD-Lib.readthedocs.io/en/latest/?badge=latest
