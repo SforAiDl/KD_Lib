@@ -14,7 +14,7 @@ def generate_numbers():
     See more at: http://doc.pytest.org/en/latest/fixture.html
     """
 
-    return random.sample(range(100),10)
+    return random.sample(range(100), 10)
 
 
 def test_sum_numbers(generate_numbers):
