@@ -3,9 +3,6 @@ KD_Lib
 ======
 
 
-.. image:: https://img.shields.io/pypi/v/KD_Lib.svg
-        :target: https://pypi.python.org/pypi/KD_Lib
-
 .. image:: https://img.shields.io/travis/Het-Shah/KD_Lib.svg
         :target: https://travis-ci.org/Het-Shah/KD_Lib
 
