@@ -103,4 +103,3 @@ def train_distill_model(teachers, model, optimizer, loss_function, temperature,
         'val_acc': val_acc,
         'val_loss': val_loss
     }
-
