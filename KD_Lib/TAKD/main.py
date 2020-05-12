@@ -48,7 +48,7 @@ def main_TAKD(config):
         name = assistant['name']
         if 'resnet' in name:
             order = name.replace('resnet', '')
-            assistants.append(resnet_book[order](assistant.params).to(device))
+            assistants.append(resnet_book[order](assistant['params']).to(device))
 
     print("Assistant Models: ")
     assistant_optimizers = []
