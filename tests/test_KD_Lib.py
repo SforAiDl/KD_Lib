@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """Tests for `KD_Lib` package."""
 
-import pytest
-import random
+#import pytest
+#import random
 
-from KD_Lib import (
-    ResNet18,
-    ResNet34,
-    ResNet50,
-    ResNet101,
-    ResNet152
-)
+#from KD_Lib import (
+#    ResNet18,
+#    ResNet34,
+#    ResNet50,
+#    ResNet101,
+#    ResNet152
+#)
 
 # @pytest.fixture
 # def generate_numbers():
