@@ -48,7 +48,8 @@ def main_TAKD(config):
         name = assistant['name']
         if 'resnet' in name:
             order = name.replace('resnet', '')
-            assistants.append(resnet_book[order](assistant['params']).to(device))
+            ta_model = resnet_book[order](assistant['params']).to(device)
+            assistants.append(ta_model)
 
     print("Assistant Models: ")
     assistant_optimizers = []
@@ -57,7 +58,7 @@ def main_TAKD(config):
         assistant_optimizers.append(Adam(assistant.parameters()))
 
         trainers = []
-        train_order = config['assistant_train_order']
+        train_order = config['assistant_train_order'][count]
         for elem in train_order:
             if elem == -1:
                 trainers.append(teacher)
