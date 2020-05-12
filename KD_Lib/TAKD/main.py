@@ -7,7 +7,7 @@ from KD_Lib.TAKD.training import train_model, train_distill_model
 from KD_Lib.TAKD.data_loader import get_cifar10
 
 
-def main():
+def main_TAKD():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("Working on: ", device)
 
@@ -55,4 +55,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main_TAKD()

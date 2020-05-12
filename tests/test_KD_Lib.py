@@ -4,8 +4,8 @@
 import pytest
 import random
 
+from KD_Lib.TAKD.main import main_TAKD
 from KD_Lib import KD_Lib
-from KD_Lib import TAKD
 
 
 @pytest.fixture
@@ -33,4 +33,4 @@ def test_max_number(generate_numbers):
 
 
 def test_TAKD():
-    TAKD.main()
+    main_TAKD()
