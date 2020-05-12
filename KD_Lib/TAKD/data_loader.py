@@ -3,8 +3,8 @@ import torchvision
 import torchvision.transforms as transforms
 
 
-def get_cifar10(dataset_dir='./data/cifar10', batch_size=128, crop=False,
-                num_workers=2, download=True):
+def get_cifar(num_classes=10, dataset_dir='./data/cifar/', batch_size=128,
+              crop=False, num_workers=2, download=True):
     test_transform = transforms.Compose([
                                         transforms.ToTensor(),
                                         transforms.Normalize(
@@ -25,12 +25,17 @@ def get_cifar10(dataset_dir='./data/cifar10', batch_size=128, crop=False,
     else:
         train_transform = test_transform
 
-    trainset = torchvision.datasets.CIFAR10(root=dataset_dir, train=True,
-                                            download=download,
-                                            transform=train_transform)
-    testset = torchvision.datasets.CIFAR10(root=dataset_dir, train=False,
-                                           download=download,
-                                           transform=test_transform)
+    if num_classes == 10:
+        dataset = torchvision.datasets.CIFAR10
+    elif num_classes == 100:
+        dataset = torchvision.datasets.CIFAR100
+
+    trainset = dataset(root=dataset_dir, train=True,
+                       download=download,
+                       transform=train_transform)
+    testset = dataset(root=dataset_dir, train=False,
+                      download=download,
+                      transform=test_transform)
 
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size,
                                               num_workers=num_workers,
@@ -42,5 +47,7 @@ def get_cifar10(dataset_dir='./data/cifar10', batch_size=128, crop=False,
 
 
 if __name__ == "__main__":
+    print("CIFAR100")
+    print(get_cifar(100))
     print("CIFAR10")
-    print(get_cifar10())
+    print(get_cifar(10))

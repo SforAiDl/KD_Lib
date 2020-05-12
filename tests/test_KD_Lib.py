@@ -33,4 +33,36 @@ def test_max_number(generate_numbers):
 
 
 def test_TAKD():
-    main_TAKD()
+    config = {
+        'teacher': {
+            'name': 'resnet101',
+            'params': [32, 32, 64, 64, 128],
+            'optimizer': 'adam'
+        },
+        'assistants': [
+            {
+                'name': 'resnet50',
+                'params': [32, 32, 64, 64, 128],
+                'optimizer': 'adam'
+            },
+            {
+                'name': 'resnet34',
+                'params': [32, 32, 64, 64, 128],
+                'optimizer': 'adam'
+            },
+        ],
+        'student': {
+            'name': 'resnet18',
+            'params': [16, 32, 32, 16, 8],
+            'optimizer': 'adam'
+        },
+        'dataset': {
+            'name': 'cifar10',
+            'location': './data/cifar10',
+            'batch_size': 128
+        },
+        'loss_function': 'cross_entropy',
+        'assistant_train_order': [[-1], [-1, 0]]
+
+    }
+    main_TAKD(config)
