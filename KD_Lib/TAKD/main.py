@@ -68,7 +68,7 @@ def main_TAKD(config):
         TA_results = train_distill_model(trainers, assistant,
                                          assistant_optimizers[count], loss,
                                          3, train_loader, test_loader, device,
-                                         0.8, 'assistant_{}.pth.tar'
+                                         0.8, 'assistant_%s.pth.tar'
                                          % format(mod_name))
         count += 1
         print(TA_results)
