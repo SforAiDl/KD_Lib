@@ -1,4 +1,4 @@
-from KD_lib.models.resnet import (
+from KD_Lib.models.resnet import (
 	ResNet18,
 	ResNet34,
 	ResNet50,

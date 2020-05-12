@@ -6,7 +6,7 @@ __author__ = """Het Shah"""
 __email__ = 'divhet163@gmail.com'
 __version__ = '0.0.1'
 
-from KD_lib.models import (
+from KD_Lib.models import (
 	ResNet18,
 	ResNet34,
 	ResNet50,
