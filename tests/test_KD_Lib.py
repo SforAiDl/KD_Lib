@@ -61,11 +61,11 @@ def test_TAKD():
             'train_epoch': 1
         },
         'dataset': {
-            'name': 'cifar10',
-            'location': './data/cifar10',
+            'name': 'mnist',
+            'location': './data/mnist',
             'batch_size': 128,
             'num_classes': 10,
-            'num_channels': 3
+            'num_channels': 1
         },
         'loss_function': 'cross_entropy',
         'assistant_train_order': [[-1], [-1, 0]]

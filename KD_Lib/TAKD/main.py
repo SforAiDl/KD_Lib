@@ -4,7 +4,7 @@ import torch.nn as nn
 
 from KD_Lib.models.resnet import resnet_book
 from KD_Lib.TAKD.training import train_model, train_distill_model
-from KD_Lib.TAKD.data_loader import get_cifar
+from KD_Lib.TAKD.data_loader import get_cifar, get_mnist
 
 
 optimizers = {
@@ -19,8 +19,8 @@ loss_functions = {
 
 
 def main_TAKD(config):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print("Working on: ", device)
+    device = torch.device('cpu')
+    print("Working Device: ", device)
 
     dataset_location = config['dataset']['location']
     dataset_num_classes = config['dataset']['num_classes']
@@ -30,15 +30,26 @@ def main_TAKD(config):
     if 'cifar' in str(config['dataset']['name']):
         train_loader, test_loader = get_cifar(
             dataset_num_classes, dataset_location, dataset_batch_size)
+    elif 'mnist' in str(config['dataset']['name']):
+        train_loader, test_loader = get_mnist(
+            dataset_num_classes, dataset_location, dataset_batch_size)
+
+    print(str(config['dataset']['name']), " dataset")
+    print("Train Dataset:", len(train_loader))
+    print("Test  Dataset:", len(test_loader))
+    print("Dataset Location", dataset_location)
+    print("Dataset Channels", dataset_num_channels)
+    print("Target Classes", dataset_num_classes)
 
     loss = loss_functions[config['loss_function']]
+    print("Loss Function:", str(loss))
 
+    print("Teacher Model: ", config['teacher']['name'])
     order = config['teacher']['name'].replace('resnet', '')
     teacher = resnet_book[order](
-        config['teacher']['params'], dataset_num_channels,
-        dataset_num_classes).to(device)
+        config['teacher']['params'], num_channel=dataset_num_channels,
+        num_classes=dataset_num_classes).to(device)
 
-    print("Teacher Model   : ", config['teacher']['name'])
     optimizerTeacher = Adam(teacher.parameters())
     epochs = config['teacher']['train_epoch']
     teacher_results = train_model(teacher, optimizerTeacher, loss,
@@ -46,17 +57,18 @@ def main_TAKD(config):
                                   'teacher.pth.tar', epochs)
     print(teacher_results)
 
+    print("Assistant Models: ")
     assistants = []
     for assistant in config['assistants']:
         name = assistant['name']
         if 'resnet' in name:
             order = name.replace('resnet', '')
             ta_model = resnet_book[order](assistant['params'],
-                                          dataset_num_channels,
-                                          dataset_num_classes).to(device)
+                                          num_channel=dataset_num_channels,
+                                          num_classes=dataset_num_classes).to(
+                                              device)
             assistants.append(ta_model)
 
-    print("Assistant Models: ")
     assistant_optimizers = []
     count = 0
     for assistant in assistants:
@@ -79,12 +91,13 @@ def main_TAKD(config):
         count += 1
         print(TA_results)
 
+    print("Student:", config['student']['name'])
     order = config['student']['name'].replace('resnet', '')
     student = resnet_book[order](config['student']['params'],
-                                 dataset_num_channels,
-                                 dataset_num_classes).to(device)
+                                 num_channel=dataset_num_channels,
+                                 num_classes=dataset_num_classes).to(
+                                              device)
 
-    print("Student         :", config['student']['name'])
     epochs = config['student']['train_epoch']
     optimizerStudent = Adam(student.parameters())
     student_results = train_distill_model(assistants, student,
@@ -97,14 +110,14 @@ def main_TAKD(config):
 if __name__ == '__main__':
     config = {
         'teacher': {
-            'name': 'resnet101',
+            'name': 'resnet50',
             'params': [32, 32, 64, 64, 128],
             'optimizer': 'adam',
             'train_epoch': 1
         },
         'assistants': [
             {
-                'name': 'resnet50',
+                'name': 'resnet34',
                 'params': [32, 32, 64, 64, 128],
                 'optimizer': 'adam',
                 'train_epoch': 1
@@ -123,11 +136,11 @@ if __name__ == '__main__':
             'train_epoch': 1
         },
         'dataset': {
-            'name': 'cifar10',
-            'location': './data/cifar10',
+            'name': 'mnist',
+            'location': './data/mnist',
             'batch_size': 128,
             'num_classes': 10,
-            'num_channels': 3
+            'num_channels': 1
         },
         'loss_function': 'cross_entropy',
         'assistant_train_order': [[-1], [-1, 0]]
