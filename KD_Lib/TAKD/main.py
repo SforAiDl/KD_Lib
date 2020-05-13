@@ -19,7 +19,7 @@ loss_functions = {
 
 
 def main_TAKD(config):
-    device = torch.device('cpu')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print("Working Device: ", device)
 
     dataset_location = config['dataset']['location']
