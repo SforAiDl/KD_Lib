@@ -38,27 +38,27 @@ def test_TAKD():
             'name': 'resnet101',
             'params': [32, 32, 64, 64, 128],
             'optimizer': 'adam',
-            'train_epoch': 0
+            'train_epoch': 1
         },
         'assistants': [
             {
                 'name': 'resnet50',
                 'params': [32, 32, 64, 64, 128],
                 'optimizer': 'adam',
-                'train_epoch': 0
+                'train_epoch': 1
             },
             {
                 'name': 'resnet34',
                 'params': [32, 32, 64, 64, 128],
                 'optimizer': 'adam',
-                'train_epoch': 0
+                'train_epoch': 1
             },
         ],
         'student': {
             'name': 'resnet18',
             'params': [16, 32, 32, 16, 8],
             'optimizer': 'adam',
-            'train_epoch': 0
+            'train_epoch': 1
         },
         'dataset': {
             'name': 'cifar10',
