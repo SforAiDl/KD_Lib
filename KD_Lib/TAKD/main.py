@@ -35,8 +35,8 @@ def main_TAKD(config):
 
     order = config['teacher']['name'].replace('resnet', '')
     teacher = resnet_book[order](
-        config['teacher']['params'], dataset_num_classes,
-        dataset_num_channels).to(device)
+        config['teacher']['params'], dataset_num_channels,
+        dataset_num_classes).to(device)
 
     print("Teacher Model   : ", config['teacher']['name'])
     optimizerTeacher = Adam(teacher.parameters())
@@ -52,8 +52,8 @@ def main_TAKD(config):
         if 'resnet' in name:
             order = name.replace('resnet', '')
             ta_model = resnet_book[order](assistant['params'],
-                                          dataset_num_classes,
-                                          dataset_num_channels).to(device)
+                                          dataset_num_channels,
+                                          dataset_num_classes).to(device)
             assistants.append(ta_model)
 
     print("Assistant Models: ")
@@ -81,8 +81,8 @@ def main_TAKD(config):
 
     order = config['student']['name'].replace('resnet', '')
     student = resnet_book[order](config['student']['params'],
-                                 dataset_num_classes,
-                                 dataset_num_channels).to(device)
+                                 dataset_num_channels,
+                                 dataset_num_classes).to(device)
 
     print("Student         :", config['student']['name'])
     epochs = config['student']['train_epoch']
