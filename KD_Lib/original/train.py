@@ -26,10 +26,10 @@ def train_teacher(model, train_loader, optimizer, epochs, device):
     plt.show()
 
 
-def train_student(large_model, distil_model, train_loader, optimizer, loss_fn, epochs=10, temp=20, distil_weight=0.7):
+def train_student(teacher_model, student_model, train_loader, optimizer, loss_fn, epochs=10, temp=20, distil_weight=0.7):
 
-    large_model.eval()
-    distil_model.train()
+    teacher_model.eval()
+    student_model.train()
     loss_arr = []
 
     for e in range(epochs):
@@ -40,8 +40,8 @@ def train_student(large_model, distil_model, train_loader, optimizer, loss_fn, e
             data, label = data.to(device), label.to(device)
             optimizer.zero_grad()
 
-            soft_label = F.softmax(large_model(data)/temp)
-            out = distil_model(data)
+            soft_label = F.softmax(teacher_model(data)/temp)
+            out = student_model(data)
             soft_out = F.softmax(out/temp)
 
             loss = (1 - distil_weight) * F.cross_entropy(out, label) + (distil_weight) * loss_fn(soft_label, soft_out)

@@ -1,1 +1,1 @@
-from .mnist import mnist
+from . import mnist, train, evaluate, model

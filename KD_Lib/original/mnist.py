@@ -13,7 +13,7 @@ import argparse
 def mnist():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    parser = argparse.ArgumentParser(description='MNIST implementation of the "Distilling the Knowledge in a Neural Network Paper"')
+    parser = argparse.ArgumentParser(description='MNIST implementation of the "Distilling the Knowledge in a Neural Network"')
 
     parser.add_argument('--epochs', default=20, 
                         help='Default:20')
@@ -21,9 +21,9 @@ def mnist():
                         help='Default:100')
     parser.add_argument('--lr', default=0.01,
                         help='Default:0.01')
-    parser.add_argument('--loss_fn', default='MSE', 
+    parser.add_argument('--loss', default='MSE', 
                         help='(Options:MSE,KL), (Default:MSE)')
-    parser.add_argument('--optim', default='SGD',
+    parser.add_argument('--optimizer', default='SGD',
                         help='(Options:SGD,Adam), (Default:SGD)')
     parser.add_argument('--teacher_size', default=1200, 
                         help='Default:1200')
@@ -53,19 +53,21 @@ def mnist():
     teacher_model = teacher(args.teacher_size).to(device)
     student_model = student(args.student_size).to(device)
 
-    if args.optim == 'SGD':
-        optimizer = optim.SGD(teacher_model.parameters(), args.lr)
-    elif args.optim == 'Adam':
-        optimizer = optim.Adam(teacher_model.parameters(),args.lr)
-
-    if args.loss_fn == 'MSE':
+    if args.optimizer == 'SGD':
+        t_optimizer = optim.SGD(teacher_model.parameters(), args.lr, momentum=0.9)
+        s_optimizer = optim.SGD(student_model.parameters(), args.lr,momentum=0.9)
+    elif args.optimizer == 'Adam':
+        t_optimizer = optim.Adam(teacher_model.parameters(),args.lr)
+        s_optimizer = optim.Adam(student_model.parameters(),args.lr)
+    
+    if args.loss == 'MSE':
         loss_fn = nn.MSELoss()
     elif args.loss_fn == 'KL':
         loss_fn = nn.KLDivLoss()
 
-    train_teacher(teacher_model, train_loader, optimizer, args.epochs, device)
+    train_teacher(teacher_model, train_loader, t_optimizer, args.epochs, device)
     eval(teacher_model, test_loader)
-    train_student(teacher_model, student_model, train_loader, optimizer, loss_fn, args.epochs, args.temp, args.distil_weight)
+    train_student(teacher_model, student_model, train_loader, s_optimizer, loss_fn, args.epochs, args.temp, args.distil_weight)
     eval(student_model, test_loader)
 
 
