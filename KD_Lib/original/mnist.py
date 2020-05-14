@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 
-from train import train_teacher, train_student
-from evaluate import eval
-from model import teacher, student
+from .train import train_teacher, train_student
+from .evaluate import eval
+from .model import teacher, student
 
 import argparse
 
