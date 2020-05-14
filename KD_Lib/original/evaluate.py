@@ -3,6 +3,8 @@ import torch
 
 def eval(model, data_loader):
 
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
     model.eval()
     total = len(data_loader.dataset)
     correct = 0
