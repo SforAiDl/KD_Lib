@@ -13,7 +13,7 @@ from KD_Lib.original.mnist import mnist
 
 
 def test_mnist():
-    mnist(epochs=1)
+    mnist(epochs=0)
 
 
 def test_TAKD():
