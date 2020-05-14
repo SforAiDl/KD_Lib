@@ -11,3 +11,5 @@ Contributors
 ------------
 
 * Khizir Siddiqui <khizirsiddiqui@gmail.com>
+
+* Neelay Shah <shahnh19gmail.com>
