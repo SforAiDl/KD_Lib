@@ -45,7 +45,7 @@ def mnist(teacher_size=1200, student_size=800,epochs=20, lr=0.01, optimizer='SGD
 
     train_teacher(teacher_model, train_loader, t_optimizer, epochs)
     eval(teacher_model, test_loader)
-    
+
     train_student(teacher_model, student_model, train_loader, s_optimizer, 
                   loss_fn, epochs, temp, distil_weight)
     eval(student_model, test_loader)
