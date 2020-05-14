@@ -1,8 +1,10 @@
+import torch
 import torch.nn.functional as F
-import matplotlib.pyplot as plt
 
 
-def train_teacher(model, train_loader, optimizer, epochs, device):
+def train_teacher(model, train_loader, optimizer, epochs):
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     model.train()
     loss_arr = []
@@ -24,12 +26,10 @@ def train_teacher(model, train_loader, optimizer, epochs, device):
         loss_arr.append(epoch_loss)
         print(f'Epoch {e+1} loss = {epoch_loss}')
 
-    plt.plot(loss_arr)
-    plt.show()
-
-
 def train_student(teacher_model, student_model, train_loader, optimizer, 
                   loss_fn, epochs=10, temp=20, distil_weight=0.7):
+    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     teacher_model.eval()
     student_model.train()
@@ -58,6 +58,3 @@ def train_student(teacher_model, student_model, train_loader, optimizer,
 
         loss_arr.append(epoch_loss)
         print(f'Epoch {e+1} loss = {epoch_loss}')
-
-    plt.plot(loss_arr)
-    plt.show()
