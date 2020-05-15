@@ -1,15 +1,11 @@
-* KD_Lib version:
-* Python version:
-* Operating System:
+* Paper: 
+* Paper Link: 
 
 ### Description
-
-Describe what you were trying to get done.
-Tell us what happened, what went wrong, and what you expected to happen.
-
-### What I Did
-
 ```
-Paste the command(s) you ran and the output.
-If there was a crash, please include the traceback here.
+Give a short summary for the paper. 
+```
+### Modifications 
+```
+Suggest any modifications to the paper, this is if you can think of it. Otherwise its fine.
 ```

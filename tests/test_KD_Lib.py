@@ -4,40 +4,51 @@
 #import pytest
 #import random
 
-#from KD_Lib import (
-#    ResNet18,
-#    ResNet34,
-#    ResNet50,
-#    ResNet101,
-#    ResNet152
-#)
-
-# @pytest.fixture
-# def generate_numbers():
-#     """Sample pytest fixture. Generates list of random integers.
-
-#     See more at: http://doc.pytest.org/en/latest/fixture.html
-#     """
-
-#     return random.sample(range(100),10)
+from KD_Lib.TAKD.main import main_TAKD
+from KD_Lib import KD_Lib
+from KD_Lib.original.mnist import mnist
 
 
-# def test_sum_numbers(generate_numbers):
-#     """Sample test function for sum_numbers, using pytest fixture."""
-
-#     our_result = KD_Lib.sum_numbers(generate_numbers)
-#     assert our_result == sum(generate_numbers)
+def test_mnist():
+    mnist(epochs=0)
 
 
-# def test_max_number(generate_numbers):
-#     """Sample test function for max_number, using pytest fixture."""
-
-#     our_result = KD_Lib.max_number(generate_numbers)
-#     assert our_result == max(generate_numbers)
-
-
-# # def test_max_number_bad(generate_numbers):
-# #     """Sample test function that fails. Uncomment to see."""
-# #
-# #     our_result = KD_Lib.max_number(generate_numbers)
-# #     assert our_result == max(generate_numbers) + 1
+def test_TAKD():
+    config = {
+        'teacher': {
+            'name': 'resnet101',
+            'params': [32, 32, 64, 64, 128],
+            'optimizer': 'adam',
+            'train_epoch': 0
+        },
+        'assistants': [
+            {
+                'name': 'resnet50',
+                'params': [32, 32, 64, 64, 128],
+                'optimizer': 'adam',
+                'train_epoch': 0
+            },
+            {
+                'name': 'resnet34',
+                'params': [32, 32, 64, 64, 128],
+                'optimizer': 'adam',
+                'train_epoch': 0
+            },
+        ],
+        'student': {
+            'name': 'resnet18',
+            'params': [16, 32, 32, 16, 8],
+            'optimizer': 'adam',
+            'train_epoch': 0
+        },
+        'dataset': {
+            'name': 'mnist',
+            'location': './data/mnist',
+            'batch_size': 128,
+            'num_classes': 10,
+            'num_channels': 1
+        },
+        'loss_function': 'cross_entropy',
+        'assistant_train_order': [[-1], [-1, 0]]
+    }
+    main_TAKD(config)

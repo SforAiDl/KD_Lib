@@ -10,4 +10,6 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Khizir Siddiqui <khizirsiddiqui@gmail.com>
+
+* Neelay Shah <shahnh19gmail.com>
