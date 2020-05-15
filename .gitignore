@@ -103,3 +103,7 @@ ENV/
 
 # IDE Files
 .vscode/
+
+# unnecessary data directories created by running mnist
+data
+mnist_data
