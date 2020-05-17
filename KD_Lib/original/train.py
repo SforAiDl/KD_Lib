@@ -26,9 +26,9 @@ def train_teacher(model, train_loader, optimizer, epochs):
         loss_arr.append(epoch_loss)
         print(f'Epoch {e+1} loss = {epoch_loss}')
 
-def train_student(teacher_model, student_model, train_loader, optimizer, 
+def train_student(teacher_model, student_model, train_loader, optimizer,
                   loss_fn, epochs=10, temp=20, distil_weight=0.7):
-    
+
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     teacher_model.eval()
@@ -49,7 +49,7 @@ def train_student(teacher_model, student_model, train_loader, optimizer,
             out = student_model(data)
             soft_out = F.softmax(out/temp)
 
-            loss = (1 - distil_weight) * F.cross_entropy(out, label) 
+            loss = (1 - distil_weight) * F.cross_entropy(out, label)
             loss += distil_weight * loss_fn(soft_label, soft_out)
             loss.backward()
             optimizer.step()

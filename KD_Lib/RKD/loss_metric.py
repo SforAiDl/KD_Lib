@@ -9,7 +9,7 @@ def pairwaise_distance(output):
     result = (output_squared.unsqueeze(0) + output_squared.unsqueeze(1)
               - 2 * product)
     result[range(len(output)), range(len(output))] = 0
-    return result
+    return result.sqrt()
 
 
 class RKDDistanceLoss(nn.Module):
@@ -24,7 +24,7 @@ class RKDDistanceLoss(nn.Module):
         if normalize:
             s = F.normalize(s, p=2, dim=2)
         s = torch.bmm(s, s.transpose(1, 2)).view(-1)
-        return F.smooth_l1_loss(s, t, reduction='elementwise_mean')
+        return F.smooth_l1_loss(s, t, reduction='mean')
 
 
 class RKDAngleLoss(nn.Module):
@@ -37,5 +37,20 @@ class RKDAngleLoss(nn.Module):
         s = pairwaise_distance(student)
         if normalize:
             s = F.normalize(s, p=2, dim=2)
+        return F.smooth_l1_loss(s, t, reduction='mean')
 
-        return F.smooth_l1_loss(s, t, reduction='elementwise_mean')
+
+angle_loss = RKDAngleLoss()
+distance_loss = RKDDistanceLoss()
+
+
+class RKDLoss(nn.Module):
+    def __init__(self, dist_ratio=0.5, angle_ratio=0.5):
+        super(RKDLoss, self).__init__()
+        self.dist_ratio = dist_ratio
+        self.angle_ratio = angle_ratio
+
+    def forward(self, teacher, student, normalize=False):
+        loss = angle_loss(teacher, student, normalize) * self.angle_ratio
+        loss += distance_loss(teacher, student, normalize) * self.dist_ratio
+        return loss

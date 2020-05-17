@@ -1,1 +1,1 @@
-from .loss_metric import RKDAngleLoss, RKDDistanceLoss
+from .loss_metric import RKDAngleLoss, RKDDistanceLoss, RKDLoss
