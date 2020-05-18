@@ -25,6 +25,7 @@ def test_resnet():
     ResNet50(params)
     ResNet101(params)
     ResNet152(params)
+    
 
 def test_TAKD():
     config = {
