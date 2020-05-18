@@ -1,13 +1,45 @@
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 
-class LeNet(nn.Module):
-    def __init__(self, num_classes=10, in_channels=3): 
-        super(LeNet, self).__init__()
+class ModLeNet(nn.Module):
+    def __init__(self, img_size=32, num_classes=10, in_channels=3): 
+        super(ModLeNet, self).__init__()
 
+        self.img_size = img_size
         self.in_channels = in_channels
         self.num_classes = num_classes
+        self.fc_inp = (int(self.img_size/4)**2) * 16
+
+        self.cnn = nn.Sequential(
+            nn.Conv2d(self.in_channels, 6, 5, padding=2),         
+            nn.Tanh(),
+            nn.MaxPool2d(2, stride=2),  
+            nn.Conv2d(6, 16, 5, padding=2),        
+            nn.Tanh(),
+            nn.MaxPool2d(2, stride=2)   
+        )
+        self.fc = nn.Sequential(
+            nn.Linear(64*16,1024),         
+            nn.Tanh(),
+            nn.Linear(1024,self.num_classes)            
+        )
+        
+    def forward(self, x):
+        x = self.cnn(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        return x
+
+class LeNet(nn.Module):
+    def __init__(self, img_size=32, num_classes=10, in_channels=3): 
+        super(LeNet, self).__init__()
+
+        self.img_size = img_size
+        self.in_channels = in_channels
+        self.num_classes = num_classes
+        self.fc_inp = (int((self.img_size - 12)/4)**2) * 16
 
         self.cnn = nn.Sequential(
             nn.Conv2d(self.in_channels, 6, 5),         
@@ -18,7 +50,7 @@ class LeNet(nn.Module):
             nn.AvgPool2d(2, stride=2)   
         )
         self.fc = nn.Sequential(
-            nn.Linear(400,120),         
+            nn.Linear(self.fc_inp,120),         
             nn.Tanh(),
             nn.Linear(120,84),         
             nn.Tanh(),
@@ -35,42 +67,49 @@ class NIN(nn.Module):
     def __init__(self, num_classes=10, in_channels=3):
         super(NIN, self).__init__()
 
-        self.in_channels = in_channels
         self.num_classes = num_classes
+        self.in_channels = in_channels
 
-        self.classifier = nn.Sequential(
-                nn.Conv2d(self.num_classes, 192, kernel_size=5, stride=1, padding=2),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(192, 160, kernel_size=1, stride=1, padding=0),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(160,  96, kernel_size=1, stride=1, padding=0),
-                nn.ReLU(inplace=True),
-                nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
-                nn.Dropout(0.5),
+        self.features = nn.Sequential(
+            nn.Conv2d(self.in__channels, 192, 5, padding=2),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(192, 160, 1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(160, 96, 1),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(3, stride=2, ceil_mode=True),
+            nn.Dropout(inplace=True),
 
-                nn.Conv2d(96, 192, kernel_size=5, stride=1, padding=2),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(192, 192, kernel_size=1, stride=1, padding=0),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(192, 192, kernel_size=1, stride=1, padding=0),
-                nn.ReLU(inplace=True),
-                nn.AvgPool2d(kernel_size=3, stride=2, padding=1),
-                nn.Dropout(0.5),
+            nn.Conv2d(96, 192, 5, padding=2),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(192, 192, 1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(192, 192, 1),
+            nn.ReLU(inplace=True),
+            nn.AvgPool2d(3, stride=2, ceil_mode=True),
+            nn.Dropout(inplace=True),
 
-                nn.Conv2d(192, 192, kernel_size=3, stride=1, padding=1),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(192, 192, kernel_size=1, stride=1, padding=0),
-                nn.ReLU(inplace=True),
-                nn.Conv2d(192,  10, kernel_size=1, stride=1, padding=0),
-                nn.ReLU(inplace=True),
-                nn.AvgPool2d(kernel_size=8, stride=1, padding=0),
-
-                )
+            nn.Conv2d(192, 192, 3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(192, 192, 1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(192, self.num_classes, 1),
+            nn.ReLU(inplace=True),
+            nn.AvgPool2d(8, stride=1)
+        )
+        self._initialize_weights()
 
     def forward(self, x):
-        x = self.classifier(x)
+        x = self.features(x)
         x = x.view(x.size(0), self.num_classes)
         return x
+
+    def _initialize_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                m.weight.data.normal_(0, 0.05)
+                if m.bias is not None:
+                    m.bias.data.zero_()
 
 class Shallow(nn.Module):
 

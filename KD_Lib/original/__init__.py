@@ -1,1 +1,1 @@
-from . import mnist, train, evaluate, model
+from . import main, train, evaluate, model

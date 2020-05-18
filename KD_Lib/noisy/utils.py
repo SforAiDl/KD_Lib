@@ -20,4 +20,4 @@ def eval(model, data_loader):
     print(f'The accuracy of the model is {correct/total}')
 
 def add_noise(x, variance = 0.1):
-    return (x + (variance**0.5) * torch.randn_like(x))
+    return x*(1 + (variance**0.5) * torch.randn_like(x))

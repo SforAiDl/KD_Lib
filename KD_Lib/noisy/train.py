@@ -29,7 +29,7 @@ def train_teacher(model, train_loader, optimizer, epochs):
         print(f'Epoch {e+1} loss = {epoch_loss}')
 
 def train_student(teacher_model, student_model, train_loader, optimizer, 
-                  loss_fn, epochs=10, alpha = 0.7, variance=0.5):
+                  loss_fn, epochs=20, alpha = 0.7, variance=1):
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -48,7 +48,7 @@ def train_student(teacher_model, student_model, train_loader, optimizer,
             optimizer.zero_grad()
 
             t_logits = teacher_model(data)
-            if random.uniform() <= alpha:
+            if random.uniform(0,1) <= alpha:
                 t_logits = add_noise(t_logits)
 
             out = student_model(data)
