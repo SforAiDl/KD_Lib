@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 
-from .train import train_teacher, train_student
-from .utils import eval, add_noise, run_experiment
-from .model import ModLeNet, LeNet, NIN, Shallow
+from KD_Lib.noisy.train import train_teacher, train_student
+from KD_Lib.noisy.utils import eval, add_noise, run_experiment
+from KD_Lib.noisy.model import ModLeNet, LeNet, NIN, Shallow
 from KD_Lib.RKD import RKDLoss
 
 def noisy_mnist(student_size=800, epochs=20, lr=0.01,

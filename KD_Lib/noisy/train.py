@@ -1,6 +1,6 @@
 import torch
 import torch.nn.functional as F
-from .utils import add_noise
+from KD_Lib.noisy.utils import add_noise
 import random
 
 

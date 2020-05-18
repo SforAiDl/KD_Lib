@@ -13,7 +13,8 @@ from KD_Lib.models.resnet import (ResNet18,
 
 def test_noisy():
     noisy_mnist(epochs=0)
-    noisy_cifar(epochs=0)
+    noisy_cifar(num_classes=10, epochs=0)
+    noisy_cifar(num_classes=100, epochs=0)
 
 def test_original():
     mnist(epochs=0)
@@ -25,7 +26,7 @@ def test_resnet():
     ResNet50(params)
     ResNet101(params)
     ResNet152(params)
-    
+
 
 def test_TAKD():
     config = {

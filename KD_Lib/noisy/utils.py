@@ -3,7 +3,7 @@ import torch.optim as optim
 import torch.nn as nn
 
 from KD_Lib.RKD import RKDLoss
-from .train import train_teacher, train_student
+from KD_Lib.noisy.train import train_teacher, train_student
 
 def eval(model, data_loader):
 
@@ -24,7 +24,7 @@ def eval(model, data_loader):
     print(f'The accuracy of the model is {correct/total}')
 
 def add_noise(x, variance = 0.1):
-    return x*(1 + (variance**0.5) * torch.randn_like(x))
+    return x * (1 + (variance**0.5) * torch.randn_like(x))
 
 def run_experiment(train_loader, test_loader, teacher_model, student_model, 
                    epochs, lr, optimizer, loss, alpha, variance,
