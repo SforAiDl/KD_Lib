@@ -4,7 +4,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 
 from .train import train_teacher, train_student
-from .utils import eval, add_noise
+from .utils import eval, add_noise, run_experiment
 from .model import ModLeNet, LeNet, NIN, Shallow
 from KD_Lib.RKD import RKDLoss
 
@@ -57,26 +57,10 @@ def noisy_mnist(student_size=800, epochs=20, lr=0.01,
     teacher_model = LeNet(in_channels=1, img_size=28).to(device)
     student_model = Shallow(hidden_size=student_size).to(device)
 
-    if optimizer.upper() == 'SGD':
-        t_optimizer = optim.SGD(teacher_model.parameters(), lr, momentum=0.9)
-        s_optimizer = optim.SGD(student_model.parameters(), lr, momentum=0.9)
-    elif optimizer.upper() == 'Adam':
-        t_optimizer = optim.Adam(teacher_model.parameters(), lr)
-        s_optimizer = optim.Adam(student_model.parameters(), lr)
+    run_experiment(train_loader, test_loader, teacher_model, student_model, 
+                   epochs, lr, optimizer, loss, alpha, variance,
+                   rkd_dist, rkd_angle)
 
-    if loss.upper() == 'MSE':
-        loss_fn = nn.MSELoss()
-    elif loss.upper() == 'KL':
-        loss_fn = nn.KLDivLoss()
-    elif loss.upper() == 'RKD':
-        loss_fn = RKDLoss(dist_ratio=rkd_dist, angle_ratio=rkd_angle)
-
-    train_teacher(teacher_model, train_loader, t_optimizer, epochs)
-    eval(teacher_model, test_loader)
-
-    train_student(teacher_model, student_model, train_loader, s_optimizer,
-                  loss_fn, epochs, alpha, variance)
-    eval(student_model, test_loader)
 
 def noisy_cifar(num_classes=10, epochs=20, lr=0.01,
           optimizer='SGD', loss='MSE', batch_size=64,
@@ -142,26 +126,9 @@ def noisy_cifar(num_classes=10, epochs=20, lr=0.01,
     train_loader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True)
     test_loader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False)
 
-    if optimizer.upper() == 'SGD':
-        t_optimizer = optim.SGD(teacher_model.parameters(), lr, momentum=0.9)
-        s_optimizer = optim.SGD(student_model.parameters(), lr, momentum=0.9)
-    elif optimizer.upper() == 'Adam':
-        t_optimizer = optim.Adam(teacher_model.parameters(), lr)
-        s_optimizer = optim.Adam(student_model.parameters(), lr)
-
-    if loss.upper() == 'MSE':
-        loss_fn = nn.MSELoss()
-    elif loss.upper() == 'KL':
-        loss_fn = nn.KLDivLoss()
-    elif loss.upper() == 'RKD':
-        loss_fn = RKDLoss(dist_ratio=rkd_dist, angle_ratio=rkd_angle)
-
-    train_teacher(teacher_model, train_loader, t_optimizer, epochs)
-    eval(teacher_model, test_loader)
-
-    train_student(teacher_model, student_model, train_loader, s_optimizer,
-                  loss_fn, epochs, alpha, variance)
-    eval(student_model, test_loader)
+    run_experiment(train_loader, test_loader, teacher_model, student_model, 
+                   epochs, lr, optimizer, loss, alpha, variance,
+                   rkd_dist, rkd_angle)
 
 
 if __name__ == '__main__':

@@ -71,7 +71,7 @@ class NIN(nn.Module):
         self.in_channels = in_channels
 
         self.features = nn.Sequential(
-            nn.Conv2d(self.in__channels, 192, 5, padding=2),
+            nn.Conv2d(self.in_channels, 192, 5, padding=2),
             nn.ReLU(inplace=True),
             nn.Conv2d(192, 160, 1),
             nn.ReLU(inplace=True),
