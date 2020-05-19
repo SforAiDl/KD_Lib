@@ -4,25 +4,6 @@
 Installation
 ============
 
-
-Stable release
---------------
-
-To install KD_Lib, run this command in your terminal:
-
-.. code-block:: console
-
-    $ pip install KD_Lib
-
-This is the preferred method to install KD_Lib, as it will always install the most recent stable release.
-
-If you don't have `pip`_ installed, this `Python installation guide`_ can guide
-you through the process.
-
-.. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
-
-
 From sources
 ------------
 
@@ -32,13 +13,13 @@ You can either clone the public repository:
 
 .. code-block:: console
 
-    $ git clone git://github.com/Het-Shah/KD_Lib
+    $ git clone git://github.com/SforAiDL/KD_Lib
 
 Or download the `tarball`_:
 
 .. code-block:: console
 
-    $ curl  -OL https://github.com/Het-Shah/KD_Lib/tarball/master
+    $ curl  -OL https://github.com/SforAiDL/KD_Lib/tarball/master
 
 Once you have a copy of the source, you can install it with:
 
@@ -47,5 +28,5 @@ Once you have a copy of the source, you can install it with:
     $ python setup.py install
 
 
-.. _Github repo: https://github.com/Het-Shah/KD_Lib
-.. _tarball: https://github.com/Het-Shah/KD_Lib/tarball/master
+.. _Github repo: https://github.com/SforAiDL/KD_Lib
+.. _tarball: https://github.com/SforAiDL/KD_Lib/tarball/master
