@@ -3,6 +3,7 @@
 
 from KD_Lib.TAKD.main import main_TAKD
 from KD_Lib.original.mnist import mnist
+from KD_Lib.noisy.main import noisy_mnist, noisy_cifar
 from KD_Lib.models.resnet import (ResNet18,
                                   ResNet34,
                                   ResNet50,
@@ -10,9 +11,13 @@ from KD_Lib.models.resnet import (ResNet18,
                                   ResNet152)
 
 
-def test_mnist():
-    mnist(epochs=0)
+def test_noisy():
+    noisy_mnist(epochs=0)
+    noisy_cifar(num_classes=10, epochs=0)
+    noisy_cifar(num_classes=100, epochs=0)
 
+def test_original():
+    mnist(epochs=0)
 
 def test_resnet():
     params = [4, 4, 8, 8, 16]
