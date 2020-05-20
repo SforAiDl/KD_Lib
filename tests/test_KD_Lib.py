@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Tests for `KD_Lib` package."""
 
+import torch
 from KD_Lib.TAKD.main import main_TAKD
 from KD_Lib.original.mnist import mnist
 from KD_Lib.noisy.main import noisy_mnist, noisy_cifar
@@ -9,6 +10,7 @@ from KD_Lib.models.resnet import (ResNet18,
                                   ResNet50,
                                   ResNet101,
                                   ResNet152)
+from KD_Lib.attention.training import mnist as mnist_AT
 
 
 def test_noisy():
@@ -71,3 +73,17 @@ def test_TAKD():
 
 def test_RAKD():
     mnist(loss='RKD', epochs=0)
+
+
+def test_attention_model():
+    params = [4, 4, 8, 8, 16]
+    sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
+    model = ResNet152(params, att=True)
+    sample_output = model(sample_input)
+    print(sample_output)
+
+
+def test_AT():
+    teacher_params = [4, 4, 8, 4, 4]
+    student_params = [4, 4, 4, 4, 4]
+    print(mnist_AT(teacher_params, student_params, epochs=0))
