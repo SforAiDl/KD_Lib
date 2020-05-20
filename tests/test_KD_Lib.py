@@ -81,4 +81,4 @@ def test_attention_model():
 def test_AT():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
-    print(mnist_AT(teacher_params, student_params, epochs=1))
+    print(mnist_AT(teacher_params, student_params, epochs=0))
