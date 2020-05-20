@@ -4,7 +4,11 @@
 import torch
 from KD_Lib.TAKD.main import main_TAKD
 from KD_Lib.original.mnist import mnist
-from KD_Lib.models.resnet import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
+from KD_Lib.models.resnet import (ResNet18,
+                                  ResNet34,
+                                  ResNet50,
+                                  ResNet101,
+                                  ResNet152)
 
 
 def test_mnist():
@@ -12,7 +16,7 @@ def test_mnist():
 
 
 def test_resnet():
-    params = [4,4,8,8,16]
+    params = [4, 4, 8, 8, 16]
     ResNet18(params)
     ResNet34(params)
     ResNet50(params)
@@ -59,6 +63,10 @@ def test_TAKD():
         'assistant_train_order': [[-1], [-1, 0]]
     }
     main_TAKD(config)
+
+
+def test_RAKD():
+    mnist(loss='RKD', epochs=0)
 
 
 def test_attention_model():
