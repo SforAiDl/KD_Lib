@@ -12,11 +12,11 @@ class ATLoss(nn.Module):
         A_s = student_output[1:]
         loss = 0.0
         for (layerT, layerS) in zip(A_t, A_s):
-            layerT = self.single_at_loss(A_t)
-            layerS = self.single_at_loss(A_s)
-            loss += (layerS - layerT).pow(self.p).mean()
+            xT = self.single_at_loss(layerT)
+            xS = self.single_at_loss(layerS)
+            loss += (xS - xT).pow(self.p).mean()
         return loss
 
     def single_at_loss(self, activation):
         return F.normalize(
-            activation.pow(self.p).mean(1).view(activation.shape(0), -1))
+            activation.pow(self.p).mean(1).view(activation.size(0), -1))

@@ -9,6 +9,7 @@ from KD_Lib.models.resnet import (ResNet18,
                                   ResNet50,
                                   ResNet101,
                                   ResNet152)
+from KD_Lib.attention.training import mnist as mnist_AT
 
 
 def test_mnist():
@@ -75,3 +76,9 @@ def test_attention_model():
     model = ResNet152(params, att=True)
     sample_output = model(sample_input)
     print(sample_output)
+
+
+def test_AT():
+    teacher_params = [4, 4, 8, 4, 4]
+    student_params = [4, 4, 4, 4, 4]
+    print(mnist_AT(teacher_params, student_params, epochs=1))
