@@ -99,29 +99,49 @@ class ResNet(nn.Module):
             return out, feature
 
 
-def ResNet18(parameters, num_channel=3, num_classes=10):
-    return ResNet(BasicBlock, [2, 2, 2, 2], parameters, num_channel,
-                  num_classes=num_classes)
+class ResnetWithAT(ResNet):
+    def forward(self, x):
+        out = self.conv1(x)
+        out = self.bn1(out)
+        out = F.relu(out)
+        at1 = self.layer1(out)
+        at2 = self.layer2(at1)
+        at3 = self.layer3(at2)
+        at4 = self.layer4(at3)
+        out = F.avg_pool2d(at4, 4)
+        feature = out.view(out.size(0), -1)
+        out = self.linear(feature)
+        return out, at1, at2, at3, at4
 
 
-def ResNet34(parameters, num_channel=3, num_classes=10):
-    return ResNet(BasicBlock, [3, 4, 6, 3], parameters, num_channel,
-                  num_classes=num_classes)
+def ResNet18(parameters, num_channel=3, num_classes=10, att=False):
+    model = ResnetWithAT if att else ResNet
+    return model(BasicBlock, [2, 2, 2, 2], parameters, num_channel,
+                 num_classes=num_classes)
 
 
-def ResNet50(parameters, num_channel=3, num_classes=10):
-    return ResNet(Bottleneck, [3, 4, 6, 3], parameters, num_channel,
-                  num_classes=num_classes)
+def ResNet34(parameters, num_channel=3, num_classes=10, att=False):
+    model = ResnetWithAT if att else ResNet
+    return model(BasicBlock, [3, 4, 6, 3], parameters, num_channel,
+                 num_classes=num_classes)
 
 
-def ResNet101(parameters, num_channel=3, num_classes=10):
-    return ResNet(Bottleneck, [3, 4, 23, 3], parameters, num_channel,
-                  num_classes=num_classes)
+def ResNet50(parameters, num_channel=3, num_classes=10, att=False):
+    model = ResnetWithAT if att else ResNet
+    return model(Bottleneck, [3, 4, 6, 3], parameters, num_channel,
+                 num_classes=num_classes)
 
 
-def ResNet152(parameters, num_channel=3, num_classes=10):
-    return ResNet(Bottleneck, [3, 8, 36, 3], parameters, num_channel,
-                  num_classes=num_classes)
+def ResNet101(parameters, num_channel=3, num_classes=10, att=False):
+    model = ResnetWithAT if att else ResNet
+    return model(Bottleneck, [3, 4, 23, 3], parameters, num_channel,
+                 num_classes=num_classes)
+
+
+def ResNet152(parameters, num_channel=3, num_classes=10, att=False):
+    model = ResnetWithAT if att else ResNet
+    return model(Bottleneck, [3, 8, 36, 3], parameters, num_channel,
+                 num_classes=num_classes)
 
 
 resnet_book = {
