@@ -3,8 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 
-from KD_Lib.noisy.train import train_teacher, train_student
-from KD_Lib.noisy.utils import eval, add_noise, run_experiment
+from KD_Lib.noisy.train import train_teacher, train_student, run_experiment
+from KD_Lib.noisy.utils import eval, add_noise
 from KD_Lib.noisy.model import ModLeNet, LeNet, NIN, Shallow
 from KD_Lib.RKD import RKDLoss
 
