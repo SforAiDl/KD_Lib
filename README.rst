@@ -17,7 +17,7 @@ KD_Lib is compatible with Python 3.6 or later and also depends on pytorch. The e
 
 ``$ pip install KD-Lib``
 
-Note that GenRL is an active project and routinely publishes new releases. In order to upgrade GenRL to the latest version, use pip as follows.
+Note that KD_Lib is an active project and routinely publishes new releases. In order to upgrade KD_Lib to the latest version, use pip as follows.
 
 ``$ pip install -U KD-Lib``
 
