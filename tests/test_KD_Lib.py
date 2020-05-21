@@ -2,6 +2,8 @@
 """Tests for `KD_Lib` package."""
 
 import torch
+import torch.optim as optim
+from torchvision import datasets, transforms
 from KD_Lib.TAKD.main import main_TAKD
 from KD_Lib.original.mnist import mnist
 from KD_Lib.noisy.main import noisy_mnist, noisy_cifar
@@ -11,6 +13,8 @@ from KD_Lib.models.resnet import (ResNet18,
                                   ResNet101,
                                   ResNet152)
 from KD_Lib.attention.training import mnist as mnist_AT
+from KD_Lib.original.original_paper import original
+from KD_Lib.original.model import teacher, student
 
 
 def test_noisy():
@@ -87,3 +91,31 @@ def test_AT():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     print(mnist_AT(teacher_params, student_params, epochs=0))
+
+def test_original():
+    teac = teacher(1200)
+    stud = student(800)
+
+    train_loader = torch.utils.data.DataLoader(
+            datasets.MNIST('mnist_data', train=True, download=True,
+                        transform=transforms.Compose([
+                            transforms.ToTensor(),
+                            transforms.Normalize((0.1307,), (0.3081,))
+                        ])), batch_size=32, shuffle=True)
+
+    test_loader = torch.utils.data.DataLoader(
+            datasets.MNIST('mnist_data', train=False,
+                        transform=transforms.Compose([
+                                transforms.ToTensor(),
+                                transforms.Normalize((0.1307,), (0.3081,))
+                            ])),
+            batch_size=32, shuffle=True)
+
+    t_optimizer = optim.SGD(teac.parameters(), 0.01)
+    s_optimizer = optim.SGD(stud.parameters(), 0.01)
+
+    orig = original(teac, stud, train_loader, test_loader, t_optimizer, s_optimizer, loss='RKD', rkd_angle=0.4, rkd_dist=0.6)
+
+    orig.train_teacher(epochs=1,plot_losses=False)
+    orig.train_student(epochs=1,plot_losses=False)
+    orig.evaluate(teacher=False)
