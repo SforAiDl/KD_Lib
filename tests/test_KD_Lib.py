@@ -16,6 +16,7 @@ from KD_Lib.attention.training import mnist as mnist_AT
 from KD_Lib.original.original_paper import original
 from KD_Lib.original.model import teacher, student
 from KD_Lib.attention.attention import attention
+from KD_Lib.noisy import NoisyTeacher
 
 
 def test_noisy():
@@ -151,3 +152,36 @@ def test_attention():
     att.train_teacher(epochs=0,plot_losses=False,save_model=False)
     att.train_student(epochs=0,plot_losses=False,save_model=False)
     att.evaluate(teacher=False)
+
+
+def test_NoisyTeacher():
+    teacher_params = [4, 4, 8, 4, 4]
+    student_params = [4, 4, 4, 4, 4]
+    teacher_model = ResNet50(teacher_params, 1, 10)
+    student_model = ResNet18(student_params, 1, 10)
+
+    train_loader = torch.utils.data.DataLoader(
+            datasets.MNIST('mnist_data', train=True, download=True,
+                           transform=transforms.Compose([
+                               transforms.ToTensor(),
+                               transforms.Normalize((0.1307,), (0.3081,))
+                           ])), batch_size=32, shuffle=True)
+
+    test_loader = torch.utils.data.DataLoader(
+            datasets.MNIST('mnist_data', train=False,
+                           transform=transforms.Compose([
+                                   transforms.ToTensor(),
+                                   transforms.Normalize((0.1307,), (0.3081,))
+                               ])),
+            batch_size=32, shuffle=True)
+
+    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
+    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
+
+    experiment = NoisyTeacher(teacher_model, student_model, train_loader,
+                              test_loader, t_optimizer, s_optimizer,
+                              alpha=0.4, noise_variance=0.2, device='cpu')
+
+    experiment.train_teacher(epochs=0)
+    experiment.train_student(epochs=0)
+    experiment.evaluate(teacher=False)
