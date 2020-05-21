@@ -61,7 +61,7 @@ class BaseClass:
         self.student_model.train()
         loss_arr = []
 
-        print('Training student - \n')
+        print('\nTraining student...')
 
         for ep in range(epochs):
             epoch_loss = 0.0
@@ -83,7 +83,7 @@ class BaseClass:
                 epoch_loss += loss
 
             loss_arr.append(epoch_loss)
-            print(f'Epoch {ep+1} loss = {epoch_loss}')
+            print(f'Epoch {ep+1}, Loss = {epoch_loss}')
 
         if plot_losses:
             plt.plot(loss_arr)
@@ -115,7 +115,7 @@ class BaseClass:
         with torch.no_grad():
             for data, target in self.val_loader:
                 data = data.to(self.device)
-                target = target.to(device)
+                target = target.to(self.device)
                 output = model(data)
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()

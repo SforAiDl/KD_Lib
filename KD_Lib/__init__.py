@@ -8,4 +8,3 @@ __version__ = '0.0.1'
 
 from .models import resnet
 from .original import mnist, original
-from KD_Lib.common import BaseClass
