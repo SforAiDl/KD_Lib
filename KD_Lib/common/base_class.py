@@ -6,18 +6,19 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 
 class BaseClass:
-    def __init__(self, teacher_model, student_model, train_loader, val_loader, optimizer_teacher, optimizer_student, temp=20.0, alpha=0.5, device='cpu'):
+    def __init__(self, teacher_model, student_model, train_loader, val_loader, optimizer_teacher, optimizer_student, loss='MSE', temp=20.0, distil_weight=0.5, device='cpu'):
         self.teacher_model = teacher_model
         self.student_model = student_model
         self.train_loader = train_loader
         self.val_loader = val_loader 
         self.optimizer_teacher = optimizer_teacher
         self.optimizer_student = optimizer_student
+        self.loss = loss
         self.temp = temp
-        self.alpha = alpha
+        self.distl_weight = distil_weight
         self.device = device
 
-    def train_teacher(self, epochs, plot_losses=True):
+    def train_teacher(self, epochs=20, plot_losses=True):
         '''
         Function that will be training the teacher 
 
