@@ -15,6 +15,7 @@ from KD_Lib.models.resnet import (ResNet18,
 from KD_Lib.attention.training import mnist as mnist_AT
 from KD_Lib.original.original_paper import original
 from KD_Lib.original.model import teacher, student
+from KD_Lib.attention.attention import attention
 
 
 def test_noisy():
@@ -119,3 +120,34 @@ def test_original():
     orig.train_teacher(epochs=1,plot_losses=False)
     orig.train_student(epochs=1,plot_losses=False)
     orig.evaluate(teacher=False)
+
+def test_attention():
+    teacher_params = [4, 4, 8, 4, 4]
+    student_params = [4, 4, 4, 4, 4]
+    teacher_model = ResNet50(teacher_params, 1, 10, True)
+    student_model = ResNet18(student_params, 1, 10, True)
+
+    train_loader = torch.utils.data.DataLoader(
+            datasets.MNIST('mnist_data', train=True, download=True,
+                        transform=transforms.Compose([
+                            transforms.ToTensor(),
+                            transforms.Normalize((0.1307,), (0.3081,))
+                        ])), batch_size=32, shuffle=True)
+
+    test_loader = torch.utils.data.DataLoader(
+            datasets.MNIST('mnist_data', train=False,
+                        transform=transforms.Compose([
+                                transforms.ToTensor(),
+                                transforms.Normalize((0.1307,), (0.3081,))
+                            ])),
+            batch_size=32, shuffle=True)
+
+    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
+    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
+
+    att = attention(teacher_model, student_model, train_loader, test_loader, t_optimizer, s_optimizer,
+                    loss='ATTENTION')
+
+    att.train_teacher(epochs=1,plot_losses=False)
+    att.train_student(epochs=1,plot_losses=False)
+    att.evaluate(teacher=False)

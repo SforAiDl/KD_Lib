@@ -36,6 +36,10 @@ class BaseClass:
                 data = data.to(self.device)
                 label = label.to(self.device)
                 out = self.teacher_model(data)
+
+                if isinstance(out, tuple):
+                    out = out[0]
+
                 loss = F.cross_entropy(out, label)
 
                 self.optimizer_teacher.zero_grad()
@@ -117,6 +121,10 @@ class BaseClass:
                 data = data.to(self.device)
                 target = target.to(self.device)
                 output = model(data)
+                
+                if isinstance(output, tuple):
+                    output = output[0]
+                    
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
