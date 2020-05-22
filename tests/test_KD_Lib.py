@@ -148,6 +148,6 @@ def test_attention():
     att = attention(teacher_model, student_model, train_loader, test_loader, t_optimizer, s_optimizer,
                     loss='ATTENTION')
 
-    att.train_teacher(epochs=1,plot_losses=False)
-    att.train_student(epochs=1,plot_losses=False)
+    att.train_teacher(epochs=0,plot_losses=False)
+    att.train_student(epochs=0,plot_losses=False)
     att.evaluate(teacher=False)
