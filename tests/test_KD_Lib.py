@@ -18,6 +18,7 @@ from KD_Lib.original.model import teacher, student
 from KD_Lib.attention.attention import attention
 from KD_Lib.TAKD.takd import TAKD
 from KD_Lib.models.resnet import resnet_book
+from KD_Lib.noisy import NoisyTeacher
 
 train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('mnist_data', train=True, download=True,
@@ -124,3 +125,21 @@ def test_attention():
     att.train_student(epochs=0,plot_losses=False,save_model=False)
     att.evaluate(teacher=False)
     att.get_parameters()
+
+def test_NoisyTeacher():
+    teacher_params = [4, 4, 8, 4, 4]
+    student_params = [4, 4, 4, 4, 4]
+    teacher_model = ResNet50(teacher_params, 1, 10)
+    student_model = ResNet18(student_params, 1, 10)
+
+    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
+    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
+
+    experiment = NoisyTeacher(teacher_model, student_model, train_loader,
+                              test_loader, t_optimizer, s_optimizer,
+                              alpha=0.4, noise_variance=0.2, device='cpu')
+
+    experiment.train_teacher(epochs=0,plot_losses=False,save_model=False)
+    experiment.train_student(epochs=0,plot_losses=False,save_model=False)
+    experiment.evaluate(teacher=False)
+    experiment.get_parameters()
