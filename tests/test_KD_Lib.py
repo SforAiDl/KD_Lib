@@ -182,6 +182,6 @@ def test_NoisyTeacher():
                               test_loader, t_optimizer, s_optimizer,
                               alpha=0.4, noise_variance=0.2, device='cpu')
 
-    experiment.train_teacher(epochs=0)
-    experiment.train_student(epochs=0)
+    experiment.train_teacher(epochs=0,plot_losses=False,save_model=False)
+    experiment.train_student(epochs=0,plot_losses=False,save_model=False)
     experiment.evaluate(teacher=False)
