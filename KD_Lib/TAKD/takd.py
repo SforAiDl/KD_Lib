@@ -101,9 +101,9 @@ class TAKD(BaseClass):
                 else:
                     trainers.append(self.assistant_model[elem])
 
-            self.train_distil_model(trainers, assistant, self.optimizer_assistants[count], epochs, plot_losses, save_model, save_dir+'assistant_'+count+'.pt')
+            self.train_distil_model(trainers, assistant, self.optimizer_assistants[count], epochs, plot_losses, save_model, save_dir+'assistant_'+str(count)+'.pt')
             count+=1 
 
-    def train_student(self, epochs=20, save_model=True, save_model_pth='./models/student.pth'):
+    def train_student(self, epochs=20, plot_losses=True, save_model=True, save_model_pth='./models/student.pth'):
         self.train_distil_model(self.assistant_models, self.student_model, self.optimizer_student, epochs, plot_losses, save_model, save_model_pth)
         
