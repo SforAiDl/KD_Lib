@@ -2,11 +2,16 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
+
 import matplotlib.pyplot as plt 
 from copy import deepcopy
 
 class BaseClass:
-    def __init__(self, teacher_model, student_model, train_loader, val_loader, optimizer_teacher, optimizer_student, loss='MSE', temp=20.0, distil_weight=0.5, device='cpu'):
+    def __init__(self, teacher_model, student_model, train_loader, val_loader, optimizer_teacher, 
+                 optimizer_student, loss='MSE', temp=20.0, distil_weight=0.5, device='cpu', 
+                 log=False, logdir='./Experiments'):
+
         self.teacher_model = teacher_model
         self.student_model = student_model
         self.train_loader = train_loader
@@ -15,8 +20,13 @@ class BaseClass:
         self.optimizer_student = optimizer_student
         self.loss = loss
         self.temp = temp
-        self.distl_weight = distil_weight
+        self.distil_weight = distil_weight
         self.device = device
+        self.log = log
+        self.logdir = logdir
+
+        if self.log:
+            self.writer = SummaryWriter(logdir)
 
     def train_teacher(self, epochs=20, plot_losses=True, save_model=True, save_model_pth="./models/teacher.pt"):
         '''
@@ -61,6 +71,10 @@ class BaseClass:
             if epoch_acc > best_acc:
                 best_acc = epoch_acc
                 self.best_teacher_model_weights = deepcopy(self.teacher_model.state_dict())
+
+            if self.log:
+                self.writer.add_scalar('Training loss/Teacher', epoch_loss, epochs)
+                self.writer.add_scalar('Training accuracy/Teacher', epoch_acc, epochs)
 
             loss_arr.append(epoch_loss)
             print(f'Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}')
@@ -119,6 +133,10 @@ class BaseClass:
             if epoch_acc > best_acc:
                 best_acc = epoch_acc
                 self.best_student_model_weights = deepcopy(self.student_model.state_dict())
+
+            if self.log:
+                self.writer.add_scalar('Training loss/Student', epoch_loss, epochs)
+                self.writer.add_scalar('Training accuracy/Student', epoch_acc, epochs)
 
             loss_arr.append(epoch_loss)
             print(f'Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}')

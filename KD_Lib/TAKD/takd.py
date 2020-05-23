@@ -8,7 +8,10 @@ from KD_Lib.common import BaseClass
 from copy import deepcopy
 
 class TAKD(BaseClass):
-    def __init__(self, teacher_model, assistant_models, student_model, assistant_train_order, train_loader, val_loader, optimizer_teacher, optimizer_assistants, optimizer_student, loss='MSE', temp=20.0, distil_weight=0.4, rkd_angle=None, rkd_dist=None, device='cpu'):
+    def __init__(self, teacher_model, assistant_models, student_model, assistant_train_order, 
+                 train_loader, val_loader, optimizer_teacher, optimizer_assistants, optimizer_student, 
+                 loss='MSE', temp=20.0, distil_weight=0.4, rkd_angle=None, rkd_dist=None, device='cpu', 
+                 log=False, logdir='./Experiments'):
         super(TAKD, self).__init__(
             teacher_model,
             student_model,
@@ -19,7 +22,9 @@ class TAKD(BaseClass):
             loss, 
             temp,
             distil_weight,
-            device
+            device,
+            log,
+            logdir
         )
         self.assistant_models = assistant_models
         self.optimizer_assistants = optimizer_assistants
@@ -36,7 +41,7 @@ class TAKD(BaseClass):
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         loss = (1 - self.distil_weight) * nn.CrossEntropyLoss(y_pred_student, y_true)
-        loss += self.distil_weight * nn.loss_fn(
+        loss += self.distil_weight * self.loss_fn(
             F.log_softmax(y_pred_student / self.temp, dim=1),
             F.log_softmax(y_pred_teacher / self.temp, dim=1)
         )

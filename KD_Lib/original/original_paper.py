@@ -7,8 +7,8 @@ from KD_Lib.common import BaseClass
 class original(BaseClass):
     def __init__(self, teacher_model, student_model, train_loader, val_loader,
                  optimizer_teacher, optimizer_student, loss='MSE', temp=20.0,
-                 distil_weight=0.5, device='cpu', rkd_angle=None,
-                 rkd_dist=None):
+                 distil_weight=0.5, device='cpu', rkd_angle=None, rkd_dist=None, 
+                 log=False, logdir='./Experiments'):
         super(original, self).__init__(
             teacher_model,
             student_model,
@@ -19,7 +19,9 @@ class original(BaseClass):
             loss,
             temp,
             distil_weight,
-            device
+            device,
+            log,
+            logdir
         )
         if self.loss.upper() == 'MSE':
             self.loss_fn = nn.MSELoss()
@@ -34,8 +36,8 @@ class original(BaseClass):
         soft_teacher_out = F.softmax(y_pred_teacher/self.temp, dim=0)
         soft_student_out = F.softmax(y_pred_student/self.temp, dim=0)
 
-        loss = (1-self.distl_weight) * F.cross_entropy(soft_student_out,
+        loss = (1-self.distil_weight) * F.cross_entropy(soft_student_out,
                                                        y_true)
-        loss += self.distl_weight * self.loss_fn(soft_teacher_out,
+        loss += self.distil_weight * self.loss_fn(soft_teacher_out,
                                                  soft_student_out)
         return loss
