@@ -9,12 +9,13 @@ from KD_Lib.models.resnet import (ResNet18,
                                   ResNet50,
                                   ResNet101,
                                   ResNet152)
+from KD_Lib.TAKD.takd import TAKD
+from KD_Lib.attention.attention import attention
 from KD_Lib.original.original_paper import original
 from KD_Lib.original.model import teacher, student
-from KD_Lib.attention.attention import attention
-from KD_Lib.TAKD.takd import TAKD
-from KD_Lib.models.resnet import resnet_book
 from KD_Lib.noisy import NoisyTeacher
+from KD_Lib.models import lenet, nin, shallow
+from KD_Lib.models.resnet import resnet_book
 
 train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('mnist_data', train=True, download=True,
@@ -49,6 +50,34 @@ def test_attention_model():
     params = [4, 4, 8, 8, 16]
     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
     model = ResNet152(params, att=True)
+    sample_output = model(sample_input)
+    print(sample_output)
+
+
+def test_NIN():
+    sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
+    model = nin.NIN(10, 1)
+    sample_output = model(sample_input)
+    print(sample_output)
+
+
+def test_shallow():
+    sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
+    model = shallow.Shallow(32)
+    sample_output = model(sample_input)
+    print(sample_output)
+
+
+def test_lenet():
+    sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
+    model = lenet.LeNet()
+    sample_output = model(sample_input)
+    print(sample_output)
+
+
+def test_modlenet():
+    sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
+    model = lenet.ModLeNet()
     sample_output = model(sample_input)
     print(sample_output)
 
