@@ -19,6 +19,20 @@ from KD_Lib.attention.attention import attention
 from KD_Lib.TAKD.takd import TAKD
 from KD_Lib.models.resnet import resnet_book
 
+train_loader = torch.utils.data.DataLoader(
+        datasets.MNIST('mnist_data', train=True, download=True,
+                       transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])), batch_size=32, shuffle=True)
+
+test_loader = torch.utils.data.DataLoader(
+        datasets.MNIST('mnist_data', train=False,
+                    transform=transforms.Compose([
+                            transforms.ToTensor(),
+                            transforms.Normalize((0.1307,), (0.3081,))
+                        ])),
+        batch_size=32, shuffle=True)
 
 def test_noisy():
     noisy_mnist(epochs=0)
@@ -38,21 +52,6 @@ def test_resnet():
 
 
 def test_TAKD():
-    train_loader = torch.utils.data.DataLoader(
-        datasets.MNIST('mnist_data', train=True, download=True,
-                       transform=transforms.Compose([
-                           transforms.ToTensor(),
-                           transforms.Normalize((0.1307,), (0.3081,))
-                       ])), batch_size=32, shuffle=True)
-
-    test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=False,
-                        transform=transforms.Compose([
-                                transforms.ToTensor(),
-                                transforms.Normalize((0.1307,), (0.3081,))
-                            ])),
-            batch_size=32, shuffle=True)
-
     teacher = resnet_book['50']([4,4,8,8,16], num_channel=1)
     assistants = []
     temp = resnet_book['34']([4,4,8,8,16], num_channel=1)
@@ -99,21 +98,6 @@ def test_original():
     teac = teacher(1200)
     stud = student(800)
 
-    train_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=True, download=True,
-                        transform=transforms.Compose([
-                            transforms.ToTensor(),
-                            transforms.Normalize((0.1307,), (0.3081,))
-                        ])), batch_size=32, shuffle=True)
-
-    test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=False,
-                        transform=transforms.Compose([
-                                transforms.ToTensor(),
-                                transforms.Normalize((0.1307,), (0.3081,))
-                            ])),
-            batch_size=32, shuffle=True)
-
     t_optimizer = optim.SGD(teac.parameters(), 0.01)
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
 
@@ -129,21 +113,6 @@ def test_attention():
     teacher_model = ResNet50(teacher_params, 1, 10, True)
     student_model = ResNet18(student_params, 1, 10, True)
 
-    train_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=True, download=True,
-                        transform=transforms.Compose([
-                            transforms.ToTensor(),
-                            transforms.Normalize((0.1307,), (0.3081,))
-                        ])), batch_size=32, shuffle=True)
-
-    test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=False,
-                        transform=transforms.Compose([
-                                transforms.ToTensor(),
-                                transforms.Normalize((0.1307,), (0.3081,))
-                            ])),
-            batch_size=32, shuffle=True)
-
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
@@ -153,5 +122,3 @@ def test_attention():
     att.train_teacher(epochs=0,plot_losses=False,save_model=False)
     att.train_student(epochs=0,plot_losses=False,save_model=False)
     att.evaluate(teacher=False)
-
-def test_TAKD():
