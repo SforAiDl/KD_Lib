@@ -1,7 +1,11 @@
 import random
-from KD_Lib.common import BaseClass
-from .utils import add_noise
+import torch
 from torch.nn import MSELoss
+from KD_Lib.common import BaseClass
+
+
+def add_noise(x, variance=0.1):
+    return x * (1 + (variance**0.5) * torch.randn_like(x))
 
 
 class NoisyTeacher(BaseClass):
