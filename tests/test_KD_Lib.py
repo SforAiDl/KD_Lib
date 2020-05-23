@@ -16,8 +16,24 @@ from KD_Lib.attention.training import mnist as mnist_AT
 from KD_Lib.original.original_paper import original
 from KD_Lib.original.model import teacher, student
 from KD_Lib.attention.attention import attention
+from KD_Lib.TAKD.takd import TAKD
+from KD_Lib.models.resnet import resnet_book
 from KD_Lib.noisy import NoisyTeacher
 
+train_loader = torch.utils.data.DataLoader(
+        datasets.MNIST('mnist_data', train=True, download=True,
+                       transform=transforms.Compose([
+                           transforms.ToTensor(),
+                           transforms.Normalize((0.1307,), (0.3081,))
+                       ])), batch_size=32, shuffle=True)
+
+test_loader = torch.utils.data.DataLoader(
+        datasets.MNIST('mnist_data', train=False,
+                    transform=transforms.Compose([
+                            transforms.ToTensor(),
+                            transforms.Normalize((0.1307,), (0.3081,))
+                        ])),
+        batch_size=32, shuffle=True)
 
 def test_noisy():
     noisy_mnist(epochs=0)
@@ -37,45 +53,30 @@ def test_resnet():
 
 
 def test_TAKD():
-    config = {
-        'teacher': {
-            'name': 'resnet101',
-            'params': [32, 32, 64, 64, 128],
-            'optimizer': 'adam',
-            'train_epoch': 0
-        },
-        'assistants': [
-            {
-                'name': 'resnet50',
-                'params': [32, 32, 64, 64, 128],
-                'optimizer': 'adam',
-                'train_epoch': 0
-            },
-            {
-                'name': 'resnet34',
-                'params': [32, 32, 64, 64, 128],
-                'optimizer': 'adam',
-                'train_epoch': 0
-            },
-        ],
-        'student': {
-            'name': 'resnet18',
-            'params': [16, 32, 32, 16, 8],
-            'optimizer': 'adam',
-            'train_epoch': 0
-        },
-        'dataset': {
-            'name': 'mnist',
-            'location': './data/mnist',
-            'batch_size': 128,
-            'num_classes': 10,
-            'num_channels': 1
-        },
-        'loss_function': 'cross_entropy',
-        'assistant_train_order': [[-1], [-1, 0]]
-    }
-    main_TAKD(config)
+    teacher = resnet_book['50']([4,4,8,8,16], num_channel=1)
+    assistants = []
+    temp = resnet_book['34']([4,4,8,8,16], num_channel=1)
+    assistants.append(temp)
+    temp = resnet_book['34']([4,4,8,8,16], num_channel=1)
+    assistants.append(temp)
 
+    student = resnet_book['18']([4,4,8,8,16], num_channel=1)
+
+    teacher_optimizer = optim.Adam(teacher.parameters())
+    assistant_optimizers = []
+    assistant_optimizers.append(optim.Adam(assistants[0].parameters()))
+    assistant_optimizers.append(optim.Adam(assistants[1].parameters()))
+    student_optimizer = optim.Adam(student.parameters())
+
+    assistant_train_order = [[-1], [-1, 0]]
+
+    distil = TAKD(teacher, assistants, student, assistant_train_order, train_loader, test_loader,
+                teacher_optimizer, assistant_optimizers, student_optimizer)
+
+    distil.train_teacher(epochs=0,plot_losses=False,save_model=False)
+    distil.train_assistants(epochs=0,plot_losses=False,save_model=False)
+    distil.train_student(epochs=0,plot_losses=False,save_model=False)
+    distil.get_parameters()
 
 def test_RAKD():
     mnist(loss='RKD', epochs=0)
@@ -98,21 +99,6 @@ def test_original():
     teac = teacher(1200)
     stud = student(800)
 
-    train_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=True, download=True,
-                        transform=transforms.Compose([
-                            transforms.ToTensor(),
-                            transforms.Normalize((0.1307,), (0.3081,))
-                        ])), batch_size=32, shuffle=True)
-
-    test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=False,
-                        transform=transforms.Compose([
-                                transforms.ToTensor(),
-                                transforms.Normalize((0.1307,), (0.3081,))
-                            ])),
-            batch_size=32, shuffle=True)
-
     t_optimizer = optim.SGD(teac.parameters(), 0.01)
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
 
@@ -121,27 +107,13 @@ def test_original():
     orig.train_teacher(epochs=1,plot_losses=False,save_model=False)
     orig.train_student(epochs=1,plot_losses=False,save_model=False)
     orig.evaluate(teacher=False)
+    orig.get_parameters()
 
 def test_attention():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10, True)
     student_model = ResNet18(student_params, 1, 10, True)
-
-    train_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=True, download=True,
-                        transform=transforms.Compose([
-                            transforms.ToTensor(),
-                            transforms.Normalize((0.1307,), (0.3081,))
-                        ])), batch_size=32, shuffle=True)
-
-    test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=False,
-                        transform=transforms.Compose([
-                                transforms.ToTensor(),
-                                transforms.Normalize((0.1307,), (0.3081,))
-                            ])),
-            batch_size=32, shuffle=True)
 
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
@@ -152,28 +124,13 @@ def test_attention():
     att.train_teacher(epochs=0,plot_losses=False,save_model=False)
     att.train_student(epochs=0,plot_losses=False,save_model=False)
     att.evaluate(teacher=False)
-
+    att.get_parameters()
 
 def test_NoisyTeacher():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
     student_model = ResNet18(student_params, 1, 10)
-
-    train_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=True, download=True,
-                           transform=transforms.Compose([
-                               transforms.ToTensor(),
-                               transforms.Normalize((0.1307,), (0.3081,))
-                           ])), batch_size=32, shuffle=True)
-
-    test_loader = torch.utils.data.DataLoader(
-            datasets.MNIST('mnist_data', train=False,
-                           transform=transforms.Compose([
-                                   transforms.ToTensor(),
-                                   transforms.Normalize((0.1307,), (0.3081,))
-                               ])),
-            batch_size=32, shuffle=True)
 
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
@@ -185,3 +142,4 @@ def test_NoisyTeacher():
     experiment.train_teacher(epochs=0,plot_losses=False,save_model=False)
     experiment.train_student(epochs=0,plot_losses=False,save_model=False)
     experiment.evaluate(teacher=False)
+    experiment.get_parameters()
