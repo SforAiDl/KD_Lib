@@ -75,7 +75,7 @@ def test_TAKD():
     distil.train_teacher(epochs=0,plot_losses=False,save_model=False)
     distil.train_assistants(epochs=0,plot_losses=False,save_model=False)
     distil.train_student(epochs=0,plot_losses=False,save_model=False)
-
+    distil.get_parameters()
 
 def test_RAKD():
     mnist(loss='RKD', epochs=0)
@@ -106,6 +106,7 @@ def test_original():
     orig.train_teacher(epochs=1,plot_losses=False,save_model=False)
     orig.train_student(epochs=1,plot_losses=False,save_model=False)
     orig.evaluate(teacher=False)
+    orig.get_parameters()
 
 def test_attention():
     teacher_params = [4, 4, 8, 4, 4]
@@ -122,3 +123,4 @@ def test_attention():
     att.train_teacher(epochs=0,plot_losses=False,save_model=False)
     att.train_student(epochs=0,plot_losses=False,save_model=False)
     att.evaluate(teacher=False)
+    att.get_parameters()

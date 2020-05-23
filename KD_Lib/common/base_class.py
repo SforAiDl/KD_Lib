@@ -167,3 +167,14 @@ class BaseClass:
 
         print("-"*80)
         print(f'Accuracy: {correct/length_of_dataset}')
+
+    def get_parameters(self):
+        '''
+        Get the number of parameters for the teacher and the student network
+        '''
+        teacher_params = sum(p.numel() for p in self.teacher_model.parameters())
+        student_params = sum(p.numel() for p in self.student_model.parameters())
+
+        print("-"*80)
+        print(f"Total parameters for the teacher network are: {teacher_params}")
+        print(f"Total parameters for the student network are: {student_params}")
