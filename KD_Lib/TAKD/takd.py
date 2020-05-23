@@ -43,7 +43,7 @@ class TAKD(BaseClass):
 
         return loss
 
-    def train_distill_model(self, teachers, model, optimizer, epochs=20, plot_losses=True, save_model=True, save_model_pth="./models/teacher.pt"):
+    def train_distil_model(self, teachers, model, optimizer, epochs=20, plot_losses=True, save_model=True, save_model_pth="./models/teacher.pt"):
         model.train()
         train_loss = []
         length_of_dataset = len(self.train_loader.dataset)
