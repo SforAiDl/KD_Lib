@@ -1,1 +1,1 @@
-from . import resnet
+from . import resnet, shallow, nin, lenet
