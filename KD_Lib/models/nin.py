@@ -1,9 +1,9 @@
 from torch import nn
 
 
-class NIN(nn.Module):
+class NetworkInNetwork(nn.Module):
     def __init__(self, num_classes=10, in_channels=3):
-        super(NIN, self).__init__()
+        super(NetworkInNetwork, self).__init__()
 
         self.num_classes = num_classes
         self.in_channels = in_channels

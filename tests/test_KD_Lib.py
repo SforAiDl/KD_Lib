@@ -55,7 +55,7 @@ def test_attention_model():
 
 def test_NIN():
     sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
-    model = nin.NIN(10, 1)
+    model = nin.NetworkInNetwork(10, 1)
     sample_output = model(sample_input)
     print(sample_output)
 
