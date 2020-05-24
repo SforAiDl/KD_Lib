@@ -6,7 +6,7 @@ from KD_Lib.attention import ATLoss
 class attention(BaseClass):
     def __init__(self, teacher_model, student_model, train_loader, val_loader,
                  optimizer_teacher, optimizer_student, loss='MSE', temp=20.0,
-                 distil_weight=0.5, device='cpu'):
+                 distil_weight=0.5, device='cpu', log=False, logdir='./Experiments'):
         super(attention, self).__init__(
             teacher_model,
             student_model,
@@ -17,7 +17,9 @@ class attention(BaseClass):
             loss,
             temp,
             distil_weight,
-            device
+            device,
+            log,
+            logdir
         )
 
         self.loss_fn = ATLoss()

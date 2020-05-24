@@ -12,7 +12,8 @@ class NoisyTeacher(BaseClass):
     def __init__(self, teacher_model, student_model, train_loader, val_loader,
                  optimizer_teacher, optimizer_student,
                  loss_fn=MSELoss(), alpha=0.5, noise_variance=0.1,
-                 loss='MSE', temp=20.0, distil_weight=0.5, device='cpu'):
+                 loss='MSE', temp=20.0, distil_weight=0.5, device='cpu', 
+                 log=False, logdir='./Experiments'):
         super(NoisyTeacher, self).__init__(
             teacher_model,
             student_model,
@@ -23,7 +24,9 @@ class NoisyTeacher(BaseClass):
             loss,
             temp,
             distil_weight,
-            device
+            device,
+            log,
+            logdir
         )
 
         self.loss_fn = loss_fn

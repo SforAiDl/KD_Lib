@@ -96,8 +96,8 @@ def test_original():
     orig = original(teac, stud, train_loader, test_loader, t_optimizer,
                     s_optimizer, loss='RKD', rkd_angle=0.4, rkd_dist=0.6)
 
-    orig.train_teacher(epochs=1, plot_losses=False, save_model=False)
-    orig.train_student(epochs=1, plot_losses=False, save_model=False)
+    orig.train_teacher(epochs=0, plot_losses=False, save_model=False)
+    orig.train_student(epochs=0, plot_losses=False, save_model=False)
     orig.evaluate(teacher=False)
     orig.get_parameters()
 
