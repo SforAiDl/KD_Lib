@@ -2,6 +2,15 @@ import torch.nn as nn
 
 
 class ModLeNet(nn.Module):
+    """
+    Implementation of a ModLeNet model
+
+    :param img_size (int): Dimension of input image
+    :param hidden_size (int): Hidden layer dimension
+    :param num_classes (int): Number of classes for classification
+    :param in_channels (int): Number of channels in input specimens
+    """
+    
     def __init__(self, img_size=32, num_classes=10, in_channels=3):
         super(ModLeNet, self).__init__()
 
@@ -32,6 +41,15 @@ class ModLeNet(nn.Module):
 
 
 class LeNet(nn.Module):
+    """
+    Implementation of a LeNet model
+
+    :param img_size (int): Dimension of input image
+    :param hidden_size (int): Hidden layer dimension
+    :param num_classes (int): Number of classes for classification
+    :param in_channels (int): Number of channels in input specimens
+    """
+    
     def __init__(self, img_size=32, num_classes=10, in_channels=3):
         super(LeNet, self).__init__()
 

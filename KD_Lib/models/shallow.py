@@ -4,7 +4,14 @@ import torch.nn.functional as F
 
 
 class Shallow(nn.Module):
+    """
+    Implementation of a Shallow model
 
+    :param img_size (int): Dimension of input image
+    :param hidden_size (int): Hidden layer dimension
+    :param num_classes (int): Number of classes for classification
+    """
+    
     def __init__(self, img_size=28, hidden_size=800, num_classes=10):
         super(Shallow, self).__init__()
 

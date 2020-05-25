@@ -62,6 +62,7 @@ class Bottleneck(nn.Module):
 
 
 class ResNet(nn.Module):
+    
     def __init__(self, block, num_blocks, params, num_channel=3,
                  num_classes=10):
         super(ResNet, self).__init__()
@@ -115,30 +116,75 @@ class ResnetWithAT(ResNet):
 
 
 def ResNet18(parameters, num_channel=3, num_classes=10, att=False):
+    """
+    Function that creates a ResNet 18 model
+
+    :param parameters (list or tuple): List of parameters for the model
+    :param num_channel (int): Number of channels in input specimens
+    :param num_classes (int): Number of classes for classification
+    :param att (bool): True if attention needs to be used
+    """
+    
     model = ResnetWithAT if att else ResNet
     return model(BasicBlock, [2, 2, 2, 2], parameters, num_channel,
                  num_classes=num_classes)
 
 
 def ResNet34(parameters, num_channel=3, num_classes=10, att=False):
+    """
+    Function that creates a ResNet 34 model
+
+    :param parameters (list or tuple): List of parameters for the model
+    :param num_channel (int): Number of channels in input specimens
+    :param num_classes (int): Number of classes for classification
+    :param att (bool): True if attention needs to be used
+    """
+    
     model = ResnetWithAT if att else ResNet
     return model(BasicBlock, [3, 4, 6, 3], parameters, num_channel,
                  num_classes=num_classes)
 
 
 def ResNet50(parameters, num_channel=3, num_classes=10, att=False):
+    """
+    Function that creates a ResNet 50 model
+
+    :param parameters (list or tuple): List of parameters for the model
+    :param num_channel (int): Number of channels in input specimens
+    :param num_classes (int): Number of classes for classification
+    :param att (bool): True if attention needs to be used
+    """
+    
     model = ResnetWithAT if att else ResNet
     return model(Bottleneck, [3, 4, 6, 3], parameters, num_channel,
                  num_classes=num_classes)
 
 
 def ResNet101(parameters, num_channel=3, num_classes=10, att=False):
+    """
+    Function that creates a ResNet 101 model
+
+    :param parameters (list or tuple): List of parameters for the model
+    :param num_channel (int): Number of channels in input specimens
+    :param num_classes (int): Number of classes for classification
+    :param att (bool): True if attention needs to be used
+    """
+    
     model = ResnetWithAT if att else ResNet
     return model(Bottleneck, [3, 4, 23, 3], parameters, num_channel,
                  num_classes=num_classes)
 
 
 def ResNet152(parameters, num_channel=3, num_classes=10, att=False):
+    """
+    Function that creates a ResNet 152 model
+
+    :param parameters (list or tuple): List of parameters for the model
+    :param num_channel (int): Number of channels in input specimens
+    :param num_classes (int): Number of classes for classification
+    :param att (bool): True if attention needs to be used
+    """
+    
     model = ResnetWithAT if att else ResNet
     return model(Bottleneck, [3, 8, 36, 3], parameters, num_channel,
                  num_classes=num_classes)
