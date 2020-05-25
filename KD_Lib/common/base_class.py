@@ -7,6 +7,8 @@ from torch.utils.tensorboard import SummaryWriter
 import matplotlib.pyplot as plt 
 from copy import deepcopy
 
+import warnings
+
 class BaseClass:
     """
     Basic implementation of a general Knowledge Distillation framework
@@ -38,12 +40,18 @@ class BaseClass:
         self.loss = loss
         self.temp = temp
         self.distil_weight = distil_weight
-        self.device = device
         self.log = log
         self.logdir = logdir
 
         if self.log:
             self.writer = SummaryWriter(logdir)
+
+        try:
+            torch.tensor(0).to(device)
+            self.device = device
+        except:
+            print("Either an invalid device or CUDA is not available. Defaulting to CPU.")
+            self.device = 'cpu'
 
     def train_teacher(self, epochs=20, plot_losses=True, save_model=True, save_model_pth="./models/teacher.pt"):
         '''
