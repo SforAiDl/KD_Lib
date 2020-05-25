@@ -8,26 +8,26 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 
 class BaseClass:
+    """
+    Basic implementation of a general Knowledge Distillation framework
+
+    :param teacher_model (torch.nn.Module): Teacher model
+    :param student_model (torch.nn.Module): Student model
+    :param train_loader (torch.utils.data.DataLoader): Dataloader for training
+    :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
+    :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
+    :param optimizer_student (torch.optim.*): Optimizer used for training student
+    :param loss (str): Loss used for training
+    :param temp (float): Temperature parameter for distillation
+    :param distil_weight (float): Weight paramter for distillation loss
+    :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
+    :param log (bool): True if logging required
+    :param logdir (str): Directory for storing logs
+    """
+
     def __init__(self, teacher_model, student_model, train_loader, val_loader, optimizer_teacher, 
                  optimizer_student, loss='MSE', temp=20.0, distil_weight=0.5, device='cpu', 
                  log=False, logdir='./Experiments'):
-
-        """
-        Basic implementation of a general Knowledge Distillation framework
-
-        :param teacher_model (torch.nn.Module): Teacher model
-        :param student_model (torch.nn.Module): Student model
-        :param train_loader (torch.utils.data.DataLoader): Dataloader for training
-        :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
-        :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
-        :param optimizer_student (torch.optim.*): Optimizer used for training student
-        :param loss (str): Loss used for training
-        :param temp (float): Temperature parameter for distillation
-        :param distil_weight (float): Weight paramter for distillation loss
-        :param device (str): Device used for training
-        :param log (bool): True if logging required
-        :param logdir (str): Directory for storing logs
-        """
 
         self.teacher_model = teacher_model
         self.student_model = student_model
