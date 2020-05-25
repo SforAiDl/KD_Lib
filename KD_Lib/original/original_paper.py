@@ -60,6 +60,7 @@ class original(BaseClass):
         :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model 
         :param y_true (torch.FloatTensor): Original label
         """
+        
         soft_teacher_out = F.softmax(y_pred_teacher/self.temp, dim=0)
         soft_student_out = F.softmax(y_pred_student/self.temp, dim=0)
 

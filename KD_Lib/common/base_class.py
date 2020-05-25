@@ -172,6 +172,7 @@ class BaseClass:
         :param y_pred_teacher (Tensor): Predicted outputs from the teacher network 
         :param y_true (Tensor): True labels
         '''
+        
         raise NotImplementedError
 
     def evaluate(self, teacher=True):
