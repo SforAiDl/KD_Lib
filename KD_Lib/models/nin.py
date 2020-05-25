@@ -2,6 +2,13 @@ from torch import nn
 
 
 class NetworkInNetwork(nn.Module):
+    """
+    Implementation of a Network In Network model
+
+    :param num_classes (int): Number of classes for classification
+    :param in_channels (int): Number of channels in input specimens
+    """
+    
     def __init__(self, num_classes=10, in_channels=3):
         super(NetworkInNetwork, self).__init__()
 
