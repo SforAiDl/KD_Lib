@@ -7,8 +7,6 @@ from torch.utils.tensorboard import SummaryWriter
 import matplotlib.pyplot as plt 
 from copy import deepcopy
 
-import warnings
-
 class BaseClass:
     """
     Basic implementation of a general Knowledge Distillation framework
