@@ -8,10 +8,10 @@ class LSTMNet(nn.Module):
 	:param input_dim (int): Size of the vocabulary
 	:param embed_dim (int): Embedding dimension (word vector size)
 	:param hidden_dim (int): Hidden dimension for LSTM layers
-    :param num_classes (int): Number of classes for classification
-    :param dropout_prob (int): Dropout probability
-    :param bidirectional (int): True if bidirectional LSTM needed
-    :param batch_size (int): Batch size of input
+	:param num_classes (int): Number of classes for classification
+	:param dropout_prob (int): Dropout probability
+	:param bidirectional (int): True if bidirectional LSTM needed
+	:param batch_size (int): Batch size of input
     """
     
 	def __init__(self, input_dim=100, embed_dim=50, hidden_dim=32, num_classes=2, num_layers=5, dropout_prob=0, bidirectional=False, batch_size=32):
