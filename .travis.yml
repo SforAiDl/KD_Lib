@@ -5,10 +5,13 @@ python:
   - 3.6
 
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -U tox-travis codecov
+install: pip install -U tox-travis codecov black
 
 # Command to run tests, e.g. python setup.py test
-script: tox
+script:
+        - tox
+        - black --check KD_Lib
+        - black --check tests
 
 # Codecov after success
 after_success: codecov
