@@ -13,7 +13,7 @@ from KD_Lib.TAKD.takd import TAKD
 from KD_Lib.attention.attention import attention
 from KD_Lib.original.original_paper import original
 from KD_Lib.noisy import NoisyTeacher
-from KD_Lib.models import lenet, nin, shallow
+from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
 
 train_loader = torch.utils.data.DataLoader(
@@ -43,7 +43,6 @@ def test_resnet():
     ResNet50(params)
     ResNet101(params)
     ResNet152(params)
-
 
 def test_attention_model():
     params = [4, 4, 8, 8, 16]
@@ -77,6 +76,19 @@ def test_lenet():
 def test_modlenet():
     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
     model = lenet.ModLeNet()
+    sample_output = model(sample_input)
+    print(sample_output)
+
+def test_LSTMNet():
+    sample_input = torch.tensor([[1,2,8,3,2],[2,4,99,1,7]])
+    
+    # Simple LSTM
+    model = lstm.LSTMNet(num_classes=2,batch_size=2, dropout_prob=0.5)
+    sample_output = model(sample_input)
+    print(sample_output)
+
+    # Bidirectional LSTM
+    model = lstm.LSTMNet(num_classes=2,batch_size=2, dropout_prob=0.5)
     sample_output = model(sample_input)
     print(sample_output)
 
