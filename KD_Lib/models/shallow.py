@@ -12,14 +12,16 @@ class Shallow(nn.Module):
     :param num_classes (int): Number of classes for classification
     """
     
-    def __init__(self, img_size=28, hidden_size=800, num_classes=10):
+    def __init__(self, img_size=28, hidden_size=800, 
+                 num_classes=10, num_channels=1):
         super(Shallow, self).__init__()
 
         self.hidden_size = hidden_size
         self.num_classes = num_classes
         self.img_size = img_size
+        self.num_channels = num_channels
 
-        self.fc1 = nn.Linear(self.img_size**2, self.hidden_size)
+        self.fc1 = nn.Linear(self.img_size**2 * self.num_channels, self.hidden_size)
         self.fc2 = nn.Linear(self.hidden_size, self.hidden_size)
         self.fc3 = nn.Linear(self.hidden_size, self.num_classes)
 
