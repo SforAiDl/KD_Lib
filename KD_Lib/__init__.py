@@ -3,8 +3,8 @@
 """Top-level package for KD_Lib."""
 
 __author__ = """Het Shah"""
-__email__ = 'divhet163@gmail.com'
-__version__ = '0.0.3'
+__email__ = "divhet163@gmail.com"
+__version__ = "0.0.3"
 
 from .models import resnet, shallow, nin, lenet, lstm
 from .original import original
