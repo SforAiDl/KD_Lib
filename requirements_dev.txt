@@ -13,3 +13,4 @@ pytest-cov==2.6.1
 matplotlib==3.2.1
 torch==1.5.0
 torchvision==0.6.0
+tensorboard==2.2.1
