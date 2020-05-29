@@ -12,6 +12,8 @@ from KD_Lib.models.resnet import (ResNet18,
 from KD_Lib.TAKD.takd import TAKD
 from KD_Lib.attention.attention import attention
 from KD_Lib.original.original_paper import original
+from KD_Lib.teacher_free.virtual_teacher import VirtualTeacher
+from KD_Lib.teacher_free.self_training import SelfTraining
 from KD_Lib.noisy import NoisyTeacher
 from KD_Lib.Bert2Lstm.utils import get_essentials
 from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
@@ -182,6 +184,28 @@ def test_NoisyTeacher():
     experiment.evaluate(teacher=False)
     experiment.get_parameters()
 
+def test_VirtualTeacher():
+    stud = shallow.Shallow(hidden_size=300)
+
+    s_optimizer = optim.SGD(stud.parameters(), 0.01)
+
+    distiller = VirtualTeacher(stud, train_loader, test_loader, s_optimizer)
+
+    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.evaluate()
+    distiller.get_parameters()
+
+def test_SelfTraining():
+    stud = shallow.Shallow(hidden_size=300)
+
+    s_optimizer = optim.SGD(stud.parameters(), 0.01)
+
+    distiller = SelfTraining(stud, train_loader, test_loader, s_optimizer)
+
+    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.evaluate()
+    distiller.get_parameters()
+
 def test_bert2lstm():
     data_csv = './KD_Lib/Bert2Lstm/IMDB Dataset.csv'
     df = pd.read_csv(data_csv)
@@ -199,5 +223,4 @@ def test_bert2lstm():
     experiment = Bert2LSTM(student_model,train_loader,None,optimizer,train_df,val_df)
     experiment.train_teacher(plot_losses=False, save_model=False)
     experiment.train_student(plot_losses=False, save_model=False)
-
 
