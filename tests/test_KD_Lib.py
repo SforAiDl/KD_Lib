@@ -13,8 +13,13 @@ from KD_Lib.TAKD.takd import TAKD
 from KD_Lib.attention.attention import attention
 from KD_Lib.original.original_paper import original
 from KD_Lib.noisy import NoisyTeacher
+from KD_Lib.Bert2Lstm.utils import get_essentials
+from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
+
+import pandas as pd
+
 
 train_loader = torch.utils.data.DataLoader(
         datasets.MNIST('mnist_data', train=True, download=True,
@@ -34,7 +39,6 @@ test_loader = torch.utils.data.DataLoader(
 #
 #   MODEL TESTS
 #
-
 
 def test_resnet():
     params = [4, 4, 8, 8, 16]
@@ -177,3 +181,23 @@ def test_NoisyTeacher():
     experiment.train_student(epochs=0, plot_losses=False, save_model=False)
     experiment.evaluate(teacher=False)
     experiment.get_parameters()
+
+def test_bert2lstm():
+    data_csv = './KD_Lib/Bert2Lstm/IMDB Dataset.csv'
+    df = pd.read_csv(data_csv)
+    df['sentiment'].replace({'negative':0, 'positive':1},inplace=True)
+
+    train_df = df.iloc[[0,1,2,-3,-2,-1],:]
+    val_df = df.iloc[[10,15,20,-30,-20,-10],:]
+
+
+    text_field, train_loader = get_essentials(train_df)
+
+    student_model = lstm.LSTMNet(input_dim=len(text_field.vocab),num_classes=2,batch_size=2, dropout_prob=0.5)
+    optimizer = torch.optim.Adam(student_model.parameters())
+    
+    experiment = Bert2LSTM(student_model,train_loader,None,optimizer,train_df,val_df)
+    experiment.train_teacher(plot_losses=False, save_model=False)
+    experiment.train_student(plot_losses=False, save_model=False)
+
+
