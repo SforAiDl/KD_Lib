@@ -38,6 +38,19 @@ test_loader = torch.utils.data.DataLoader(
                         ])),
         batch_size=32, shuffle=True)
 
+
+## BERT to LSTM data
+data_csv = './KD_Lib/Bert2Lstm/IMDB_Dataset.csv'
+df = pd.read_csv(data_csv)
+df['sentiment'].replace({'negative':0, 'positive':1},inplace=True)
+
+train_df = df.iloc[:6,:]
+val_df = df.iloc[6:,:]
+
+text_field, train_loader = get_essentials(train_df)
+
+    
+
 #
 #   MODEL TESTS
 #
@@ -207,20 +220,10 @@ def test_SelfTraining():
     distiller.get_parameters()
 
 def test_bert2lstm():
-    data_csv = './KD_Lib/Bert2Lstm/IMDB Dataset.csv'
-    df = pd.read_csv(data_csv)
-    df['sentiment'].replace({'negative':0, 'positive':1},inplace=True)
-
-    train_df = df.iloc[[0,1,2,-3,-2,-1],:]
-    val_df = df.iloc[[10,15,20,-30,-20,-10],:]
-
-
-    text_field, train_loader = get_essentials(train_df)
-
     student_model = lstm.LSTMNet(input_dim=len(text_field.vocab),num_classes=2,batch_size=2, dropout_prob=0.5)
     optimizer = torch.optim.Adam(student_model.parameters())
     
     experiment = Bert2LSTM(student_model,train_loader,None,optimizer,train_df,val_df)
-    experiment.train_teacher(plot_losses=False, save_model=False)
-    experiment.train_student(plot_losses=False, save_model=False)
+    # experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
+    experiment.train_student(epochs=0, plot_losses=False, save_model=False)
 
