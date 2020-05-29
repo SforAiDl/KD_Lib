@@ -13,4 +13,7 @@ script: tox
 # Codecov after success
 after_success: codecov
 
-
+deploy:
+  provider: pypi
+  username: "__token__"
+  password: pypi-AgEIcHlwaS5vcmcCJDRkYjQ3MDBjLTI3MWEtNGM1Ny05NTBjLWZiNmFjNTBhODRiOQACN3sicGVybWlzc2lvbnMiOiB7InByb2plY3RzIjogWyJrZC1saWIiXX0sICJ2ZXJzaW9uIjogMX0AAAYgI0Xwagi3dnvYYMRZYWRFEHiArHMMkf1pQYXqPXnyV-k
