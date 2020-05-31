@@ -2,8 +2,8 @@ KD_Lib
 ======
 
 
-.. image:: https://img.shields.io/travis/SforAiDl/KD_Lib.svg
-        :target: https://travis-ci.com/SforAiDl/KD_Lib
+.. image:: https://travis-ci.com/SforAiDl/KD_Lib.svg?branch=master
+    :target: https://travis-ci.com/SforAiDl/KD_Lib
 
 A Pytorch Library to help extend all Knowledge Distillation works
 
