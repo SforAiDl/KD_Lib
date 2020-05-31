@@ -14,7 +14,7 @@ script:
         - black --check tests
 
 # Codecov after success
-after_success: codecov
+after_success: codecov --token=d25a9eb9-4e77-4d38-8862-6d447be11830
 
 deploy:
   provider: pypi
