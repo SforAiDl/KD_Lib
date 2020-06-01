@@ -21,7 +21,8 @@ class RCO(BaseClass):
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
-    :param loss (torch.nn.Module): Loss Function used for distillation
+    :param loss_fn (torch.nn.Module): Loss Function used for distillation
+    :param epoch_interval (int): Number of epochs after which teacher anchor points are created
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
@@ -109,7 +110,7 @@ class RCO(BaseClass):
 
                 epoch_loss += loss
 
-            if (ep+1)%self.epoch_interval == 0:
+            if (ep + 1) % self.epoch_interval == 0:
                 self.anchors.append(deepcopy(self.teacher_model))
 
             epoch_acc = correct / length_of_dataset
@@ -164,7 +165,7 @@ class RCO(BaseClass):
             epoch_loss = 0.0
             correct = 0
 
-            if (ep+1)%self.epoch_interval == 0 and ep<(epochs-1):
+            if (ep + 1) % self.epoch_interval == 0 and ep < (epochs - 1):
                 checkpoint += 1
                 teacher_model = self.anchors[checkpoint].to(self.device)
                 teacher_model.eval()
@@ -220,11 +221,12 @@ class RCO(BaseClass):
         :param y_true (Tensor): True labels
         """
 
-        loss = (1 - self.distil_weight) * F.cross_entropy(F.softmax(y_pred_student), y_true)
+        loss = (1 - self.distil_weight) * F.cross_entropy(
+            F.softmax(y_pred_student), y_true
+        )
         loss += self.distil_weight * self.loss_fn(
             F.log_softmax(y_pred_student / self.temp, dim=1),
             F.log_softmax(y_pred_teacher / self.temp, dim=1),
         )
 
         return loss
-
