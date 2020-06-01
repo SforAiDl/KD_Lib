@@ -267,6 +267,7 @@ def test_mean_teacher():
     mt.evaluate()
     mt.get_parameters()
 
+
 def test_RCO():
 
     teacher_params = [4, 4, 8, 4, 4]
