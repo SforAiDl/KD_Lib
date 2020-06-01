@@ -150,9 +150,7 @@ class RCO(BaseClass):
         :param save_model (bool): True if you want to save the student model
         :param save_model_pth (str): Path where you want to save the student model
         """
-        checkpoint = 0
-        teacher_model = self.anchors[0].to(self.device)
-        teacher_model.eval()
+        anchor_point = 0
         self.student_model.train()
         loss_arr = []
         length_of_dataset = len(self.train_loader.dataset)
@@ -165,10 +163,10 @@ class RCO(BaseClass):
             epoch_loss = 0.0
             correct = 0
 
-            if (ep + 1) % self.epoch_interval == 0 and ep < (epochs - 1):
-                checkpoint += 1
-                teacher_model = self.anchors[checkpoint].to(self.device)
+            if ep % self.epoch_interval == 0 and ep < epochs:
+                teacher_model = self.anchors[anchor_point].to(self.device)
                 teacher_model.eval()
+                anchor_point += 1
 
             for (data, label) in self.train_loader:
 
