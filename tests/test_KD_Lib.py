@@ -11,7 +11,7 @@ from KD_Lib.original.original_paper import original
 from KD_Lib.teacher_free.virtual_teacher import VirtualTeacher
 from KD_Lib.teacher_free.self_training import SelfTraining
 from KD_Lib.noisy import NoisyTeacher
-from KD_Lib.MeanTeacher import MeanTeacher
+from KD_Lib.mean_teacher import MeanTeacher
 from KD_Lib.RCO import RCO
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
