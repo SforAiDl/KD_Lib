@@ -3,14 +3,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
+from KD_Lib.common import BaseClass
 
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
 
-class BaseClass:
+class RCO(BaseClass):
     """
-    Basic implementation of a general Knowledge Distillation framework
+    Implementation of equal epoch interval route constrained optimization 
+    from the paper "Knowledge Distillation via Route Constrained Optimization" 
+    https://arxiv.org/abs/1904.09149
 
     :param teacher_model (torch.nn.Module): Teacher model
     :param student_model (torch.nn.Module): Student model
@@ -19,6 +22,7 @@ class BaseClass:
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
     :param loss_fn (torch.nn.Module): Loss Function used for distillation
+    :param epoch_interval (int): Number of epochs after which teacher anchor points are created
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
@@ -34,7 +38,8 @@ class BaseClass:
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        loss_fn=nn.MSELoss(),
+        loss_fn=nn.KLDivLoss(),
+        epoch_interval=5,
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
@@ -42,29 +47,23 @@ class BaseClass:
         logdir="./Experiments",
     ):
 
-        self.teacher_model = teacher_model
-        self.student_model = student_model
-        self.train_loader = train_loader
-        self.val_loader = val_loader
-        self.optimizer_teacher = optimizer_teacher
-        self.optimizer_student = optimizer_student
-        self.loss_fn = loss_fn
-        self.temp = temp
-        self.distil_weight = distil_weight
-        self.log = log
-        self.logdir = logdir
+        super(RCO, self).__init__(
+            teacher_model,
+            student_model,
+            train_loader,
+            val_loader,
+            optimizer_teacher,
+            optimizer_student,
+            loss_fn,
+            temp,
+            distil_weight,
+            device,
+            log,
+            logdir,
+        )
 
-        if self.log:
-            self.writer = SummaryWriter(logdir)
-
-        try:
-            torch.tensor(0).to(device)
-            self.device = device
-        except:
-            print(
-                "Either an invalid device or CUDA is not available. Defaulting to CPU."
-            )
-            self.device = "cpu"
+        self.epoch_interval = epoch_interval
+        self.anchors = []
 
     def train_teacher(
         self,
@@ -111,6 +110,9 @@ class BaseClass:
 
                 epoch_loss += loss
 
+            if (ep + 1) % self.epoch_interval == 0:
+                self.anchors.append(deepcopy(self.teacher_model))
+
             epoch_acc = correct / length_of_dataset
             if epoch_acc > best_acc:
                 best_acc = epoch_acc
@@ -148,7 +150,7 @@ class BaseClass:
         :param save_model (bool): True if you want to save the student model
         :param save_model_pth (str): Path where you want to save the student model
         """
-        self.teacher_model.eval()
+        anchor_point = 0
         self.student_model.train()
         loss_arr = []
         length_of_dataset = len(self.train_loader.dataset)
@@ -161,13 +163,18 @@ class BaseClass:
             epoch_loss = 0.0
             correct = 0
 
+            if ep % self.epoch_interval == 0 and ep < epochs:
+                teacher_model = self.anchors[anchor_point].to(self.device)
+                teacher_model.eval()
+                anchor_point += 1
+
             for (data, label) in self.train_loader:
 
                 data = data.to(self.device)
                 label = label.to(self.device)
 
                 student_out = self.student_model(data)
-                teacher_out = self.teacher_model(data)
+                teacher_out = teacher_model(data)
 
                 loss = self.calculate_kd_loss(student_out, teacher_out, label)
 
@@ -205,61 +212,19 @@ class BaseClass:
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
-        Custom loss function to calculate the KD loss for various implementations
+        Function used for calculating the KD loss during distillation
 
         :param y_pred_student (Tensor): Predicted outputs from the student network
         :param y_pred_teacher (Tensor): Predicted outputs from the teacher network
         :param y_true (Tensor): True labels
         """
 
-        raise NotImplementedError
+        loss = (1 - self.distil_weight) * F.cross_entropy(
+            F.softmax(y_pred_student), y_true
+        )
+        loss += self.distil_weight * self.loss_fn(
+            F.log_softmax(y_pred_student / self.temp, dim=1),
+            F.log_softmax(y_pred_teacher / self.temp, dim=1),
+        )
 
-    def evaluate(self, teacher=False):
-        """
-        Evaluate method for printing accuracies of the trained network
-
-        :param teacher (bool): True if you want accuracy of the teacher network
-        """
-        if teacher:
-            model = deepcopy(self.teacher_model)
-        else:
-            model = deepcopy(self.student_model)
-        model.eval()
-        length_of_dataset = len(self.val_loader.dataset)
-        correct = 0
-
-        with torch.no_grad():
-            for data, target in self.val_loader:
-                data = data.to(self.device)
-                target = target.to(self.device)
-                output = model(data)
-
-                if isinstance(output, tuple):
-                    output = output[0]
-
-                pred = output.argmax(dim=1, keepdim=True)
-                correct += pred.eq(target.view_as(pred)).sum().item()
-
-        print("-" * 80)
-        print(f"Accuracy: {correct/length_of_dataset}")
-
-    def get_parameters(self):
-        """
-        Get the number of parameters for the teacher and the student network
-        """
-        teacher_params = sum(p.numel() for p in self.teacher_model.parameters())
-        student_params = sum(p.numel() for p in self.student_model.parameters())
-
-        print("-" * 80)
-        print(f"Total parameters for the teacher network are: {teacher_params}")
-        print(f"Total parameters for the student network are: {student_params}")
-
-    def post_epoch_call(self, epoch):
-        """
-        Any changes to be made after an epoch is completed.
-
-        :param epoch (int) : current epoch number
-        :return            : nothing (void)
-        """
-
-        pass
+        return loss
