@@ -133,7 +133,7 @@ class BaseClass:
         if plot_losses:
             plt.plot(loss_arr)
 
-    def train_student(
+    def _train_student(
         self,
         epochs=10,
         plot_losses=True,
@@ -141,7 +141,7 @@ class BaseClass:
         save_model_pth="./models/student.pth",
     ):
         """
-        Function that will be training the student
+        Function to train student model - for internal use only.
 
         :param epochs (int): Number of epochs you want to train the teacher
         :param plot_losses (bool): True if you want to plot the losses
@@ -203,6 +203,23 @@ class BaseClass:
         if plot_losses:
             plt.plot(loss_arr)
 
+    def train_student(
+        self,
+        epochs=10,
+        plot_losses=True,
+        save_model=True,
+        save_model_pth="./models/student.pth",
+    ):
+        """
+        Function that will be training the student
+
+        :param epochs (int): Number of epochs you want to train the teacher
+        :param plot_losses (bool): True if you want to plot the losses
+        :param save_model (bool): True if you want to save the student model
+        :param save_model_pth (str): Path where you want to save the student model
+        """
+        self._train_student(epochs, plot_losses, save_model, save_model_pth)
+
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
         Custom loss function to calculate the KD loss for various implementations
@@ -214,6 +231,37 @@ class BaseClass:
 
         raise NotImplementedError
 
+    def _evaluate_model(self, model, verbose=True):
+        """
+        Evaluate the given model's accuaracy over val set.
+        For internal use only.
+
+        :param model (nn.Module): Model to be used for evaluation
+        :param verbose (bool): Display Accuracy
+        """
+        model.eval()
+        length_of_dataset = len(self.val_loader.dataset)
+        correct = 0
+        outputs = []
+
+        with torch.no_grad():
+            for data, target in self.val_loader:
+                data = data.to(self.device)
+                target = target.to(self.device)
+                output = model(data)
+
+                if isinstance(output, tuple):
+                    output = output[0]
+                outputs.append(output)
+
+                pred = output.argmax(dim=1, keepdim=True)
+                correct += pred.eq(target.view_as(pred)).sum().item()
+
+        if verbose:
+            print("-" * 80)
+            print(f"Accuracy: {correct/length_of_dataset}")
+        return outputs
+
     def evaluate(self, teacher=False):
         """
         Evaluate method for printing accuracies of the trained network
@@ -224,24 +272,7 @@ class BaseClass:
             model = deepcopy(self.teacher_model)
         else:
             model = deepcopy(self.student_model)
-        model.eval()
-        length_of_dataset = len(self.val_loader.dataset)
-        correct = 0
-
-        with torch.no_grad():
-            for data, target in self.val_loader:
-                data = data.to(self.device)
-                target = target.to(self.device)
-                output = model(data)
-
-                if isinstance(output, tuple):
-                    output = output[0]
-
-                pred = output.argmax(dim=1, keepdim=True)
-                correct += pred.eq(target.view_as(pred)).sum().item()
-
-        print("-" * 80)
-        print(f"Accuracy: {correct/length_of_dataset}")
+        _ = self._evaluate_model(model)
 
     def get_parameters(self):
         """

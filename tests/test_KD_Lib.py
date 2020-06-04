@@ -308,6 +308,6 @@ def test_BANN():
         device="cuda:0"
     )
 
-    distiller.train(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
