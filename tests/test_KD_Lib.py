@@ -13,6 +13,7 @@ from KD_Lib.teacher_free.self_training import SelfTraining
 from KD_Lib.noisy import NoisyTeacher
 from KD_Lib.mean_teacher import MeanTeacher
 from KD_Lib.RCO import RCO
+from KD_Lib.BANN import BANN
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
 
@@ -289,5 +290,24 @@ def test_RCO():
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
     distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.evaluate()
+    distiller.get_parameters()
+
+
+def test_BANN():
+    params = [4, 4, 4, 4, 4]
+    model = ResNet50(params, 1, 10).to("cuda:0")
+    optimizer = optim.SGD(model.parameters(), 0.01)
+
+    distiller = BANN(
+        model,
+        train_loader,
+        test_loader,
+        optimizer,
+        num_gen=2,
+        device="cuda:0"
+    )
+
+    distiller.train(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
