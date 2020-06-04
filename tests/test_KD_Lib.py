@@ -300,12 +300,7 @@ def test_BANN():
     optimizer = optim.SGD(model.parameters(), 0.01)
 
     distiller = BANN(
-        model,
-        train_loader,
-        test_loader,
-        optimizer,
-        num_gen=2,
-        device="cuda:0"
+        model, train_loader, test_loader, optimizer, num_gen=2, device="cuda:0"
     )
 
     distiller.train_student(epochs=0, plot_losses=False, save_model=False)

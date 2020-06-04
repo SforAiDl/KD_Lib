@@ -57,11 +57,19 @@ class BANN(BaseClass):
         self.num_gen = num_gen
         self.gen = 0
 
-    def train_student(self, epochs=10, plot_losses=False, save_model=True, save_model_pth="./models/student-{}.pth"):
+    def train_student(
+        self,
+        epochs=10,
+        plot_losses=False,
+        save_model=True,
+        save_model_pth="./models/student-{}.pth",
+    ):
         for k in range(self.num_gen):
-            print("Born Again : Gen {}/{}".format(k+1, self.num_gen))
+            print("Born Again : Gen {}/{}".format(k + 1, self.num_gen))
 
-            self._train_student(epochs, plot_losses, save_model, save_model_pth.format(k+1))
+            self._train_student(
+                epochs, plot_losses, save_model, save_model_pth.format(k + 1)
+            )
 
             # Use best model in k-1 gen as last model
             self.teacher_model.load_state_dict(self.best_student_model_weights)
@@ -71,7 +79,7 @@ class BANN(BaseClass):
             self.optimizer_student.load_state_dict(self.init_optim)
             self.gen += 1
 
-    def evaluate(self, models_dir='./models'):
+    def evaluate(self, models_dir="./models"):
         print("Evaluating Model Ensemble")
         models_dir = glob.glob(os.path.join(models_dir, "*.pth"))
         len_models = len(models_dir)
@@ -108,10 +116,9 @@ class BANN(BaseClass):
         if self.gen == 0:
             return self.loss_fn(y_pred_student, y_true)
 
-        s_i = F.log_softmax(y_pred_student/self.temp, dim=1)
-        t_i = F.softmax(y_pred_teacher/self.temp, dim=1)
-        KD_loss = nn.KLDivLoss()(s_i,t_i) * self.distil_weight
-        KD_loss += F.cross_entropy(y_pred_student, y_true) * (1. - self.distil_weight)
+        s_i = F.log_softmax(y_pred_student / self.temp, dim=1)
+        t_i = F.softmax(y_pred_teacher / self.temp, dim=1)
+        KD_loss = nn.KLDivLoss()(s_i, t_i) * self.distil_weight
+        KD_loss += F.cross_entropy(y_pred_student, y_true) * (1.0 - self.distil_weight)
 
         return KD_loss
-
