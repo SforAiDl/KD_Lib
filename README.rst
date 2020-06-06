@@ -37,7 +37,7 @@ Currently implemented works
 +-----------------------------------------------------------+----------------------------------+----------------------+
 |  Paper                                                    |  Link                            | Repository (KD_Lib/) |
 +===========================================================+==================================+======================+
-| Distilling the Knowledge in a Neural Network              | https://arxiv.org/abs/1503.02531 | orig                 | 
+| Distilling the Knowledge in a Neural Network              | https://arxiv.org/abs/1503.02531 | orig                 |
 +-----------------------------------------------------------+----------------------------------+----------------------+
 | Improved Knowledge Distillation via Teacher Assistant     | https://arxiv.org/abs/1902.03393 | TAKD                 |
 +-----------------------------------------------------------+----------------------------------+----------------------+
@@ -52,4 +52,6 @@ Currently implemented works
 | Mean Teachers are Better Role Models                      | https://arxiv.org/abs/1703.01780 | mean_teacher         |
 +-----------------------------------------------------------+----------------------------------+----------------------+
 | Knowledge Distillation via Route Constrained Optimization | https://arxiv.org/abs/1904.09149 | RCO                  |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Born Again Neural Networks                                | https://arxiv.org/abs/1805.04770 | BANN                 |
 +-----------------------------------------------------------+----------------------------------+----------------------+
