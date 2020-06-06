@@ -296,12 +296,10 @@ def test_RCO():
 
 def test_BANN():
     params = [4, 4, 4, 4, 4]
-    model = ResNet50(params, 1, 10).to("cuda:0")
+    model = ResNet50(params, 1, 10)
     optimizer = optim.SGD(model.parameters(), 0.01)
 
-    distiller = BANN(
-        model, train_loader, test_loader, optimizer, num_gen=2, device="cuda:0"
-    )
+    distiller = BANN(model, train_loader, test_loader, optimizer, num_gen=2)
 
     distiller.train_student(epochs=0, plot_losses=False, save_model=False)
     distiller.evaluate()

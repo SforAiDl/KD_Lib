@@ -10,15 +10,19 @@ from KD_Lib.common import BaseClass
 
 class BANN(BaseClass):
     """
+    Implementation of paper "Born Again Neural Networks"
+    https://arxiv.org/abs/1805.04770
+
     :param student_model (torch.nn.Module): Student model
     :param train_loader (torch.utils.data.DataLoader): Dataloader for training
-    :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
-    :param optimizer (torch.optim.*): Optimizer used for training.
-    :param loss_fn (torch.nn.Module): Loss Function used for distillation
-    :param epoch_interval (int): Number of epochs after which teacher anchor points are created
+    :param val_loader (torch.utils.data.DataLoader): Dataloader for validation
+    :param optimizer (torch.optim.*): Optimizer for training
+    :param num_gen (int): Number of generations to train.
+    :param loss_fn (torch.nn.Module): Loss Function used for first model in gen.
+                                      later, KLDivLoss is used.
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
-    :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
+    :param device (str): Device for training; 'cpu' for cpu and 'cuda' for gpu
     :param log (bool): True if logging required
     :param logdir (str): Directory for storing logs
     """
@@ -64,6 +68,19 @@ class BANN(BaseClass):
         save_model=True,
         save_model_pth="./models/student-{}.pth",
     ):
+        """
+        Function that will be training the student
+
+        :param epochs (int): Number of epochs you want to train the student per generation
+        :param plot_losses (bool): True if you want to plot the losses for every generation
+        :param save_model (bool): True if you want to save the student model (Set true if you want to use models for later evaluation)
+        :param save_model_pth (str): Path where you want to save the student model
+        """
+        try:
+            fmt = save_model_pth.format(1)
+        except:
+            print("Invalid save_model_pth, allow {\} for generation number")
+            return
         for k in range(self.num_gen):
             print("Born Again : Gen {}/{}".format(k + 1, self.num_gen))
 
@@ -80,6 +97,11 @@ class BANN(BaseClass):
             self.gen += 1
 
     def evaluate(self, models_dir="./models"):
+        """
+        Evaluate method for printing accuracies of the trained network
+
+        :param models_dir (str): Location of stored models. (default: ./models)
+        """
         print("Evaluating Model Ensemble")
         models_dir = glob.glob(os.path.join(models_dir, "*.pth"))
         len_models = len(models_dir)
