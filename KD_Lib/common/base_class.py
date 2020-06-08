@@ -269,9 +269,9 @@ class BaseClass:
         :param teacher (bool): True if you want accuracy of the teacher network
         """
         if teacher:
-            model = deepcopy(self.teacher_model)
+            model = deepcopy(self.teacher_model).to(self.device)
         else:
-            model = deepcopy(self.student_model)
+            model = deepcopy(self.student_model).to(self.device)
         _ = self._evaluate_model(model)
 
     def get_parameters(self):

@@ -37,13 +37,11 @@ class VirtualTeacher:
         train_loader,
         val_loader,
         optimizer_student,
-        loss="MSE",
+        loss_fn=nn.MSELoss(),
         correct_prob=0.9,
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
-        rkd_angle=None,
-        rkd_dist=None,
         log=False,
         logdir="./Experiments",
     ):
@@ -52,7 +50,7 @@ class VirtualTeacher:
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.optimizer_student = optimizer_student
-        self.loss = loss
+        self.loss_fn = loss_fn
         self.correct_prob = correct_prob
         self.temp = temp
         self.distil_weight = distil_weight
@@ -71,14 +69,6 @@ class VirtualTeacher:
             )
             self.device = "cpu"
 
-        if self.loss.upper() == "MSE":
-            self.loss_fn = nn.MSELoss()
-
-        elif self.loss.upper() == "KL":
-            self.loss_fn = nn.KLDivLoss()
-
-        elif self.loss.upper() == "RKD":
-            self.loss_fn = RKDLoss(dist_ratio=rkd_dist, angle_ratio=rkd_angle)
 
     def train_student(
         self,
@@ -151,10 +141,10 @@ class VirtualTeacher:
 
     def calculate_kd_loss(self, y_pred_student, y_true):
 
-        num_channels = y_pred_student.shape[1]
+        num_classes = y_pred_student.shape[1]
 
         soft_label = torch.ones_like(y_pred_student).to(self.device)
-        soft_label = soft_label * (1 - self.correct_prob) / (num_channels - 1)
+        soft_label = soft_label * (1 - self.correct_prob) / (num_classes - 1)
         for i in range(y_pred_student.shape[0]):
             soft_label[i, y_true[i]] = self.correct_prob
 
