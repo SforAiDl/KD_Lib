@@ -25,8 +25,6 @@ class VirtualTeacher:
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
-    :param rkd_angle (float): Angle ratio for RKD loss if used
-    :param rkd_dist (float): Distance ratio for RKD loss if used
     :param log (bool): True if logging required
     :param logdir (str): Directory for storing logs
     """
