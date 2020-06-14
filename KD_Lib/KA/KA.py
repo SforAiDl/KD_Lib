@@ -81,35 +81,59 @@ class KnowledgeAdjustment(BaseClass):
 
         for i in range(y_pred_teacher.shape[0]):
 
-          if torch.argmax(y_pred_teacher[i]) != y_true[i]:
+            if torch.argmax(y_pred_teacher[i]) != y_true[i]:
 
-            if i:
-              soft_pred_teacher = torch.cat((soft_pred_teacher, F.softmax(y_pred_teacher[start:i , :]/self.temp, dim=1)), 0)
+                if i:
+                    soft_pred_teacher = torch.cat(
+                        (
+                            soft_pred_teacher,
+                            F.softmax(y_pred_teacher[start:i, :] / self.temp, dim=1),
+                        ),
+                        0,
+                    )
 
-            start = i + 1
-            count += 1
+                start = i + 1
+                count += 1
 
-            if self.method == "PS":
-              _, top_indices = torch.topk(y_pred_teacher[i], 2)  
-              index = torch.arange(num_classes).to(self.device)
-              index[top_indices[0]] = top_indices[1]
-              index[top_indices[1]] = top_indices[0]
+                if self.method == "PS":
+                    _, top_indices = torch.topk(y_pred_teacher[i], 2)
+                    index = torch.arange(num_classes).to(self.device)
+                    index[top_indices[0]] = top_indices[1]
+                    index[top_indices[1]] = top_indices[0]
 
-              ps = torch.zeros_like(y_pred_teacher[i]).scatter_(0, index, F.softmax(y_pred_teacher[i]/self.temp, dim=0))
-              soft_pred_teacher = torch.cat((soft_pred_teacher, ps.view(1, -1)), 0)
+                    ps = torch.zeros_like(y_pred_teacher[i]).scatter_(
+                        0, index, F.softmax(y_pred_teacher[i] / self.temp, dim=0)
+                    )
+                    soft_pred_teacher = torch.cat(
+                        (soft_pred_teacher, ps.view(1, -1)), 0
+                    )
 
-            elif self.method == "LSR":
-              lsr = torch.ones_like(y_pred_teacher[i]) * (1 - self.correct_prob)/num_classes
-              lsr[y_true[i].item()] = self.correct_prob
+                elif self.method == "LSR":
+                    lsr = (
+                        torch.ones_like(y_pred_teacher[i])
+                        * (1 - self.correct_prob)
+                        / num_classes
+                    )
+                    lsr[y_true[i].item()] = self.correct_prob
 
-              soft_pred_teacher = torch.cat((soft_pred_teacher, lsr.view(1, -1)), 0)
+                    soft_pred_teacher = torch.cat(
+                        (soft_pred_teacher, lsr.view(1, -1)), 0
+                    )
 
         if count:
-          soft_pred_teacher = torch.cat((soft_pred_teacher, F.softmax(y_pred_teacher[start: , :]/self.temp, dim=1)), 0)
-          loss = self.loss_fn(soft_pred_teacher, F.log_softmax(y_pred_student, dim=1))
+            soft_pred_teacher = torch.cat(
+                (
+                    soft_pred_teacher,
+                    F.softmax(y_pred_teacher[start:, :] / self.temp, dim=1),
+                ),
+                0,
+            )
+            loss = self.loss_fn(soft_pred_teacher, F.log_softmax(y_pred_student, dim=1))
 
         else:
-          loss = self.loss_fn(F.softmax(y_pred_teacher/self.temp, dim=1), F.log_softmax(y_pred_student, dim=1))
-
+            loss = self.loss_fn(
+                F.softmax(y_pred_teacher / self.temp, dim=1),
+                F.log_softmax(y_pred_student, dim=1),
+            )
 
         return loss

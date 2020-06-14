@@ -130,11 +130,11 @@ class BaseClass:
 
         self.teacher_model.load_state_dict(self.best_teacher_model_weights)
         if save_model:
-          if os.path.isdir('./models'):
-            torch.save(self.teacher_model.state_dict(), save_model_pth)
-          else:
-            os.mkdir('./models')
-            torch.save(self.teacher_model.state_dict(), save_model_pth)
+            if os.path.isdir("./models"):
+                torch.save(self.teacher_model.state_dict(), save_model_pth)
+            else:
+                os.mkdir("./models")
+                torch.save(self.teacher_model.state_dict(), save_model_pth)
         if plot_losses:
             plt.plot(loss_arr)
 

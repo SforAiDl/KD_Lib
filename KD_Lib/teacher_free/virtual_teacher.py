@@ -67,7 +67,6 @@ class VirtualTeacher:
             )
             self.device = "cpu"
 
-
     def train_student(
         self,
         epochs=10,
