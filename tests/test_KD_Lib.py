@@ -305,6 +305,7 @@ def test_BANN():
     distiller.train_student(epochs=0, plot_losses=False, save_model=False)
     # distiller.evaluate()
 
+
 def test_KA_PS():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
@@ -321,13 +322,14 @@ def test_KA_PS():
         test_loader,
         t_optimizer,
         s_optimizer,
-        "PS"
+        "PS",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
     distiller.train_student(epochs=0, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
+
 
 def test_KA_LSR():
     teacher_params = [4, 4, 8, 4, 4]
@@ -345,7 +347,7 @@ def test_KA_LSR():
         test_loader,
         t_optimizer,
         s_optimizer,
-        "LSR"
+        "LSR",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
