@@ -6,6 +6,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 import matplotlib.pyplot as plt
 from copy import deepcopy
+import os
 
 
 class BaseClass:
@@ -129,7 +130,11 @@ class BaseClass:
 
         self.teacher_model.load_state_dict(self.best_teacher_model_weights)
         if save_model:
-            torch.save(self.teacher_model.state_dict(), save_model_pth)
+            if os.path.isdir("./models"):
+                torch.save(self.teacher_model.state_dict(), save_model_pth)
+            else:
+                os.mkdir("./models")
+                torch.save(self.teacher_model.state_dict(), save_model_pth)
         if plot_losses:
             plt.plot(loss_arr)
 
@@ -269,9 +274,9 @@ class BaseClass:
         :param teacher (bool): True if you want accuracy of the teacher network
         """
         if teacher:
-            model = deepcopy(self.teacher_model)
+            model = deepcopy(self.teacher_model).to(self.device)
         else:
-            model = deepcopy(self.student_model)
+            model = deepcopy(self.student_model).to(self.device)
         _ = self._evaluate_model(model)
 
     def get_parameters(self):

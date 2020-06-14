@@ -36,12 +36,10 @@ class SelfTraining:
         train_loader,
         val_loader,
         optimizer_student,
-        loss="MSE",
+        loss_fn=nn.MSELoss(),
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
-        rkd_angle=None,
-        rkd_dist=None,
         log=False,
         logdir="./Experiments",
     ):
@@ -50,7 +48,7 @@ class SelfTraining:
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.optimizer_student = optimizer_student
-        self.loss = loss
+        self.loss_fn = loss_fn
         self.temp = temp
         self.distil_weight = distil_weight
         self.log = log
@@ -67,15 +65,6 @@ class SelfTraining:
                 "Either an invalid device or CUDA is not available. Defaulting to CPU."
             )
             self.device = "cpu"
-
-        if self.loss.upper() == "MSE":
-            self.loss_fn = nn.MSELoss()
-
-        elif self.loss.upper() == "KL":
-            self.loss_fn = nn.KLDivLoss()
-
-        elif self.loss.upper() == "RKD":
-            self.loss_fn = RKDLoss(dist_ratio=rkd_dist, angle_ratio=rkd_angle)
 
     def train_student(
         self,
