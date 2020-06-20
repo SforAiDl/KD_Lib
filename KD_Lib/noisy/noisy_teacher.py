@@ -84,9 +84,9 @@ class NoisyTeacher(BaseClass):
         if random.uniform(0, 1) <= self.alpha:
             y_pred_teacher = add_noise(y_pred_teacher, self.noise_variance)
 
-        loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true) 
-        loss +=  (self.distil_weight) * self.loss_fn(
-                                                     F.log_softmax(y_pred_student / self.temp),
-                                                     F.softmax(y_pred_teacher / self.temp),
-                                                    )
+        loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
+        loss += (self.distil_weight) * self.loss_fn(
+            F.log_softmax(y_pred_student / self.temp),
+            F.softmax(y_pred_teacher / self.temp),
+        )
         return loss

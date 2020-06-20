@@ -10,7 +10,9 @@ from KD_Lib.attention.attention import attention
 from KD_Lib.original.original_paper import original
 from KD_Lib.teacher_free.virtual_teacher import VirtualTeacher
 from KD_Lib.teacher_free.self_training import SelfTraining
-from KD_Lib.noisy import NoisyTeacher
+from KD_Lib.noisy.noisy_teacher import NoisyTeacher
+from KD_Lib.noisy.soft_random import SoftRandom
+from KD_Lib.noisy.messy_collab import MessyCollab
 from KD_Lib.mean_teacher import MeanTeacher
 from KD_Lib.RCO import RCO
 from KD_Lib.BANN import BANN
@@ -354,3 +356,51 @@ def test_KA_LSR():
     distiller.train_student(epochs=0, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
+
+
+def test_soft_random():
+    teacher_params = [4, 4, 8, 4, 4]
+    student_params = [4, 4, 4, 4, 4]
+    teacher_model = ResNet50(teacher_params, 1, 10)
+    student_model = ResNet18(student_params, 1, 10)
+
+    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
+    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
+
+    distiller = SoftRandom(
+        teacher_model,
+        student_model,
+        train_loader,
+        test_loader,
+        t_optimizer,
+        s_optimizer,
+    )
+
+    distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.evaluate()
+    distiller.get_parameters()
+
+def test_messy_collab():
+    teacher_params = [4, 4, 8, 4, 4]
+    student_params = [4, 4, 4, 4, 4]
+    teacher_model = ResNet50(teacher_params, 1, 10)
+    student_model = ResNet18(student_params, 1, 10)
+
+    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
+    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
+
+    distiller = MessyCollab(
+        teacher_model,
+        student_model,
+        train_loader,
+        test_loader,
+        t_optimizer,
+        s_optimizer,
+    )
+
+    distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.evaluate()
+    distiller.get_parameters()
+
