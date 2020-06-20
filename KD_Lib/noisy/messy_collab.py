@@ -8,6 +8,7 @@ from copy import deepcopy
 import matplotlib.pyplot as plt
 import os
 
+
 class MessyCollab(BaseClass):
     """
     Implementation of the messy collaboration framework from the paper 
@@ -38,8 +39,8 @@ class MessyCollab(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        noise_rate = 0.02,
-        method = 'S',
+        noise_rate=0.02,
+        method="S",
         loss_fn=nn.KLDivLoss(),
         temp=20.0,
         distil_weight=0.5,
@@ -94,7 +95,7 @@ class MessyCollab(BaseClass):
             for (data, label) in self.train_loader:
                 data = data.to(self.device)
                 label = label.to(self.device)
-                if self.method in ('T', 'TS'):
+                if self.method in ("T", "TS"):
                     for i in range(int(self.noise_rate * length_of_dataset)):
                         perturbation = random.randint(0, data.shape[0] - 1)
                         if perturbation != label[i]:
@@ -179,7 +180,7 @@ class MessyCollab(BaseClass):
 
                 data = data.to(self.device)
                 label = label.to(self.device)
-                if self.method in ('S', 'TS'):
+                if self.method in ("S", "TS"):
                     for i in range(int(self.noise_rate * length_of_dataset)):
                         perturbation = random.randint(0, data.shape[0] - 1)
                         if perturbation != label[i]:

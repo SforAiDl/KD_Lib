@@ -381,6 +381,7 @@ def test_soft_random():
     distiller.evaluate()
     distiller.get_parameters()
 
+
 def test_messy_collab():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
@@ -403,4 +404,3 @@ def test_messy_collab():
     distiller.train_student(epochs=0, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
-
