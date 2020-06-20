@@ -1,12 +1,13 @@
 import random
 import torch
-from torch.nn import MSELoss
+import torch.nn as nn
+import torch.nn.functional as F
 from KD_Lib.common import BaseClass
 
 
 def add_noise(x, variance=0.1):
     """
-    Function for adding noise
+    Function for adding gaussian noise
 
     :param x (torch.FloatTensor): Input for adding noise
     :param variance (float): Variance for adding noise
@@ -46,7 +47,7 @@ class NoisyTeacher(BaseClass):
         optimizer_student,
         alpha=0.5,
         noise_variance=0.1,
-        loss_fn=MSELoss(),
+        loss_fn=nn.MSELoss(),
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
@@ -82,4 +83,10 @@ class NoisyTeacher(BaseClass):
 
         if random.uniform(0, 1) <= self.alpha:
             y_pred_teacher = add_noise(y_pred_teacher, self.noise_variance)
-        return self.loss_fn(y_pred_student, y_pred_teacher)
+
+        loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true) 
+        loss +=  (self.distil_weight) * self.loss_fn(
+                                                     F.log_softmax(y_pred_student / self.temp),
+                                                     F.softmax(y_pred_teacher / self.temp),
+                                                    )
+        return loss
