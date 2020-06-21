@@ -97,12 +97,12 @@ class MessyCollab(BaseClass):
                 label = label.to(self.device)
                 if self.method in ("T", "TS"):
                     for i in range(int(self.noise_rate * length_of_dataset)):
-                        perturbation = random.randint(0, data.shape[0] - 1)
+                        perturbation = random.randint(0, data.shape[1] - 1)
                         if perturbation != label[i]:
                             label[i] = perturbation
                         else:
                             try:
-                                perturbation + 1 < data.shape[0]
+                                perturbation + 1 < data.shape[1]
                                 label[i] = perturbation + 1
                             except:
                                 label[i] = perturbation - 1
