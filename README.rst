@@ -55,6 +55,9 @@ Currently implemented works
 +-----------------------------------------------------------+----------------------------------+----------------------+
 | Born Again Neural Networks                                | https://arxiv.org/abs/1805.04770 | BANN                 |
 +-----------------------------------------------------------+----------------------------------+----------------------+
-| Preparing Lessons: Improve Knowledge Distillation with    | https://arxiv.org/abs/1911.07471 | KDBS                 |
+| Preparing Lessons: Improve Knowledge Distillation with    | https://arxiv.org/abs/1911.07471 | KA                   |
 | Better Supervision                                        |                                  |                      |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Improving Generalization Robustness with Noisy            | https://arxiv.org/abs/1910.05057 | noisy                |
+| Collaboration in Knowledge Distillation                   |                                  |                      |  
 +-----------------------------------------------------------+----------------------------------+----------------------+
