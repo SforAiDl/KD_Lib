@@ -11,7 +11,6 @@ from KD_Lib.Bert2Lstm.utils import df_to_dataset, batch_to_inputs, set_seed
 import numpy as np
 from copy import deepcopy
 
-
 class Bert2LSTM(BaseClass):
     """
     Original implementation of Knowledge distillation from the paper "Distilling Task-Specific

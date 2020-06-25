@@ -2,8 +2,8 @@ KD_Lib
 ======
 
 
-.. image:: https://img.shields.io/travis/SforAiDl/KD_Lib.svg
-        :target: https://travis-ci.org/SforAiDl/KD_Lib
+.. image:: https://travis-ci.com/SforAiDl/KD_Lib.svg?branch=master
+    :target: https://travis-ci.com/SforAiDl/KD_Lib
 
 A Pytorch Library to help extend all Knowledge Distillation works
 
@@ -34,8 +34,30 @@ If you intend to install the latest unreleased version of the library (i.e from 
 Currently implemented works
 ===========================
 
-| Original MNIST Paper: https://arxiv.org/abs/1503.02531 
-| Improved Knowledge Distillation via Teacher Assistant: https://arxiv.org/abs/1902.03393
-| Relational Knowledge Distillation: https://arxiv.org/abs/1904.05068
-| Distilling Knowledge from Noisy Teachers: https://arxiv.org/pdf/1610.09650.pdf
-| Paying More Attention To The Attention - Improving the Performance of CNNs via Attention Transfer: https://arxiv.org/pdf/1612.03928.pdf
++-----------------------------------------------------------+----------------------------------+----------------------+
+|  Paper                                                    |  Link                            | Repository (KD_Lib/) |
++===========================================================+==================================+======================+
+| Distilling the Knowledge in a Neural Network              | https://arxiv.org/abs/1503.02531 | orig                 |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Improved Knowledge Distillation via Teacher Assistant     | https://arxiv.org/abs/1902.03393 | TAKD                 |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Relational Knowledge Distillation                         | https://arxiv.org/abs/1904.05068 | RKD                  |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Distilling Knowledge from Noisy Teachers                  | https://arxiv.org/abs/1610.09650 | noisy                |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Paying More Attention To The Attention                    | https://arxiv.org/abs/1612.03928 | attention            |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Revisit Knowledge Distillation: a Teacher-free Framework  | https://arxiv.org/abs/1909.11723 | teacher_free         |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Mean Teachers are Better Role Models                      | https://arxiv.org/abs/1703.01780 | mean_teacher         |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Knowledge Distillation via Route Constrained Optimization | https://arxiv.org/abs/1904.09149 | RCO                  |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Born Again Neural Networks                                | https://arxiv.org/abs/1805.04770 | BANN                 |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Preparing Lessons: Improve Knowledge Distillation with    | https://arxiv.org/abs/1911.07471 | KA                   |
+| Better Supervision                                        |                                  |                      |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Improving Generalization Robustness with Noisy            | https://arxiv.org/abs/1910.05057 | noisy                |
+| Collaboration in Knowledge Distillation                   |                                  |                      |  
++-----------------------------------------------------------+----------------------------------+----------------------+

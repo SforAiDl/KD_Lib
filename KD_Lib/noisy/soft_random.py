@@ -1,27 +1,38 @@
+import random
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
+from KD_Lib.common import BaseClass
 
-from KD_Lib.RKD import RKDLoss
-
-import matplotlib.pyplot as plt
 from copy import deepcopy
+import matplotlib.pyplot as plt
 
 
-class VirtualTeacher:
+def add_noise(x, variance=0.1):
     """
-    Implementation of the virtual teacher kowledge distillation framework from the paper
-    "Revisit Knowledge Distillation: a Teacher-free Framework" https://arxiv.org/abs/1909.11723
+    Function for adding gaussian noise
+
+    :param x (torch.FloatTensor): Input for adding noise
+    :param variance (float): Variance for adding noise
+    """
+
+    return x * (1 + (variance ** 0.5) * torch.randn_like(x))
 
 
+class SoftRandom(BaseClass):
+    """
+    Implementation of the soft randomization framework from the paper 
+    "Improving Generalization Robustness with Noisy Collaboration in Knowledge Distillation" 
+    https://arxiv.org/abs/1910.05057
+
+    :param teacher_model (torch.nn.Module): Teacher model
     :param student_model (torch.nn.Module): Student model
     :param train_loader (torch.utils.data.DataLoader): Dataloader for training
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
+    :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
+    :param noise_variance (float): Variance parameter for adding noise
     :param loss_fn (torch.nn.Module):  Calculates loss during distillation
-    :param correct_prob (float): Probability assigned to the correct class while generating soft labels for student training
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
@@ -31,43 +42,38 @@ class VirtualTeacher:
 
     def __init__(
         self,
+        teacher_model,
         student_model,
         train_loader,
         val_loader,
+        optimizer_teacher,
         optimizer_student,
-        loss_fn=nn.MSELoss(),
-        correct_prob=0.9,
+        noise_variance=0.1,
+        loss_fn=nn.KLDivLoss(),
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
         log=False,
         logdir="./Experiments",
     ):
+        super(SoftRandom, self).__init__(
+            teacher_model,
+            student_model,
+            train_loader,
+            val_loader,
+            optimizer_teacher,
+            optimizer_student,
+            loss_fn,
+            temp,
+            distil_weight,
+            device,
+            log,
+            logdir,
+        )
 
-        self.student_model = student_model
-        self.train_loader = train_loader
-        self.val_loader = val_loader
-        self.optimizer_student = optimizer_student
-        self.loss_fn = loss_fn
-        self.correct_prob = correct_prob
-        self.temp = temp
-        self.distil_weight = distil_weight
-        self.log = log
-        self.logdir = logdir
+        self.noise_variance = noise_variance
 
-        if self.log:
-            self.writer = SummaryWriter(logdir)
-
-        try:
-            torch.tensor(0).to(device)
-            self.device = device
-        except:
-            print(
-                "Either an invalid device or CUDA is not available. Defaulting to CPU."
-            )
-            self.device = "cpu"
-
-    def train_student(
+    def _train_student(
         self,
         epochs=10,
         plot_losses=True,
@@ -75,14 +81,14 @@ class VirtualTeacher:
         save_model_pth="./models/student.pth",
     ):
         """
-        Function that will be training the student
+        Function to train student model - for internal use only.
 
         :param epochs (int): Number of epochs you want to train the teacher
         :param plot_losses (bool): True if you want to plot the losses
         :param save_model (bool): True if you want to save the student model
         :param save_model_pth (str): Path where you want to save the student model
         """
-
+        self.teacher_model.eval()
         self.student_model.train()
         loss_arr = []
         length_of_dataset = len(self.train_loader.dataset)
@@ -98,11 +104,13 @@ class VirtualTeacher:
             for (data, label) in self.train_loader:
 
                 data = data.to(self.device)
+                noisy_data = add_noise(data, self.noise_variance)
                 label = label.to(self.device)
 
-                student_out = self.student_model(data)
+                student_out = self.student_model(noisy_data)
+                teacher_out = self.teacher_model(data)
 
-                loss = self.calculate_kd_loss(student_out, label)
+                loss = self.calculate_kd_loss(student_out, teacher_out, label)
 
                 if isinstance(student_out, tuple):
                     student_out = student_out[0]
@@ -136,54 +144,18 @@ class VirtualTeacher:
         if plot_losses:
             plt.plot(loss_arr)
 
-    def calculate_kd_loss(self, y_pred_student, y_true):
+    def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
+        """
+        Function used for calculating the KD loss during distillation
 
-        num_classes = y_pred_student.shape[1]
-
-        soft_label = torch.ones_like(y_pred_student).to(self.device)
-        soft_label = soft_label * (1 - self.correct_prob) / (num_classes - 1)
-        for i in range(y_pred_student.shape[0]):
-            soft_label[i, y_true[i]] = self.correct_prob
-
-        loss = (1 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
+        :param y_pred_student (torch.FloatTensor): Prediction made by the student model
+        :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model
+        :param y_true (torch.FloatTensor): Original label
+        """
+        loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
         loss += self.distil_weight * self.loss_fn(
-            F.log_softmax(y_pred_student, dim=1),
-            F.softmax(soft_label / self.temp, dim=1),
+            F.log_softmax(y_pred_student / self.temp),
+            F.softmax(y_pred_teacher / self.temp),
         )
+
         return loss
-
-    def evaluate(self):
-        """
-        Evaluate method for printing accuracies of the trained network
-
-        """
-
-        model = deepcopy(self.student_model)
-        model.eval()
-        length_of_dataset = len(self.val_loader.dataset)
-        correct = 0
-
-        with torch.no_grad():
-            for data, target in self.val_loader:
-                data = data.to(self.device)
-                target = target.to(self.device)
-                output = model(data)
-
-                if isinstance(output, tuple):
-                    output = output[0]
-
-                pred = output.argmax(dim=1, keepdim=True)
-                correct += pred.eq(target.view_as(pred)).sum().item()
-
-        print("-" * 80)
-        print(f"Accuracy: {correct/length_of_dataset}")
-
-    def get_parameters(self):
-        """
-        Get the number of parameters for the student network
-        """
-
-        student_params = sum(p.numel() for p in self.student_model.parameters())
-
-        print("-" * 80)
-        print(f"Total parameters for the student network are: {student_params}")

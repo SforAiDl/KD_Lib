@@ -8,7 +8,7 @@ class NetworkInNetwork(nn.Module):
     :param num_classes (int): Number of classes for classification
     :param in_channels (int): Number of channels in input specimens
     """
-    
+
     def __init__(self, num_classes=10, in_channels=3):
         super(NetworkInNetwork, self).__init__()
 
@@ -24,7 +24,6 @@ class NetworkInNetwork(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(3, stride=2, ceil_mode=True),
             nn.Dropout(inplace=True),
-
             nn.Conv2d(96, 192, 5, padding=2),
             nn.ReLU(inplace=True),
             nn.Conv2d(192, 192, 1),
@@ -33,14 +32,13 @@ class NetworkInNetwork(nn.Module):
             nn.ReLU(inplace=True),
             nn.AvgPool2d(3, stride=2, ceil_mode=True),
             nn.Dropout(inplace=True),
-
             nn.Conv2d(192, 192, 3, padding=1),
             nn.ReLU(inplace=True),
             nn.Conv2d(192, 192, 1),
             nn.ReLU(inplace=True),
             nn.Conv2d(192, self.num_classes, 1),
             nn.ReLU(inplace=True),
-            nn.AvgPool2d(8, stride=1)
+            nn.AvgPool2d(8, stride=1),
         )
         self._initialize_weights()
 
