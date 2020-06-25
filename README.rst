@@ -59,5 +59,8 @@ Currently implemented works
 | Better Supervision                                        |                                  |                      |
 +-----------------------------------------------------------+----------------------------------+----------------------+
 | Improving Generalization Robustness with Noisy            | https://arxiv.org/abs/1910.05057 | noisy                |
-| Collaboration in Knowledge Distillation                   |                                  |                      |  
+| Collaboration in Knowledge Distillation                   |                                  |                      |
++-----------------------------------------------------------+----------------------------------+----------------------+
+| Distilling Task-Specific Knowledge from BERT into         | https://arxiv.org/abs/1903.12136 | Bert2Lstm            |
+| Simple Neural Networks                                    |                                  |                      |
 +-----------------------------------------------------------+----------------------------------+----------------------+
