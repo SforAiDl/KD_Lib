@@ -32,7 +32,7 @@ class Bert2LSTM(BaseClass):
     """
     
     def __init__(self, student_model, distill_train_loader, distill_val_loader, optimizer_student, train_df, val_df,
-                 optimizer_teacher=None,loss='MSE', temp=20.0, distil_weight=0.5, device='cpu', log=False, logdir='./Experiments'):
+                 optimizer_teacher=None,loss_fn='MSE', temp=20.0, distil_weight=0.5, device='cpu', log=False, logdir='./Experiments'):
 
         set_seed(42)
 
@@ -48,17 +48,17 @@ class Bert2LSTM(BaseClass):
             distill_val_loader,
             optimizer_teacher,
             optimizer_student,
-            loss,
+            loss_fn,
             temp,
             distil_weight,
             device,
             log,
             logdir
         )
-        if self.loss.upper() == 'MSE':
+        if self.loss_fn.upper() == 'MSE':
             self.loss_fn = nn.MSELoss()
 
-        elif self.loss.upper() == 'KL':
+        elif self.loss_fn.upper() == 'KL':
             self.loss_fn = nn.KLDivLoss()
 
     def _get_teacher_dataloaders(self, max_seq_length=128, train_batch_size=16, val_batch_size=16, mode='train'):
@@ -245,3 +245,31 @@ class Bert2LSTM(BaseClass):
         if plot_losses:
             plt.plot(loss_arr)
 
+    def evaluate_student(self, verbose=True):
+        return self.evaluate(teacher=False)
+
+    def evaluate_teacher(self, max_seq_length=128, val_batch_size=16, verbose=True):
+        self.teacher_val_loader = self._get_teacher_dataloaders(max_seq_length, val_batch_size, mode='validate')
+
+        self.teacher_model.to(self.device)
+        self.teacher_model.eval()
+
+        correct = 0
+        length_of_dataset = len(self.teacher_val_loader.dataset)
+        
+        for batch in self.teacher_val_loader:
+            batch = tuple(t.to(self.device) for t in batch)
+            inputs = batch_to_inputs(batch)
+
+            with torch.no_grad():
+                outputs = self.teacher_model(**inputs)
+                logits = outputs[1]
+
+                out = torch.softmax(logits, dim=1)
+                pred = out.argmax(dim=1, keepdim=True)
+                correct += pred.eq(batch[3].view_as(pred)).sum().item()
+
+        if verbose:
+            print("-" * 80)
+            print(f"Accuracy: {correct/length_of_dataset}")
+        return outputs
