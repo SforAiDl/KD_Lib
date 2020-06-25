@@ -17,8 +17,14 @@ from KD_Lib.mean_teacher import MeanTeacher
 from KD_Lib.RCO import RCO
 from KD_Lib.BANN import BANN
 from KD_Lib.KA import KnowledgeAdjustment
+from KD_Lib.noisy import NoisyTeacher
+from KD_Lib.Bert2Lstm.utils import get_essentials
+from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
+
+import pandas as pd
+
 
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST(
@@ -44,6 +50,18 @@ test_loader = torch.utils.data.DataLoader(
     batch_size=32,
     shuffle=True,
 )
+
+
+## BERT to LSTM data
+data_csv = "./KD_Lib/Bert2Lstm/IMDB_Dataset.csv"
+df = pd.read_csv(data_csv)
+df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
+
+train_df = df.iloc[:6, :]
+val_df = df.iloc[6:, :]
+
+text_field, train_loader = get_essentials(train_df)
+
 
 #
 #   MODEL TESTS
@@ -404,3 +422,18 @@ def test_messy_collab():
     distiller.train_student(epochs=0, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
+
+
+def test_bert2lstm():
+    student_model = lstm.LSTMNet(
+        input_dim=len(text_field.vocab), num_classes=2, batch_size=2, dropout_prob=0.5
+    )
+    optimizer = torch.optim.Adam(student_model.parameters())
+
+    experiment = Bert2LSTM(
+        student_model, train_loader, train_loader, optimizer, train_df, val_df
+    )
+    # experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
+    experiment.train_student(epochs=0, plot_losses=False, save_model=False)
+    experiment.evaluate_student()
+    experiment.evaluate_teacher()

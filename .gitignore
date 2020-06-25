@@ -107,3 +107,4 @@ ENV/
 # unnecessary data directories created by running mnist
 data
 mnist_data
+Experiments
