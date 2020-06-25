@@ -53,20 +53,20 @@ test_loader = torch.utils.data.DataLoader(
 
 
 ## BERT to LSTM data
-data_csv = './KD_Lib/Bert2Lstm/IMDB_Dataset.csv'
+data_csv = "./KD_Lib/Bert2Lstm/IMDB_Dataset.csv"
 df = pd.read_csv(data_csv)
-df['sentiment'].replace({'negative':0, 'positive':1},inplace=True)
+df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
 
-train_df = df.iloc[:6,:]
-val_df = df.iloc[6:,:]
+train_df = df.iloc[:6, :]
+val_df = df.iloc[6:, :]
 
 text_field, train_loader = get_essentials(train_df)
 
-    
 
 #
 #   MODEL TESTS
 #
+
 
 def test_resnet():
     params = [4, 4, 8, 8, 16]
@@ -265,6 +265,7 @@ def test_SelfTraining():
     distiller.evaluate()
     distiller.get_parameters()
 
+
 def test_mean_teacher():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
@@ -422,13 +423,17 @@ def test_messy_collab():
     distiller.evaluate()
     distiller.get_parameters()
 
+
 def test_bert2lstm():
-    student_model = lstm.LSTMNet(input_dim=len(text_field.vocab),num_classes=2,batch_size=2, dropout_prob=0.5)
+    student_model = lstm.LSTMNet(
+        input_dim=len(text_field.vocab), num_classes=2, batch_size=2, dropout_prob=0.5
+    )
     optimizer = torch.optim.Adam(student_model.parameters())
-    
-    experiment = Bert2LSTM(student_model,train_loader, train_loader,optimizer,train_df,val_df)
+
+    experiment = Bert2LSTM(
+        student_model, train_loader, train_loader, optimizer, train_df, val_df
+    )
     # experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
     experiment.train_student(epochs=0, plot_losses=False, save_model=False)
     experiment.evaluate_student()
     experiment.evaluate_teacher()
-
