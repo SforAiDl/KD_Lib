@@ -7,7 +7,7 @@ from torchvision import datasets, transforms
 from KD_Lib.models.resnet import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
 from KD_Lib.TAKD.takd import TAKD
 from KD_Lib.attention.attention import attention
-from KD_Lib.original.original_paper import original
+from KD_Lib.vanilla.vanilla_kd import VanillaKD
 from KD_Lib.teacher_free.virtual_teacher import VirtualTeacher
 from KD_Lib.teacher_free.self_training import SelfTraining
 from KD_Lib.noisy.noisy_teacher import NoisyTeacher
@@ -20,6 +20,7 @@ from KD_Lib.KA import KnowledgeAdjustment
 from KD_Lib.noisy import NoisyTeacher
 from KD_Lib.Bert2Lstm.utils import get_essentials
 from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
+from KD_Lib.DML import DML
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
 
@@ -122,7 +123,7 @@ def test_modlenet():
 
 
 def test_LSTMNet():
-    sample_input = torch.tensor([[1, 2, 8, 3, 2], [2, 4, 99, 1, 7]])
+    sample_input = torch.Tensor([[1, 2, 8, 3, 2], [2, 4, 99, 1, 7]])
 
     # Simple LSTM
     model = lstm.LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
@@ -147,12 +148,14 @@ def test_original():
     t_optimizer = optim.SGD(teac.parameters(), 0.01)
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
 
-    orig = original(teac, stud, train_loader, test_loader, t_optimizer, s_optimizer)
+    distiller = VanillaKD(
+        teac, stud, train_loader, test_loader, t_optimizer, s_optimizer
+    )
 
-    orig.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    orig.train_student(epochs=0, plot_losses=False, save_model=False)
-    orig.evaluate(teacher=False)
-    orig.get_parameters()
+    distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.evaluate(teacher=False)
+    distiller.get_parameters()
 
 
 def test_TAKD():
@@ -437,3 +440,23 @@ def test_bert2lstm():
     experiment.train_student(epochs=0, plot_losses=False, save_model=False)
     experiment.evaluate_student()
     experiment.evaluate_teacher()
+
+
+def test_DML():
+
+    student_params = [4, 4, 4, 4, 4]
+    student_model_1 = ResNet50(student_params, 1, 10)
+    student_model_2 = ResNet18(student_params, 1, 10)
+
+    student_cohort = (student_model_1, student_model_2)
+
+    s_optimizer_1 = optim.SGD(student_model_1.parameters(), 0.01)
+    s_optimizer_2 = optim.SGD(student_model_2.parameters(), 0.01)
+
+    student_optimizers = (s_optimizer_1, s_optimizer_2)
+
+    distiller = DML(student_cohort, train_loader, test_loader, student_optimizers)
+
+    distiller.train_students(epochs=0, plot_losses=False, save_model=False)
+    distiller.evaluate()
+    distiller.get_parameters()

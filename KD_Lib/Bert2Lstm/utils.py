@@ -95,10 +95,10 @@ def features_to_dataset(features):
     :param features: list InputFeatures
     :return: TensorDataset
     """
-    all_input_ids = torch.tensor([f.input_ids for f in features], dtype=torch.long)
-    all_input_mask = torch.tensor([f.input_mask for f in features], dtype=torch.long)
-    all_segment_ids = torch.tensor([f.segment_ids for f in features], dtype=torch.long)
-    all_label_ids = torch.tensor([f.label_ids for f in features], dtype=torch.long)
+    all_input_ids = torch.Tensor([f.input_ids for f in features], dtype=torch.long)
+    all_input_mask = torch.Tensor([f.input_mask for f in features], dtype=torch.long)
+    all_segment_ids = torch.Tensor([f.segment_ids for f in features], dtype=torch.long)
+    all_label_ids = torch.Tensor([f.label_ids for f in features], dtype=torch.long)
 
     dataset = TensorDataset(
         all_input_ids, all_input_mask, all_segment_ids, all_label_ids
@@ -168,9 +168,9 @@ def to_indexes(vocab, words):
 
 
 def to_dataset(x, y_real):
-    torch_x = torch.tensor(x, dtype=torch.long)
-    # torch_y = torch.tensor(y, dtype=torch.float)
-    torch_real_y = torch.tensor(y_real, dtype=torch.long)
+    torch_x = torch.Tensor(x, dtype=torch.long)
+    # torch_y = torch.Tensor(y, dtype=torch.float)
+    torch_real_y = torch.Tensor(y_real, dtype=torch.long)
     return TensorDataset(torch_x, torch_real_y)
 
 
