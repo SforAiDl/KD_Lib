@@ -123,7 +123,7 @@ def test_modlenet():
 
 
 def test_LSTMNet():
-    sample_input = torch.Tensor([[1, 2, 8, 3, 2], [2, 4, 99, 1, 7]])
+    sample_input = torch.tensor([[1, 2, 8, 3, 2], [2, 4, 99, 1, 7]])
 
     # Simple LSTM
     model = lstm.LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
