@@ -77,7 +77,7 @@ class KnowledgeAdjustment(BaseClass):
         count = 0
 
         num_classes = y_pred_teacher.shape[1]
-        soft_pred_teacher = torch.Tensor([]).to(self.device)
+        soft_pred_teacher = torch.tensor([]).to(self.device)
 
         for i in range(y_pred_teacher.shape[0]):
 

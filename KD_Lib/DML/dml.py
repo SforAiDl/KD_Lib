@@ -47,7 +47,7 @@ class DML:
             self.writer = SummaryWriter(logdir)
 
         try:
-            torch.Tensor(0).to(device)
+            torch.tensor(0).to(device)
             self.device = device
         except:
             print(
@@ -120,7 +120,7 @@ class DML:
             epoch_acc = correct / length_of_dataset
             if epoch_acc > best_acc:
                 best_acc = epoch_acc
-                best_student_id = (torch.Tensor(correct_preds)).argmax().item()
+                best_student_id = (torch.tensor(correct_preds)).argmax().item()
                 self.best_student_model_weights = deepcopy(
                     self.student_cohort[best_student_id].state_dict()
                 )
