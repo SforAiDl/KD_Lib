@@ -59,7 +59,7 @@ class VirtualTeacher:
             self.writer = SummaryWriter(logdir)
 
         try:
-            torch.tensor(0).to(device)
+            torch.Tensor(0).to(device)
             self.device = device
         except:
             print(

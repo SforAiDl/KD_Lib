@@ -9,12 +9,13 @@ from KD_Lib.common import BaseClass
 from KD_Lib.Bert2Lstm.utils import df_to_dataset, batch_to_inputs, set_seed
 
 import numpy as np
+import matplotlib.pyplot as plt
 from copy import deepcopy
 
 
 class Bert2LSTM(BaseClass):
     """
-    Original implementation of Knowledge distillation from the paper "Distilling Task-Specific
+    Implementation of Knowledge distillation from the paper "Distilling Task-Specific
     Knowledge from BERT into Simple Neural Networks" https://arxiv.org/pdf/1903.12136.pdf
 
     :param student_model (torch.nn.Module): Student model
@@ -24,7 +25,7 @@ class Bert2LSTM(BaseClass):
     :param train_df (pandas.DataFrame): Dataframe for training the teacher model
     :param val_df (pandas.DataFrame): Dataframe for validating the teacher model
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher. If None, AdamW is used.
-    :param loss (str): Loss used for training
+    :param loss_fn (torch.nn.module): Loss function
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
@@ -41,7 +42,7 @@ class Bert2LSTM(BaseClass):
         train_df,
         val_df,
         optimizer_teacher=None,
-        loss_fn="MSE",
+        loss_fn=nn.MSELoss(),
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
@@ -72,11 +73,6 @@ class Bert2LSTM(BaseClass):
             log,
             logdir,
         )
-        if self.loss_fn.upper() == "MSE":
-            self.loss_fn = nn.MSELoss()
-
-        elif self.loss_fn.upper() == "KL":
-            self.loss_fn = nn.KLDivLoss()
 
     def _get_teacher_dataloaders(
         self, max_seq_length=128, train_batch_size=16, val_batch_size=16, mode="train"
@@ -119,7 +115,7 @@ class Bert2LSTM(BaseClass):
         """
 
         soft_teacher_out = F.softmax(y_pred_teacher / self.temp, dim=0)
-        soft_student_out = F.softmax(y_pred_student / self.temp, dim=0)
+        soft_student_out = F.log_softmax(y_pred_student / self.temp, dim=0)
 
         loss = (1 - self.distil_weight) * F.cross_entropy(soft_student_out, y_true)
         loss += self.distil_weight * self.loss_fn(soft_teacher_out, soft_student_out)
@@ -165,7 +161,7 @@ class Bert2LSTM(BaseClass):
                 outputs = self.teacher_model(**inputs)
 
                 loss = outputs[0]
-                out = torch.softmax(outputs[1], dim=1)
+                out = F.softmax(outputs[1], dim=1)
 
                 pred = out.argmax(dim=1, keepdim=True)
                 correct += pred.eq(batch[3].view_as(pred)).sum().item()
@@ -248,7 +244,7 @@ class Bert2LSTM(BaseClass):
             for (data, label), bert_prob in zip(self.train_loader, y_pred_teacher):
 
                 data = data.to(self.device)
-                teacher_out = bert_prob.to(device)
+                teacher_out = bert_prob.to(self.device)
                 label = label.to(self.device)
 
                 student_out = self.student_model(data.t()).squeeze(1)
@@ -309,7 +305,7 @@ class Bert2LSTM(BaseClass):
                 outputs = self.teacher_model(**inputs)
                 logits = outputs[1]
 
-                out = torch.softmax(logits, dim=1)
+                out = F.softmax(logits, dim=1)
                 pred = out.argmax(dim=1, keepdim=True)
                 correct += pred.eq(batch[3].view_as(pred)).sum().item()
 

@@ -108,12 +108,11 @@ class TAKD(BaseClass):
         """
 
         model.train()
-        train_loss = []
         length_of_dataset = len(self.train_loader.dataset)
         best_acc = 0.0
         self.best_model_weights = deepcopy(model.state_dict())
 
-        if type(teachers) is not list:
+        if not isinstance(teachers, list):
             teachers = [teachers]
 
         for epoch in range(epochs):
@@ -150,7 +149,7 @@ class TAKD(BaseClass):
 
         model.load_state_dict(self.best_model_weights)
         if save_model:
-            torch.save_model(model.state_dict(), save_model_pth)
+            torch.save(model.state_dict(), save_model_pth)
 
     def train_assistants(
         self, epochs=20, plot_losses=True, save_model=True, save_dir="./models/"

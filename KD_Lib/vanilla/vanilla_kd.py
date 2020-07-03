@@ -4,7 +4,7 @@ from KD_Lib.RKD import RKDLoss
 from KD_Lib.common import BaseClass
 
 
-class original(BaseClass):
+class VanillaKD(BaseClass):
     """
     Original implementation of Knowledge distillation from the paper "Distilling the
     Knowledge in a Neural Network" https://arxiv.org/pdf/1503.02531.pdf
@@ -38,7 +38,7 @@ class original(BaseClass):
         log=False,
         logdir="./Experiments",
     ):
-        super(original, self).__init__(
+        super(VanillaKD, self).__init__(
             teacher_model,
             student_model,
             train_loader,
