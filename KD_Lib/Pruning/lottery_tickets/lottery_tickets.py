@@ -1,0 +1,174 @@
+import copy
+import numpy as np
+import torch
+import torch.nn as nn
+
+
+class Prune_lottery_tickets:
+    def __init__(
+        self,
+        model,
+        train_loader,
+        test_loader,
+        loss_fn=nn.CrossEntropyLoss(),
+        valid_freq=10,
+        print_freq=10,
+    ):
+
+        self.model = model
+        self.initial_state_dict = copy.deepcopy(self.model.state_dict())
+        self.mask = self._initialize_mask()
+        self.loss_fn = loss_fn
+        self.train_loader = train_loader
+        self.test_loader = test_loader
+        self.optimizer = torch.optim.Adam(self.model.parameters())
+
+    def prune(
+        self,
+        prune_percent=10,
+        num_iterations=10,
+        train_iterations=10,
+        valid_freq=10,
+        print_freq=10,
+        save_models=False,
+    ):
+
+        self.num_iterations = num_iterations
+        self.train_iterations = train_iterations
+        self.percent = prune_percent
+        self.valid_freq = valid_freq
+        self.print_freq = print_freq
+        self.save_models = save_models
+
+        for it in range(self.num_iterations):
+            if not it == 0:
+                self._prune_by_percentile()
+                self._original_initialization()
+            self.optimizer = torch.optim.Adam(self.model.parameters())
+
+            self._train_after_pruning()
+
+    def _initialize_mask(self):
+        step = 0
+
+        for name, param in self.model.named_parameters():
+            if "weight" in name:
+                step += 1
+
+        mask = [None] * step
+        step = 0
+
+        for name, param in self.model.named_parameters():
+            if "weight" in name:
+                param_data = param.data.cpu().numpy()
+                mask[step] = np.ones_like(param_data)
+                step += 1
+
+        return mask
+
+    def _prune_by_percentile(self):
+        step = 0
+
+        for name, param in self.model.named_parameters():
+            if "weight" in name:
+                param_data = param.data.cpu().numpy()
+                alive = param_data[np.nonzero(param_data)]
+                percentile = np.percentile(abs(alive), self.percent)
+                new_mask = np.where(abs(param_data) < percentile, 0, self.mask[step])
+                param.data = torch.from_numpy(param_data * new_mask).to(param.device)
+                self.mask[step] = new_mask
+                step += 1
+
+    def _original_initialization(self):
+        step = 0
+
+        for name, param in self.model.named_parameters():
+            if "weight" in name:
+                param_data = (
+                    self.mask[step] * self.initial_state_dict[name].cpu().numpy()
+                )
+                param.data = torch.from_numpy(param_data).to(param.device)
+                step += 1
+            if "bias" in name:
+                param.data = self.initial_state_dict[name]
+
+    def _train_after_pruning(self):
+        best_acc = 0.0
+        losses = []
+        accs = []
+
+        for it in range(self.train_iterations):
+            if (it % self.valid_freq) == 0:
+                _, acc = self._test_pruned_model()
+                if acc > best_acc:
+                    best_acc = acc
+                    if self.save_models:
+                        self._save_model(it)
+
+            loss, acc = self._train_pruned_model()
+            losses.append(loss)
+            accs.append(acc)
+
+            if (it % self.print_freq) == 0:
+                print(
+                    f"Train Epoch: {it}/{self.train_iterations} Loss: {loss:.6f} Accuracy: {accuracy:.2f}% Best Accuracy: {best_accuracy:.2f}%"
+                )
+
+    def _test_pruned_model(self):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.eval()
+        test_loss = 0
+        correct = 0
+
+        with torch.no_grad():
+            for data, targets in self.test_loader:
+                data, targets = data.to(device), targets.to(device)
+                outputs = self.model(data)
+
+                if isinstance(outputs, tuple):
+                    outputs = outputs[0]
+
+                test_loss += self.loss_fn(outputs, targets).item()
+                pred = outputs.argmax(dim=1, keepdim=True)
+                correct += pred.eq(targets.data.view_as(pred)).sum().item()
+
+            test_loss /= len(self.test_loader.dataset)
+            test_acc = 100.0 * correct / len(self.test_loader.dataset)
+
+        return test_loss, test_acc
+
+    def _train_pruned_model(self):
+        eps = 1e-6
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.train()
+        correct = 0
+
+        for data, targets in self.train_loader:
+            self.optimizer.zero_grad()
+            data, targets = data.to(device), targets.to(device)
+            outputs = self.model(data)
+
+            if isinstance(outputs, tuple):
+                outputs = outputs[0]
+
+            train_loss = self.loss_fn(outputs, targets)
+            train_loss.backward()
+
+            pred = outputs.argmax(dim=1, keepdim=True)
+            correct += pred.eq(targets.data.view_as(pred)).sum().item()
+
+            for name, param in self.model.named_parameters():
+                if "weight" in name:
+                    param_data = param.data.cpu().numpy()
+                    param_grad = param.grad.data.cpu().numpy()
+                    param_grad = np.where(param_data < eps, 0, param_grad)
+                    param.grad.data = torch.from_numpy(param_grad).to(device)
+
+            self.optimizer.step()
+
+        train_acc = 100.0 * correct / len(self.train_loader.dataset)
+        return train_loss.item(), train_acc
+
+    def _save_model(self, it):
+        file_name = f"{os.getcwd()}/{it}_pruned_model.pth.tar"
+        torch.save(self.model, file_name)

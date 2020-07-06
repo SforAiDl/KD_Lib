@@ -24,6 +24,8 @@ from KD_Lib.DML import DML
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
 
+from KD_Lib.Pruning.lottery_tickets import Prune_lottery_tickets
+
 import pandas as pd
 
 
@@ -51,7 +53,6 @@ test_loader = torch.utils.data.DataLoader(
     batch_size=32,
     shuffle=True,
 )
-
 
 ## BERT to LSTM data
 data_csv = "./KD_Lib/Bert2Lstm/IMDB_Dataset.csv"
@@ -460,3 +461,15 @@ def test_DML():
     distiller.train_students(epochs=0, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
+
+
+#
+# Pruning tests
+#
+
+
+def test_lottery_tickets():
+    teacher_params = [4, 4, 8, 4, 4]
+    teacher_model = ResNet50(teacher_params, 1, 10, True)
+    pruner = Prune_lottery_tickets(teacher_model, train_loader, test_loader)
+    pruner.prune(num_iterations=0, train_iterations=0, valid_freq=1, print_freq=1)
