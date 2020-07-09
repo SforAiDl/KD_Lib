@@ -119,7 +119,7 @@ class Lottery_Tickets_Pruner:
 
             if (it % self.print_freq) == 0:
                 print(
-                    f"Train Epoch: {it}/{self.train_iterations} Loss: {loss:.6f} Accuracy: {acc:.2f}% Best Accuracy: {best_acc:.2f}%"
+                    f"Train Epoch: {it}/{self.train_iterations} Loss: {loss:.6f} Training Accuracy: {acc:.2f}% Best Validation Accuracy: {best_acc:.2f}%"
                 )
 
             if (it % self.valid_freq) == 0:
