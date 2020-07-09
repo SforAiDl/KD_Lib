@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 
-class Prune_lottery_tickets:
+class Lottery_Tickets_Pruner:
     def __init__(
         self,
         model,
@@ -15,7 +15,8 @@ class Prune_lottery_tickets:
         print_freq=10,
     ):
 
-        self.model = model
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model = model.to(self.device)
         self.initial_state_dict = copy.deepcopy(self.model.state_dict())
         self.mask = self._initialize_mask()
         self.loss_fn = loss_fn
@@ -41,16 +42,17 @@ class Prune_lottery_tickets:
         self.save_models = save_models
 
         for it in range(self.num_iterations):
+            print(f"Iteration {it}...")
             if not it == 0:
                 self._prune_by_percentile()
                 self._original_initialization()
             self.optimizer = torch.optim.Adam(self.model.parameters())
 
-            self._train_after_pruning()
+            self._train_after_pruning(it)
 
     def _initialize_mask(self):
         step = 0
-
+        # print("Initializing mask...")
         for name, param in self.model.named_parameters():
             if "weight" in name:
                 step += 1
@@ -92,37 +94,40 @@ class Prune_lottery_tickets:
             if "bias" in name:
                 param.data = self.initial_state_dict[name]
 
-    def _train_after_pruning(self):
+    def _train_after_pruning(self, prune_it):
         best_acc = 0.0
         losses = []
         accs = []
 
         for it in range(self.train_iterations):
-            if (it % self.valid_freq) == 0:
-                _, acc = self._test_pruned_model()
-                if acc > best_acc:
-                    best_acc = acc
-                    if self.save_models:
-                        self._save_model(it)
-
+            # print("Training model...")
             loss, acc = self._train_pruned_model()
             losses.append(loss)
             accs.append(acc)
 
             if (it % self.print_freq) == 0:
                 print(
-                    f"Train Epoch: {it}/{self.train_iterations} Loss: {loss:.6f} Accuracy: {accuracy:.2f}% Best Accuracy: {best_accuracy:.2f}%"
+                    f"Train Epoch: {it}/{self.train_iterations} Loss: {loss:.6f} Accuracy: {acc:.2f}% Best Accuracy: {best_acc:.2f}%"
                 )
 
+            if (it % self.valid_freq) == 0:
+                # print(f'Iteration {it} testing...')
+                _, acc = self._test_pruned_model()
+                # print(f"Accuracy: {acc}")
+                if acc > best_acc:
+                    # print("Accuracy better than best!")
+                    best_acc = acc
+                    if self.save_models:
+                        self._save_model(prune_it, it)
+
     def _test_pruned_model(self):
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.eval()
         test_loss = 0
         correct = 0
 
         with torch.no_grad():
             for data, targets in self.test_loader:
-                data, targets = data.to(device), targets.to(device)
+                data, targets = data.to(self.device), targets.to(self.device)
                 outputs = self.model(data)
 
                 if isinstance(outputs, tuple):
@@ -139,13 +144,13 @@ class Prune_lottery_tickets:
 
     def _train_pruned_model(self):
         eps = 1e-6
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model.train()
         correct = 0
 
+        step = 0
         for data, targets in self.train_loader:
             self.optimizer.zero_grad()
-            data, targets = data.to(device), targets.to(device)
+            data, targets = data.to(self.device), targets.to(self.device)
             outputs = self.model(data)
 
             if isinstance(outputs, tuple):
@@ -157,18 +162,43 @@ class Prune_lottery_tickets:
             pred = outputs.argmax(dim=1, keepdim=True)
             correct += pred.eq(targets.data.view_as(pred)).sum().item()
 
+            train_acc = 100.0 * correct / len(self.train_loader.dataset)
+
+            # print(f"Training Step: {step} | Loss: {train_loss.item()} | Accuracy: {train_acc}")
+
             for name, param in self.model.named_parameters():
                 if "weight" in name:
                     param_data = param.data.cpu().numpy()
                     param_grad = param.grad.data.cpu().numpy()
                     param_grad = np.where(param_data < eps, 0, param_grad)
-                    param.grad.data = torch.from_numpy(param_grad).to(device)
+                    param.grad.data = torch.from_numpy(param_grad).to(self.device)
 
             self.optimizer.step()
+            step += 1
 
         train_acc = 100.0 * correct / len(self.train_loader.dataset)
         return train_loss.item(), train_acc
 
-    def _save_model(self, it):
-        file_name = f"{os.getcwd()}/{it}_pruned_model.pth.tar"
+    def _save_model(self, prune_it, it):
+        file_name = f"{os.getcwd()}/{prune_it}_{it}_pruned_model.pth.tar"
         torch.save(self.model, file_name)
+
+    def get_pruning_statistics(model_path=None):
+        if model_path is not None:
+            model = torch.load(model_path)
+        else:
+            model = self.model
+        nonzero = total = 0
+        for name, p in model.named_parameters():
+            tensor = p.data.cpu().numpy()
+            nz_count = np.count_nonzero(tensor)
+            total_params = np.prod(tensor.shape)
+            nonzero += nz_count
+            total += total_params
+            print(
+                f"{name:20} | nonzeros = {nz_count:7} / {total_params:7} ({100 * nz_count / total_params:6.2f}%) | total_pruned = {total_params - nz_count :7} | shape = {tensor.shape}"
+            )
+        print(
+            f"alive: {nonzero}, pruned : {total - nonzero}, total: {total}, Compression rate : {total/nonzero:10.2f}x  ({100 * (total-nonzero) / total:6.2f}% pruned)"
+        )
+        return round((nonzero / total) * 100, 1)

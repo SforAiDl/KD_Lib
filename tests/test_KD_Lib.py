@@ -24,7 +24,7 @@ from KD_Lib.DML import DML
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
 
-from KD_Lib.Pruning.lottery_tickets import Prune_lottery_tickets
+from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
 
 import pandas as pd
 
@@ -471,5 +471,5 @@ def test_DML():
 def test_lottery_tickets():
     teacher_params = [4, 4, 8, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10, True)
-    pruner = Prune_lottery_tickets(teacher_model, train_loader, test_loader)
+    pruner = Lottery_Tickets_Pruner(teacher_model, train_loader, test_loader)
     pruner.prune(num_iterations=0, train_iterations=0, valid_freq=1, print_freq=1)

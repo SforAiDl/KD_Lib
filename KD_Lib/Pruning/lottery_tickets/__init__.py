@@ -1,1 +1,1 @@
-from .lottery_tickets import Prune_lottery_tickets
+from .lottery_tickets import Lottery_Tickets_Pruner
