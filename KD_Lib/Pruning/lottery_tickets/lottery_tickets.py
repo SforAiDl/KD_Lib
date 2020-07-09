@@ -97,6 +97,7 @@ class Lottery_Tickets_Pruner:
 
     def _train_after_pruning(self, prune_it):
         best_acc = 0.0
+        best_weights = None
         losses = []
         accs = []
 
@@ -119,7 +120,9 @@ class Lottery_Tickets_Pruner:
                     # print("Accuracy better than best!")
                     best_acc = acc
                     if self.save_models:
-                        self._save_model(prune_it, it)
+                        best_weights = copy.deepcopy(self.model.state_dict())
+        
+        self._save_model(prune_it, best_weights)
 
     def _test_pruned_model(self):
         self.model.eval()
@@ -180,10 +183,14 @@ class Lottery_Tickets_Pruner:
         train_acc = 100.0 * correct / len(self.train_loader.dataset)
         return train_loss.item(), train_acc
 
-    def _save_model(self, prune_it, it):
-        file_name = f"{os.getcwd()}/{prune_it}_{it}_pruned_model.pth.tar"
-        self.saved_models.append(file_name)
-        torch.save(self.model, file_name)
+    def _save_model(self, prune_it, best_weights):
+        if best_weights is not None:
+            file_name = f"{os.getcwd()}/pruned_model_{prune_it}.pth.tar"
+            self.saved_models.append(file_name)
+            self.model.load_state_dict(best_weights)
+            torch.save(self.model, file_name)
+        else:
+            print("No best weights found")
 
     def get_pruning_statistics(model_path=None):
         if model_path is not None:
