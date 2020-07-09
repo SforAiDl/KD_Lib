@@ -5,15 +5,15 @@ import torch.nn as nn
 
 
 class Lottery_Tickets_Pruner:
-    def __init__(
-        self,
-        model,
-        train_loader,
-        test_loader,
-        loss_fn=nn.CrossEntropyLoss(),
-        valid_freq=10,
-        print_freq=10,
-    ):
+    """
+    Implementation of Lottery Tickets Pruning for PyTorch models.
+    :param model (torch.nn.Module): Model that needs to be pruned
+    :param train_loader (torch.utils.data.DataLoader): Dataloader for training
+    :param test_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
+    :param loss_fn (torch.nn.Module): Loss function to be used for training
+    """
+
+    def __init__(self, model, train_loader, test_loader, loss_fn=nn.CrossEntropyLoss()):
 
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = model.to(self.device)
@@ -33,6 +33,16 @@ class Lottery_Tickets_Pruner:
         print_freq=10,
         save_models=False,
     ):
+        """
+        Function used for pruning
+
+        :param prune_percent (int): Pruning percent
+        :param num_iterations (int): Number of iterations for pruning
+        :param train_iterations (int): Number of iterations for training per pruning iteration
+        :valid_freq (int): Frequency of testing (only these models can be stored using save_models)
+        :print_freq (int): Frequency of printing training results
+        :save_models (bool): True if validated models need to be saved
+        """
 
         self.num_iterations = num_iterations
         self.train_iterations = train_iterations
@@ -97,7 +107,7 @@ class Lottery_Tickets_Pruner:
 
     def _train_after_pruning(self, prune_it):
         best_acc = 0.0
-        best_weights = None
+        best_weights = copy.deepcopy(self.model.state_dict())
         losses = []
         accs = []
 
@@ -121,7 +131,7 @@ class Lottery_Tickets_Pruner:
                     best_acc = acc
                     if self.save_models:
                         best_weights = copy.deepcopy(self.model.state_dict())
-        
+
         self._save_model(prune_it, best_weights)
 
     def _test_pruned_model(self):
@@ -184,15 +194,23 @@ class Lottery_Tickets_Pruner:
         return train_loss.item(), train_acc
 
     def _save_model(self, prune_it, best_weights):
-        if best_weights is not None:
-            file_name = f"{os.getcwd()}/pruned_model_{prune_it}.pth.tar"
-            self.saved_models.append(file_name)
-            self.model.load_state_dict(best_weights)
-            torch.save(self.model, file_name)
-        else:
-            print("No best weights found")
+        file_name = f"{os.getcwd()}/pruned_model_{prune_it}.pth.tar"
+        self.saved_models.append(file_name)
+        self.model.load_state_dict(best_weights)
+        torch.save(self.model, file_name)
 
     def get_pruning_statistics(model_path=None):
+        """
+        Function used for priniting layer-wise pruning statistics
+
+        :param model_path (str): Path of the model whose statistics need to be displayed
+                                 If None, statistics of all the saved models is displayed
+
+        :return alive (int or list): If model_path is specified, percentage of alive neurons is returned.
+                                     If model_path is None and saved_models are available, returns a list
+                                     containing alive neurons percentage for each saved model
+                                     Else returns -1 
+        """
         if model_path is not None:
             alive = _get_pruning_statistics(model_path)
         else:
