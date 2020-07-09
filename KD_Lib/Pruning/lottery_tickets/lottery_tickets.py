@@ -2,6 +2,7 @@ import copy
 import numpy as np
 import torch
 import torch.nn as nn
+import os
 
 
 class Lottery_Tickets_Pruner:
