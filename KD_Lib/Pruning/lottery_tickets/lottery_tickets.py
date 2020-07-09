@@ -40,6 +40,7 @@ class Lottery_Tickets_Pruner:
         self.valid_freq = valid_freq
         self.print_freq = print_freq
         self.save_models = save_models
+        self.saved_models = []
 
         for it in range(self.num_iterations):
             print(f"Iteration {it}...")
@@ -181,13 +182,24 @@ class Lottery_Tickets_Pruner:
 
     def _save_model(self, prune_it, it):
         file_name = f"{os.getcwd()}/{prune_it}_{it}_pruned_model.pth.tar"
+        self.saved_models.append(file_name)
         torch.save(self.model, file_name)
 
     def get_pruning_statistics(model_path=None):
         if model_path is not None:
-            model = torch.load(model_path)
+            alive = _get_pruning_statistics(model_path)
         else:
-            model = self.model
+            if len(self.saved_models) == 0:
+                print("No saved models found.")
+                alive = -1
+            else:
+                alive = []
+                for path in self.save_models:
+                    print(f"Model: {path}")
+                    alive.append(_get_pruning_statistics(path))
+        return alive
+
+    def _get_pruning_statistics(model_path=None):
         nonzero = total = 0
         for name, p in model.named_parameters():
             tensor = p.data.cpu().numpy()
