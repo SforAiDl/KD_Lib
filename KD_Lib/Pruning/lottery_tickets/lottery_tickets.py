@@ -12,6 +12,7 @@ class Lottery_Tickets_Pruner:
     :param train_loader (torch.utils.data.DataLoader): Dataloader for training
     :param test_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param loss_fn (torch.nn.Module): Loss function to be used for training
+    :param device (torch.device): Device used for implementation ("cpu" by default)
     """
 
     def __init__(
