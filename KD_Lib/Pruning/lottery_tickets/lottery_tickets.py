@@ -14,9 +14,16 @@ class Lottery_Tickets_Pruner:
     :param loss_fn (torch.nn.Module): Loss function to be used for training
     """
 
-    def __init__(self, model, train_loader, test_loader, loss_fn=nn.CrossEntropyLoss()):
+    def __init__(
+        self,
+        model,
+        train_loader,
+        test_loader,
+        loss_fn=nn.CrossEntropyLoss(),
+        device="cpu",
+    ):
 
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = device
         self.model = model.to(self.device)
         self.initial_state_dict = copy.deepcopy(self.model.state_dict())
         self.mask = self._initialize_mask()
