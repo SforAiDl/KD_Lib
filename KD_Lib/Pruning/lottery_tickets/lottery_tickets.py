@@ -208,7 +208,7 @@ class Lottery_Tickets_Pruner:
         self.model.load_state_dict(best_weights)
         torch.save(self.model, file_name)
 
-    def get_pruning_statistics(model_path=None):
+    def get_pruning_statistics(self, model_path=None):
         """
         Function used for priniting layer-wise pruning statistics
 
@@ -233,7 +233,7 @@ class Lottery_Tickets_Pruner:
                     alive.append(_get_pruning_statistics(path))
         return alive
 
-    def _get_pruning_statistics(model_path=None):
+    def _get_pruning_statistics(self, model_path=None):
         nonzero = total = 0
         for name, p in model.named_parameters():
             tensor = p.data.cpu().numpy()
