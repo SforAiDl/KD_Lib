@@ -66,6 +66,8 @@ class VanillaKD(BaseClass):
         soft_student_out = F.softmax(y_pred_student / self.temp, dim=1)
 
         loss = (1 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
-        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(soft_teacher_out, soft_student_out)
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            soft_teacher_out, soft_student_out
+        )
 
         return loss
