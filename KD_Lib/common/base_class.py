@@ -143,7 +143,7 @@ class BaseClass:
         epochs=10,
         plot_losses=True,
         save_model=True,
-        save_model_pth="./models/student.pth",
+        save_model_pth="./models/student.pt",
     ):
         """
         Function to train student model - for internal use only.
@@ -186,7 +186,7 @@ class BaseClass:
                 loss.backward()
                 self.optimizer_student.step()
 
-                epoch_loss += loss
+                epoch_loss += loss.item()
 
             epoch_acc = correct / length_of_dataset
             if epoch_acc > best_acc:
@@ -213,7 +213,7 @@ class BaseClass:
         epochs=10,
         plot_losses=True,
         save_model=True,
-        save_model_pth="./models/student.pth",
+        save_model_pth="./models/student.pt",
     ):
         """
         Function that will be training the student
