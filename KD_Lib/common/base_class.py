@@ -65,7 +65,7 @@ class BaseClass:
             print(
                 "Either an invalid device or CUDA is not available. Defaulting to CPU."
             )
-            self.device = "cpu"
+            self.device = torch.device("cpu")
 
     def train_teacher(
         self,

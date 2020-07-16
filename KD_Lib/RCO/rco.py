@@ -220,7 +220,7 @@ class RCO(BaseClass):
         """
 
         loss = (1 - self.distil_weight) * F.cross_entropy(
-            F.softmax(y_pred_student), y_true
+            F.softmax(y_pred_student, dim=1), y_true
         )
         loss += self.distil_weight * self.loss_fn(
             F.log_softmax(y_pred_student / self.temp, dim=1),

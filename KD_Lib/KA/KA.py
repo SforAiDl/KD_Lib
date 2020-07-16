@@ -102,7 +102,7 @@ class KnowledgeAdjustment(BaseClass):
                     index[top_indices[1]] = top_indices[0]
 
                     ps = torch.zeros_like(y_pred_teacher[i]).scatter_(
-                        0, index, F.softmax(y_pred_teacher[i] / self.temp, dim=0)
+                        0, index, F.softmax(y_pred_teacher[i] / self.temp, dim=1)
                     )
                     soft_pred_teacher = torch.cat(
                         (soft_pred_teacher, ps.view(1, -1)), 0
