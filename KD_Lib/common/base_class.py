@@ -43,6 +43,8 @@ class BaseClass:
         logdir="./Experiments",
     ):
 
+        self.teacher_model = teacher_model
+        self.student_model = student_model
         self.train_loader = train_loader
         self.val_loader = val_loader
         self.optimizer_teacher = optimizer_teacher
@@ -65,8 +67,6 @@ class BaseClass:
             )
             self.device = torch.device("cpu")
 
-        self.teacher_model = teacher_model.to(self.device)
-        self.student_model = student_model.to(self.device)
 
     def train_teacher(
         self,
