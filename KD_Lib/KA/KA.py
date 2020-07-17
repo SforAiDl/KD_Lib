@@ -128,10 +128,10 @@ class KnowledgeAdjustment(BaseClass):
                 ),
                 0,
             )
-            loss = self.loss_fn(soft_pred_teacher, F.log_softmax(y_pred_student, dim=1))
+            loss = (self.temp * self.temp) * self.loss_fn(soft_pred_teacher, F.log_softmax(y_pred_student, dim=1))
 
         else:
-            loss = self.loss_fn(
+            loss = (self.temp * self.temp) * self.loss_fn(
                 F.softmax(y_pred_teacher / self.temp, dim=1),
                 F.log_softmax(y_pred_student, dim=1),
             )

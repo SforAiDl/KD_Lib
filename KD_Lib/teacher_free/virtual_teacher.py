@@ -146,7 +146,7 @@ class VirtualTeacher:
             soft_label[i, y_true[i]] = self.correct_prob
 
         loss = (1 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
-        loss += self.distil_weight * self.loss_fn(
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
             F.log_softmax(y_pred_student, dim=1),
             F.softmax(soft_label / self.temp, dim=1),
         )

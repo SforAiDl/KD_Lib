@@ -190,7 +190,7 @@ class SelfTraining:
         """
 
         loss = (1 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
-        loss += self.distil_weight * self.loss_fn(
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
             F.log_softmax(y_pred_student, dim=1),
             F.softmax(y_pred_teacher / self.temp, dim=1),
         )
