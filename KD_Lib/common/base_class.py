@@ -67,7 +67,6 @@ class BaseClass:
             )
             self.device = torch.device("cpu")
 
-
     def train_teacher(
         self,
         epochs=20,

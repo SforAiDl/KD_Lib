@@ -118,7 +118,9 @@ class Bert2LSTM(BaseClass):
         soft_student_out = F.log_softmax(y_pred_student / self.temp, dim=0)
 
         loss = (1 - self.distil_weight) * F.cross_entropy(soft_student_out, y_true)
-        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(soft_teacher_out, soft_student_out)
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            soft_teacher_out, soft_student_out
+        )
         return loss
 
     def train_teacher(
