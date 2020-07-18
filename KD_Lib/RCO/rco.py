@@ -110,7 +110,7 @@ class RCO(BaseClass):
 
                 epoch_loss += loss
 
-            if (ep + 1) % self.epoch_interval == 0:
+            if (ep + 1) % self.epoch_interval == 0 or (ep+1)==epochs:
                 self.anchors.append(deepcopy(self.teacher_model))
 
             epoch_acc = correct / length_of_dataset
