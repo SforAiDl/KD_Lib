@@ -184,7 +184,7 @@ def get_essentials(train_df, max_seq_length=128, train_batch_size=16):
     X_split = [t.split() for t in X]
 
     # pad
-    X_pad = [pad(s, max_seq_length) for s in X]
+    X_pad = [pad(s, max_seq_length) for s in X_split]
 
     # to index
     X_index = [to_indexes(text_field.vocab, s) for s in X_pad]

@@ -26,6 +26,9 @@ from KD_Lib.models.resnet import resnet_book
 
 from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
 
+from KD_Lib.text.utils.lstm import train_lstm, evaluate_lstm, distill_to_lstm
+from KD_Lib.text.utils.bert import train_bert, evaluate_bert
+
 import pandas as pd
 
 
@@ -125,15 +128,16 @@ def test_modlenet():
 
 def test_LSTMNet():
     sample_input = torch.tensor([[1, 2, 8, 3, 2], [2, 4, 99, 1, 7]])
+    sample_lengths = torch.tensor([5, 5])
 
     # Simple LSTM
-    model = lstm.LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
-    sample_output = model(sample_input)
+    model = lstm.LSTMNet(num_classes=2, dropout_prob=0.5)
+    sample_output = model(sample_input, sample_lengths)
     print(sample_output)
 
     # Bidirectional LSTM
-    model = lstm.LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
-    sample_output = model(sample_input)
+    model = lstm.LSTMNet(num_classes=2, dropout_prob=0.5)
+    sample_output = model(sample_input, sample_lengths)
     print(sample_output)
 
 
@@ -430,7 +434,7 @@ def test_messy_collab():
 
 def test_bert2lstm():
     student_model = lstm.LSTMNet(
-        input_dim=len(text_field.vocab), num_classes=2, batch_size=2, dropout_prob=0.5
+        input_dim=len(text_field.vocab), num_classes=2, dropout_prob=0.5
     )
     optimizer = torch.optim.Adam(student_model.parameters())
 
