@@ -12,15 +12,19 @@ def train_bert(
     device=torch.device("cpu"),
     batch_print_freq=40,
 ):
+
     """
-    Function that will be training BERT 
-    :param epochs (int): Number of epochs you want to train the teacher 
-    :param plot_losses (bool): True if you want to plot the losses
-    :param save_model (bool): True if you want to save the teacher model
-    :param save_model_pth (str): Path where you want to store the teacher model
-    :param max_seq_length (int): Maximum sequence length paramter for generating dataloaders
-    :param train_batch_size (int): Batch size paramter for generating dataloaders
+    Function useful for training BERT
+
+    :param model (torch.nn.Module): BERT Model to be trained
+    :param optimizer (torch.optim.*): Optimizer used for training
+    :train_loader (torch.utils.data.DataLoader): Training data loader
+    :loss_fn (torch.nn.Module): Loss function used for training
+    :epochs (int): Number of epochs to train
+    :device (torch.device): Device used for training; 'cpu' for cpu and 'cuda' for gpu
+    :batch_print_freq (int): Frequency at which batch number needs to be printed per epoch
     """
+
     model.to(device)
     model.train()
 
@@ -88,6 +92,16 @@ def distill_to_bert():
 
 
 def evaluate_bert(model, val_loader, device=torch.device("cpu"), verbose=True):
+
+    """
+    Function useful for evaluating BERT
+
+    :param model (torch.nn.Module): Model to be evaluated
+    :val_loader (torch.utils.data.DataLoader): Validation data loader
+    :device (torch.device): Device used for training; 'cpu' for cpu and 'cuda' for gpu
+    :verbose (bool): True if accuracy needs to be printed. Else False.
+    """
+
     model.to(device)
     model.eval()
 

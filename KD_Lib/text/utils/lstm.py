@@ -14,6 +14,18 @@ def train_lstm(
     batch_print_freq=40,
 ):
 
+    """
+    Function useful for training an LSTM
+
+    :param model (torch.nn.Module): Model to be trained
+    :param optimizer (torch.optim.*): Optimizer used for training
+    :train_loader (torch.utils.data.DataLoader): Training data loader
+    :loss_fn (torch.nn.Module): Loss function used for training
+    :epochs (int): Number of epochs to train
+    :device (torch.device): Device used for training; 'cpu' for cpu and 'cuda' for gpu
+    :batch_print_freq (int): Frequency at which batch number needs to be printed per epoch
+    """
+
     model.to(device)
     model.train()
 
@@ -86,6 +98,17 @@ def distill_to_lstm(
     device=torch.device("cpu"),
 ):
 
+    """
+    Function useful for distilling to an LSTM
+
+    :param model (torch.nn.Module): Model to be distilled
+    :param optimizer (torch.optim.*): Optimizer used for distillation
+    :train_loader (torch.utils.data.DataLoader): Training data loader
+    :loss_fn (KD Loss function): Loss function used for distillation
+    :epochs (int): Number of epochs to train
+    :device (torch.device): Device used for training; 'cpu' for cpu and 'cuda' for gpu
+    """
+
     model.to(device)
     model.train()
 
@@ -144,6 +167,15 @@ def distill_to_lstm(
 
 
 def evaluate_lstm(model, val_loader, device=torch.device("cpu"), verbose=True):
+
+    """
+    Function useful for evaluating LSTM
+
+    :param model (torch.nn.Module): Model to be evaluated
+    :val_loader (torch.utils.data.DataLoader): Validation data loader
+    :device (torch.device): Device used for training; 'cpu' for cpu and 'cuda' for gpu
+    :verbose (bool): True if accuracy needs to be printed. Else False.
+    """
 
     model.to(device)
     model.eval()
