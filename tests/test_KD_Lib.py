@@ -16,7 +16,7 @@ from KD_Lib.noisy.messy_collab import MessyCollab
 from KD_Lib.mean_teacher import MeanTeacher
 from KD_Lib.RCO import RCO
 from KD_Lib.BANN import BANN
-from KD_Lib.KA import KnowledgeAdjustment
+from KD_Lib.KA import PS, LSR
 from KD_Lib.noisy import NoisyTeacher
 from KD_Lib.Bert2Lstm.utils import get_essentials
 from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
@@ -330,7 +330,7 @@ def test_BANN():
     # distiller.evaluate()
 
 
-def test_KA_PS():
+def test_PS():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
@@ -339,14 +339,13 @@ def test_KA_PS():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = KnowledgeAdjustment(
+    distiller = PS(
         teacher_model,
         student_model,
         train_loader,
         test_loader,
         t_optimizer,
         s_optimizer,
-        "PS",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
@@ -355,7 +354,7 @@ def test_KA_PS():
     distiller.get_parameters()
 
 
-def test_KA_LSR():
+def test_LSR():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
@@ -364,14 +363,13 @@ def test_KA_LSR():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = KnowledgeAdjustment(
+    distiller = LSR(
         teacher_model,
         student_model,
         train_loader,
         test_loader,
         t_optimizer,
         s_optimizer,
-        "LSR",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
