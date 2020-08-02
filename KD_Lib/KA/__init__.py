@@ -1,1 +1,2 @@
-from .KA import LSR, PS
+from .LSR import LSR
+from .PS import PS
