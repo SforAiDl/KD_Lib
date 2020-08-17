@@ -18,16 +18,18 @@ from KD_Lib.RCO import RCO
 from KD_Lib.BANN import BANN
 from KD_Lib.KA import KnowledgeAdjustment
 from KD_Lib.noisy import NoisyTeacher
-from KD_Lib.Bert2Lstm.utils import get_essentials
-from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
+# from KD_Lib.Bert2Lstm.utils import get_essentials
+# from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
 from KD_Lib.DML import DML
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
 
 from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
 
-from KD_Lib.text.utils.lstm import train_lstm, evaluate_lstm, distill_to_lstm
-from KD_Lib.text.utils.bert import train_bert, evaluate_bert
+from KD_Lib.KD.text.utils.lstm import train_lstm, evaluate_lstm, distill_to_lstm
+from KD_Lib.KD.text.utils.bert import train_bert, evaluate_bert
+
+from KD_Lib.KD.text import Bert2LSTM, get_essentials
 
 import pandas as pd
 
@@ -58,7 +60,7 @@ test_loader = torch.utils.data.DataLoader(
 )
 
 ## BERT to LSTM data
-data_csv = "./KD_Lib/Bert2Lstm/IMDB_Dataset.csv"
+data_csv = "./KD_Lib/KD/text/Bert2Lstm/IMDB_Dataset.csv"
 df = pd.read_csv(data_csv)
 df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
 
@@ -436,12 +438,11 @@ def test_bert2lstm():
     student_model = lstm.LSTMNet(
         input_dim=len(text_field.vocab), num_classes=2, dropout_prob=0.5
     )
-    optimizer = torch.optim.Adam(student_model.parameters())
-
+    
     experiment = Bert2LSTM(
-        student_model, train_loader, train_loader, optimizer, train_df, val_df
+        student_model, train_loader, train_loader, train_df, val_df
     )
-    # experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
+    experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
     experiment.train_student(epochs=0, plot_losses=False, save_model=False)
     experiment.evaluate_student()
     experiment.evaluate_teacher()
