@@ -59,7 +59,7 @@ class BERT2LSTM(BaseClass):
         if optimizer_teacher is None:
             optimizer_teacher = AdamW(teacher_model.parameters())
 
-        super(Bert2LSTM, self).__init__(
+        super(BERT2LSTM, self).__init__(
             teacher_model,
             student_model,
             distill_train_loader,
