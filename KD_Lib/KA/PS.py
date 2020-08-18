@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 
 
-class PS(BaseClass):
+class ProbShift(BaseClass):
     """
     Implementation of the knowledge adjustment technique from the paper
     "Preparing Lessons: Improve Knowledge Distillation with Better Supervision" 
@@ -46,7 +46,7 @@ class PS(BaseClass):
         logdir="./Experiments",
     ):
 
-        super(PS, self).__init__(
+        super(ProbShift, self).__init__(
             teacher_model,
             student_model,
             train_loader,

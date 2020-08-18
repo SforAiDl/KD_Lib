@@ -16,10 +16,10 @@ from KD_Lib.noisy.messy_collab import MessyCollab
 from KD_Lib.mean_teacher import MeanTeacher
 from KD_Lib.RCO import RCO
 from KD_Lib.BANN import BANN
-from KD_Lib.KA import PS, LSR
+from KD_Lib.KA import ProbShift, LabelSmoothReg
 from KD_Lib.noisy import NoisyTeacher
-from KD_Lib.Bert2Lstm.utils import get_essentials
-from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
+from KD_Lib.BERT2LSTM.utils import get_essentials
+from KD_Lib.BERT2LSTM.bert2lstm import BERT2LSTM
 from KD_Lib.DML import DML
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
@@ -339,7 +339,7 @@ def test_PS():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = PS(
+    distiller = ProbShift(
         teacher_model,
         student_model,
         train_loader,
@@ -363,7 +363,7 @@ def test_LSR():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = LSR(
+    distiller = LabelSmoothReg(
         teacher_model,
         student_model,
         train_loader,
@@ -432,7 +432,7 @@ def test_bert2lstm():
     )
     optimizer = torch.optim.Adam(student_model.parameters())
 
-    experiment = Bert2LSTM(
+    experiment = BERT2LSTM(
         student_model, train_loader, train_loader, optimizer, train_df, val_df
     )
     # experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)

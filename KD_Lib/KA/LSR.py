@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from copy import deepcopy
 
 
-class LSR(BaseClass):
+class LableSmoothReg(BaseClass):
     """
     Implementation of the label smoothening regularization technique from the paper
     "Preparing Lessons: Improve Knowledge Distillation with Better Supervision" 
@@ -45,7 +45,7 @@ class LSR(BaseClass):
         logdir="./Experiments",
     ):
 
-        super(LSR, self).__init__(
+        super(LableSmoothReg, self).__init__(
             teacher_model,
             student_model,
             train_loader,

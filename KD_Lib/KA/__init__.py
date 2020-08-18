@@ -1,2 +1,2 @@
-from .LSR import LSR
-from .PS import PS
+from .LSR import LabelSmoothReg
+from .PS import ProbShift
