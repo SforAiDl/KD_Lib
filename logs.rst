@@ -1,4 +1,3 @@
-`Colab Notebook <https://colab.research.google.com/drive/1brU6xL8nqlw5F6op0Edys-Av7SlTrr6t?usp=sharing>`_
 
 Results for Knowledge Distillation Algorithms -
 ===============================================
