@@ -19,16 +19,11 @@ from KD_Lib.BANN import BANN
 from KD_Lib.KA import KnowledgeAdjustment
 from KD_Lib.noisy import NoisyTeacher
 
-# from KD_Lib.Bert2Lstm.utils import get_essentials
-# from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
 from KD_Lib.DML import DML
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
 
 from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
-
-from KD_Lib.KD.text.utils.lstm import train_lstm, evaluate_lstm, distill_to_lstm
-from KD_Lib.KD.text.utils.bert import train_bert, evaluate_bert
 
 from KD_Lib.KD.text import Bert2LSTM, get_essentials
 
