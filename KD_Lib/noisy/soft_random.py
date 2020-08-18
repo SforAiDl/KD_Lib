@@ -153,9 +153,9 @@ class SoftRandom(BaseClass):
         :param y_true (torch.FloatTensor): Original label
         """
         loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
-        loss += self.distil_weight * self.loss_fn(
-            F.log_softmax(y_pred_student / self.temp),
-            F.softmax(y_pred_teacher / self.temp),
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            F.log_softmax(y_pred_student / self.temp, dim=1),
+            F.softmax(y_pred_teacher / self.temp, dim=1),
         )
 
         return loss

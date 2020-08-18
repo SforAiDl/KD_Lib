@@ -4,7 +4,6 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
-from KD_Lib.RKD import RKDLoss
 
 import matplotlib.pyplot as plt
 from copy import deepcopy
@@ -35,9 +34,9 @@ class VirtualTeacher:
         train_loader,
         val_loader,
         optimizer_student,
-        loss_fn=nn.MSELoss(),
+        loss_fn=nn.KLDivLoss(),
         correct_prob=0.9,
-        temp=20.0,
+        temp=10.0,
         distil_weight=0.5,
         device="cpu",
         log=False,
@@ -146,7 +145,7 @@ class VirtualTeacher:
             soft_label[i, y_true[i]] = self.correct_prob
 
         loss = (1 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
-        loss += self.distil_weight * self.loss_fn(
+        loss += (self.distil_weight) * self.loss_fn(
             F.log_softmax(y_pred_student, dim=1),
             F.softmax(soft_label / self.temp, dim=1),
         )

@@ -64,5 +64,7 @@ class attention(BaseClass):
 
         soft_student_out = F.softmax(y_pred_student[0] / self.temp, dim=1)
         loss = (1 - self.distil_weight) * F.cross_entropy(soft_student_out, y_true)
-        loss += self.distil_weight * self.loss_fn(y_pred_teacher, y_pred_student)
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            y_pred_teacher, y_pred_student
+        )
         return loss

@@ -16,10 +16,10 @@ from KD_Lib.noisy.messy_collab import MessyCollab
 from KD_Lib.mean_teacher import MeanTeacher
 from KD_Lib.RCO import RCO
 from KD_Lib.BANN import BANN
-from KD_Lib.KA import KnowledgeAdjustment
+from KD_Lib.KA import ProbShift, LabelSmoothReg
 from KD_Lib.noisy import NoisyTeacher
-from KD_Lib.Bert2Lstm.utils import get_essentials
-from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
+from KD_Lib.BERT2LSTM.utils import get_essentials
+from KD_Lib.BERT2LSTM.bert2lstm import BERT2LSTM
 from KD_Lib.DML import DML
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
@@ -55,7 +55,7 @@ test_loader = torch.utils.data.DataLoader(
 )
 
 ## BERT to LSTM data
-data_csv = "./KD_Lib/Bert2Lstm/IMDB_Dataset.csv"
+data_csv = "./KD_Lib/BERT2LSTM/IMDB_Dataset.csv"
 df = pd.read_csv(data_csv)
 df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
 
@@ -330,7 +330,7 @@ def test_BANN():
     # distiller.evaluate()
 
 
-def test_KA_PS():
+def test_PS():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
@@ -339,14 +339,13 @@ def test_KA_PS():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = KnowledgeAdjustment(
+    distiller = ProbShift(
         teacher_model,
         student_model,
         train_loader,
         test_loader,
         t_optimizer,
         s_optimizer,
-        "PS",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
@@ -355,7 +354,7 @@ def test_KA_PS():
     distiller.get_parameters()
 
 
-def test_KA_LSR():
+def test_LSR():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
@@ -364,14 +363,13 @@ def test_KA_LSR():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = KnowledgeAdjustment(
+    distiller = LabelSmoothReg(
         teacher_model,
         student_model,
         train_loader,
         test_loader,
         t_optimizer,
         s_optimizer,
-        "LSR",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
@@ -434,7 +432,7 @@ def test_bert2lstm():
     )
     optimizer = torch.optim.Adam(student_model.parameters())
 
-    experiment = Bert2LSTM(
+    experiment = BERT2LSTM(
         student_model, train_loader, train_loader, optimizer, train_df, val_df
     )
     # experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
