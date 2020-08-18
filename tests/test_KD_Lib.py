@@ -55,7 +55,7 @@ test_loader = torch.utils.data.DataLoader(
 )
 
 ## BERT to LSTM data
-data_csv = "./KD_Lib/Bert2Lstm/IMDB_Dataset.csv"
+data_csv = "./KD_Lib/BERT2LSTM/IMDB_Dataset.csv"
 df = pd.read_csv(data_csv)
 df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
 
