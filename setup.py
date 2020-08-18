@@ -13,13 +13,9 @@ with open("HISTORY.rst") as history_file:
 
 requirements = []
 
-setup_requirements = [
-    "pytest-runner",
-]
+setup_requirements = ["pytest-runner"]
 
-test_requirements = [
-    "pytest",
-]
+test_requirements = ["pytest"]
 
 setup(
     author="Het Shah",

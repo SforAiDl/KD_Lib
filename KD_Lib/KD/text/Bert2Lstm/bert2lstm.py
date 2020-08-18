@@ -54,22 +54,19 @@ class Bert2LSTM(BaseClass):
         self.set_seed(42)
 
         self.train_df, self.val_df = train_df, val_df
-        
+
         teacher_model = BertForSequenceClassification.from_pretrained(
             "bert-base-uncased",
-            num_labels = num_classes,
-            output_attentions = False,
-            output_hidden_states = False,
+            num_labels=num_classes,
+            output_attentions=False,
+            output_hidden_states=False,
         )
 
-        optimizer_teacher = AdamW(teacher_model.parameters(),
-                                  lr = 2e-5,
-                                  eps = 1e-8
-                                  )
-        
-        
-        self.bert_tokenizer = BertTokenizer.from_pretrained("bert-base-uncased", do_lower_case=True)
+        optimizer_teacher = AdamW(teacher_model.parameters(), lr=2e-5, eps=1e-8)
 
+        self.bert_tokenizer = BertTokenizer.from_pretrained(
+            "bert-base-uncased", do_lower_case=True
+        )
 
         super(Bert2LSTM, self).__init__(
             teacher_model,
@@ -86,8 +83,9 @@ class Bert2LSTM(BaseClass):
             logdir,
         )
 
-        self.optimizer_student = torch.optim.Adam(self.student_model.parameters(), lr=2e-4)
-
+        self.optimizer_student = torch.optim.Adam(
+            self.student_model.parameters(), lr=2e-4
+        )
 
     def set_seed(self, seed):
         random.seed(seed)
@@ -101,8 +99,10 @@ class Bert2LSTM(BaseClass):
         """
         df = self.val_df if (mode == "validate") else self.train_df
 
-        return get_bert_dataloader(df, self.bert_tokenizer, max_seq_length, batch_size, mode)
-        
+        return get_bert_dataloader(
+            df, self.bert_tokenizer, max_seq_length, batch_size, mode
+        )
+
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
         Function used for calculating the KD loss during distillation
@@ -120,7 +120,9 @@ class Bert2LSTM(BaseClass):
         self.criterion_ce = torch.nn.CrossEntropyLoss()
 
         loss = (1 - self.distil_weight) * self.criterion_ce(soft_student_out, y_true)
-        loss += self.distil_weight * self.criterion_mse(soft_student_out, soft_teacher_out)
+        loss += self.distil_weight * self.criterion_mse(
+            soft_student_out, soft_teacher_out
+        )
         return loss
 
     def train_teacher(
@@ -131,7 +133,7 @@ class Bert2LSTM(BaseClass):
         save_model_pth="./models/teacher.pt",
         max_seq_length=128,
         train_batch_size=16,
-        batch_print_freq=40
+        batch_print_freq=40,
     ):
         """
         Function that will be training the teacher 
@@ -142,20 +144,24 @@ class Bert2LSTM(BaseClass):
         :param max_seq_length (int): Maximum sequence length paramter for generating dataloaders
         :param train_batch_size (int): Batch size paramter for generating dataloaders
         """
-        self.teacher_train_loader = self._get_teacher_dataloaders(max_seq_length, train_batch_size, mode="train")
+        self.teacher_train_loader = self._get_teacher_dataloaders(
+            max_seq_length, train_batch_size, mode="train"
+        )
 
-        best_weights, loss_arr = train_bert(self.teacher_model, 
-                                           self.optimizer_teacher, 
-                                           self.teacher_train_loader, 
-                                           epochs, 
-                                           self.device, 
-                                           batch_print_freq)
+        best_weights, loss_arr = train_bert(
+            self.teacher_model,
+            self.optimizer_teacher,
+            self.teacher_train_loader,
+            epochs,
+            self.device,
+            batch_print_freq,
+        )
 
         self.teacher_model.load_state_dict(best_weights)
-        
+
         if save_model:
             torch.save(self.teacher_model.state_dict(), save_model_pth)
-        
+
         if plot_losses:
             plt.plot(loss_arr)
 
@@ -174,24 +180,29 @@ class Bert2LSTM(BaseClass):
         :param save_model_pth (str): Path where you want to save the student model
         """
 
-        self.teacher_distill_loader = self._get_teacher_dataloaders(batch_size=self.train_loader.batch_size,mode="distill")
+        self.teacher_distill_loader = self._get_teacher_dataloaders(
+            batch_size=self.train_loader.batch_size, mode="distill"
+        )
 
-        y_pred_teacher = evaluate_bert(self.teacher_model, self.teacher_distill_loader, self.device)
+        y_pred_teacher = evaluate_bert(
+            self.teacher_model, self.teacher_distill_loader, self.device
+        )
 
-        best_weights, loss_arr = distill_to_lstm(self.student_model, 
-                                                 self.optimizer_student, 
-                                                 self.train_loader, 
-                                                 y_pred_teacher,
-                                                 self.calculate_kd_loss,
-                                                 epochs, 
-                                                 self.device)
+        best_weights, loss_arr = distill_to_lstm(
+            self.student_model,
+            self.optimizer_student,
+            self.train_loader,
+            y_pred_teacher,
+            self.calculate_kd_loss,
+            epochs,
+            self.device,
+        )
 
-        
         self.student_model.load_state_dict(best_weights)
-        
+
         if save_model:
             torch.save(self.student_model.state_dict(), save_model_pth)
-        
+
         if plot_losses:
             plt.plot(loss_arr)
 
@@ -200,6 +211,7 @@ class Bert2LSTM(BaseClass):
 
     def evaluate_teacher(self, max_seq_length=128, val_batch_size=16, verbose=True):
 
-        self.teacher_val_loader = self._get_teacher_dataloaders(max_seq_length, val_batch_size, mode="validate")
+        self.teacher_val_loader = self._get_teacher_dataloaders(
+            max_seq_length, val_batch_size, mode="validate"
+        )
         return evaluate_bert(self.teacher_model, self.teacher_val_loader, self.device)
-        

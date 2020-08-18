@@ -190,11 +190,10 @@ def evaluate_lstm(model, val_loader, device=torch.device("cpu"), verbose=True):
             data_len = data_len.to(device)
             target = target.to(device)
             output = model(data, data_len).squeeze(1)
+            outputs.append(output)
 
             pred = output.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
-
-            outputs.append(pred)
 
     if verbose:
         print("-" * 80)

@@ -18,6 +18,7 @@ from KD_Lib.RCO import RCO
 from KD_Lib.BANN import BANN
 from KD_Lib.KA import KnowledgeAdjustment
 from KD_Lib.noisy import NoisyTeacher
+
 # from KD_Lib.Bert2Lstm.utils import get_essentials
 # from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
 from KD_Lib.DML import DML
@@ -438,10 +439,8 @@ def test_bert2lstm():
     student_model = lstm.LSTMNet(
         input_dim=len(text_field.vocab), num_classes=2, dropout_prob=0.5
     )
-    
-    experiment = Bert2LSTM(
-        student_model, train_loader, train_loader, train_df, val_df
-    )
+
+    experiment = Bert2LSTM(student_model, train_loader, train_loader, train_df, val_df)
     experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
     experiment.train_student(epochs=0, plot_losses=False, save_model=False)
     experiment.evaluate_student()
