@@ -6,14 +6,14 @@ import torch.nn.functional as F
 from transformers import BertForSequenceClassification, AdamW, BertTokenizer
 
 from KD_Lib.common import BaseClass
-from KD_Lib.Bert2Lstm.utils import df_to_dataset, batch_to_inputs, set_seed
+from KD_Lib.BERT2LSTM.utils import df_to_dataset, batch_to_inputs, set_seed
 
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
 
-class Bert2LSTM(BaseClass):
+class BERT2LSTM(BaseClass):
     """
     Implementation of Knowledge distillation from the paper "Distilling Task-Specific
     Knowledge from BERT into Simple Neural Networks" https://arxiv.org/pdf/1903.12136.pdf
@@ -59,7 +59,7 @@ class Bert2LSTM(BaseClass):
         if optimizer_teacher is None:
             optimizer_teacher = AdamW(teacher_model.parameters())
 
-        super(Bert2LSTM, self).__init__(
+        super(BERT2LSTM, self).__init__(
             teacher_model,
             student_model,
             distill_train_loader,
@@ -118,7 +118,9 @@ class Bert2LSTM(BaseClass):
         soft_student_out = F.log_softmax(y_pred_student / self.temp, dim=0)
 
         loss = (1 - self.distil_weight) * F.cross_entropy(soft_student_out, y_true)
-        loss += self.distil_weight * self.loss_fn(soft_teacher_out, soft_student_out)
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            soft_teacher_out, soft_student_out
+        )
         return loss
 
     def train_teacher(

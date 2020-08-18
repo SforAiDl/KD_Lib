@@ -1,1 +1,2 @@
-from .KA import KnowledgeAdjustment
+from .LSR import LabelSmoothReg
+from .PS import ProbShift
