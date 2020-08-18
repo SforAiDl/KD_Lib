@@ -44,6 +44,7 @@ class attention(BaseClass):
             val_loader,
             optimizer_teacher,
             optimizer_student,
+            ATLoss(),
             temp,
             distil_weight,
             device,
@@ -51,7 +52,7 @@ class attention(BaseClass):
             logdir,
         )
 
-        self.loss_fn = ATLoss()
+        self.loss_fn = self.loss_fn.to(self.device)
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
@@ -61,10 +62,7 @@ class attention(BaseClass):
         :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model
         :param y_true (torch.FloatTensor): Original label
         """
-
         soft_student_out = F.softmax(y_pred_student[0] / self.temp, dim=1)
-        loss = (1 - self.distil_weight) * F.cross_entropy(soft_student_out, y_true)
-        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
-            y_pred_teacher, y_pred_student
-        )
+        loss = (1.0 - self.distil_weight) * self.temp * F.cross_entropy(soft_student_out, y_true)
+        loss += self.distil_weight * self.loss_fn(y_pred_teacher, y_pred_student)
         return loss
