@@ -5,7 +5,7 @@ KD_Lib
 .. image:: https://travis-ci.com/SforAiDl/KD_Lib.svg?branch=master
     :target: https://travis-ci.com/SforAiDl/KD_Lib
 
-A Pytorch Library to help extend all Knowledge Distillation works
+A PyTorch library to easily facilitate knowledge distillation for custom deep learning models
 
 Installation :
 ==============
