@@ -6,7 +6,7 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
-from KD_Lib.common import BaseClass
+from KD_Lib.KD.common import BaseClass
 
 
 class TAKD(BaseClass):
