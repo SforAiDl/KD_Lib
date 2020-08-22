@@ -1,5 +1,6 @@
 from torch import nn
-from KD_Lib.common import BaseClass
+
+from KD_Lib.KD.common import BaseClass
 
 
 class MeanTeacher(BaseClass):

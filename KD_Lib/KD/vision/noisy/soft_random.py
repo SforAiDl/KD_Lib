@@ -1,22 +1,12 @@
-import random
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from KD_Lib.common import BaseClass
 
 from copy import deepcopy
 import matplotlib.pyplot as plt
 
-
-def add_noise(x, variance=0.1):
-    """
-    Function for adding gaussian noise
-
-    :param x (torch.FloatTensor): Input for adding noise
-    :param variance (float): Variance for adding noise
-    """
-
-    return x * (1 + (variance ** 0.5) * torch.randn_like(x))
+from KD_Lib.KD.common import BaseClass
+from .utils import add_noise
 
 
 class SoftRandom(BaseClass):

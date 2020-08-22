@@ -1,12 +1,13 @@
-import random
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from KD_Lib.common import BaseClass
 
+import random
 from copy import deepcopy
 import matplotlib.pyplot as plt
 import os
+
+from KD_Lib.KD.common import BaseClass
 
 
 class MessyCollab(BaseClass):

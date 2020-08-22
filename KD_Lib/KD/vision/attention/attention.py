@@ -1,9 +1,10 @@
 import torch.nn.functional as F
-from KD_Lib.common import BaseClass
-from KD_Lib.attention import ATLoss
+
+from KD_Lib.KD.common import BaseClass
+from .loss_metric import ATLoss
 
 
-class attention(BaseClass):
+class Attention(BaseClass):
     """
     Implementation of attention-based Knowledge distillation from the paper "Paying More
     Attention To The Attention - Improving the Performance of CNNs via Attention Transfer"
@@ -37,7 +38,7 @@ class attention(BaseClass):
         log=False,
         logdir="./Experiments",
     ):
-        super(attention, self).__init__(
+        super(Attention, self).__init__(
             teacher_model,
             student_model,
             train_loader,

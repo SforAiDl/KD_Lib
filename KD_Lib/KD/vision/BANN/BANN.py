@@ -1,11 +1,12 @@
-import os
-import glob
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+import os
+import glob
 from copy import deepcopy
 
-from KD_Lib.common import BaseClass
+from KD_Lib.KD.common import BaseClass
 
 
 class BANN(BaseClass):
