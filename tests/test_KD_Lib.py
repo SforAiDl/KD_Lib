@@ -14,11 +14,8 @@ from KD_Lib.models.resnet import resnet_book
 from KD_Lib.KD.vision.TAKD import TAKD
 from KD_Lib.KD.vision.attention import Attention
 from KD_Lib.KD.vision.vanilla import VanillaKD
-from KD_Lib.KD.vision.teacher_free import VirtualTeacher
-from KD_Lib.KD.vision.teacher_free import SelfTraining
-from KD_Lib.KD.vision.noisy import NoisyTeacher
-from KD_Lib.KD.vision.noisy import SoftRandom
-from KD_Lib.KD.vision.noisy import MessyCollab
+from KD_Lib.KD.vision.teacher_free import VirtualTeacher, SelfTraining
+from KD_Lib.KD.vision.noisy import NoisyTeacher, SoftRandom, MessyCollab
 from KD_Lib.KD.vision.mean_teacher import MeanTeacher
 from KD_Lib.KD.vision.RCO import RCO
 from KD_Lib.KD.vision.BANN import BANN
@@ -57,7 +54,7 @@ test_loader = torch.utils.data.DataLoader(
 )
 
 ## BERT to LSTM data
-data_csv = "./KD_Lib/KD/text/BERT2LSTM/IMDB_Dataset.csv"
+data_csv = "../KD_Lib/KD/text/BERT2LSTM/IMDB_Dataset.csv"
 df = pd.read_csv(data_csv)
 df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
 
