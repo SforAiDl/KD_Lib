@@ -3,14 +3,14 @@ from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, rando
 import torch.nn as nn
 import torch.nn.functional as F
 
-from transformers import BertForSequenceClassification, AdamW, BertTokenizer
-
-from KD_Lib.common import BaseClass
-from KD_Lib.BERT2LSTM.utils import df_to_dataset, batch_to_inputs, set_seed
-
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
+
+from transformers import BertForSequenceClassification, AdamW, BertTokenizer
+
+from KD_Lib.KD.common import BaseClass
+from KD_Lib.KD.text.BERT2LSTM.utils import df_to_dataset, batch_to_inputs, set_seed
 
 
 class BERT2LSTM(BaseClass):

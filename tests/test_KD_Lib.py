@@ -1,32 +1,33 @@
 # -*- coding: utf-8 -*-
 """Tests for `KD_Lib` package."""
 
+import pandas as pd
 import torch
 import torch.optim as optim
 from torchvision import datasets, transforms
+
 from KD_Lib.models.resnet import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
-from KD_Lib.TAKD.takd import TAKD
-from KD_Lib.attention.attention import attention
-from KD_Lib.vanilla.vanilla_kd import VanillaKD
-from KD_Lib.teacher_free.virtual_teacher import VirtualTeacher
-from KD_Lib.teacher_free.self_training import SelfTraining
-from KD_Lib.noisy.noisy_teacher import NoisyTeacher
-from KD_Lib.noisy.soft_random import SoftRandom
-from KD_Lib.noisy.messy_collab import MessyCollab
-from KD_Lib.mean_teacher import MeanTeacher
-from KD_Lib.RCO import RCO
-from KD_Lib.BANN import BANN
-from KD_Lib.KA import ProbShift, LabelSmoothReg
-from KD_Lib.noisy import NoisyTeacher
-from KD_Lib.BERT2LSTM.utils import get_essentials
-from KD_Lib.BERT2LSTM.bert2lstm import BERT2LSTM
-from KD_Lib.DML import DML
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
 
-from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
+from KD_Lib.KD.vision.TAKD import TAKD
+from KD_Lib.KD.vision.attention import Attention
+from KD_Lib.KD.vision.vanilla import VanillaKD
+from KD_Lib.KD.vision.teacher_free import VirtualTeacher
+from KD_Lib.KD.vision.teacher_free import SelfTraining
+from KD_Lib.KD.vision.noisy import NoisyTeacher
+from KD_Lib.KD.vision.noisy import SoftRandom
+from KD_Lib.KD.vision.noisy import MessyCollab
+from KD_Lib.KD.vision.mean_teacher import MeanTeacher
+from KD_Lib.KD.vision.RCO import RCO
+from KD_Lib.KD.vision.BANN import BANN
+from KD_Lib.KD.vision.KA import ProbShift, LabelSmoothReg
+from KD_Lib.KD.vision.DML import DML
 
-import pandas as pd
+from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
+from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
+
+from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
 
 
 train_loader = torch.utils.data.DataLoader(
@@ -55,7 +56,7 @@ test_loader = torch.utils.data.DataLoader(
 )
 
 ## BERT to LSTM data
-data_csv = "./KD_Lib/BERT2LSTM/IMDB_Dataset.csv"
+data_csv = "./KD_Lib/KD/text/BERT2LSTM/IMDB_Dataset.csv"
 df = pd.read_csv(data_csv)
 df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
 
@@ -204,7 +205,7 @@ def test_attention():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    att = attention(
+    att = Attention(
         teacher_model,
         student_model,
         train_loader,

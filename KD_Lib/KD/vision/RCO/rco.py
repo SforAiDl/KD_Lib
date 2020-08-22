@@ -3,10 +3,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
-from KD_Lib.common import BaseClass
 
 import matplotlib.pyplot as plt
 from copy import deepcopy
+
+from KD_Lib.KD.common import BaseClass
 
 
 class RCO(BaseClass):

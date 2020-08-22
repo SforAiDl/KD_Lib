@@ -4,14 +4,13 @@ import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
-
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
 
-class VirtualTeacher:
+class SelfTraining:
     """
-    Implementation of the virtual teacher kowledge distillation framework from the paper
+    Implementation of the self training kowledge distillation framework from the paper
     "Revisit Knowledge Distillation: a Teacher-free Framework" https://arxiv.org/abs/1909.11723
 
 
@@ -20,10 +19,11 @@ class VirtualTeacher:
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param optimizer_student (torch.optim.*): Optimizer used for training student
     :param loss_fn (torch.nn.Module):  Calculates loss during distillation
-    :param correct_prob (float): Probability assigned to the correct class while generating soft labels for student training
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
+    :param rkd_angle (float): Angle ratio for RKD loss if used
+    :param rkd_dist (float): Distance ratio for RKD loss if used
     :param log (bool): True if logging required
     :param logdir (str): Directory for storing logs
     """
@@ -35,7 +35,6 @@ class VirtualTeacher:
         val_loader,
         optimizer_student,
         loss_fn=nn.KLDivLoss(),
-        correct_prob=0.9,
         temp=10.0,
         distil_weight=0.5,
         device="cpu",
@@ -48,7 +47,6 @@ class VirtualTeacher:
         self.val_loader = val_loader
         self.optimizer_student = optimizer_student
         self.loss_fn = loss_fn
-        self.correct_prob = correct_prob
         self.temp = temp
         self.distil_weight = distil_weight
         self.log = log
@@ -82,6 +80,50 @@ class VirtualTeacher:
         :param save_model_pth (str): Path where you want to save the student model
         """
 
+        self_teacher = deepcopy(self.student_model)
+        optimizer_self_teacher = optim.SGD(self_teacher.parameters(), 0.01, 0.9)
+        self_teacher.train()
+
+        length_of_dataset = len(self.train_loader.dataset)
+
+        print("\nTraining self teacher...")
+
+        for ep in range(epochs):
+            epoch_loss = 0.0
+            correct = 0
+
+            for (data, label) in self.train_loader:
+
+                data = data.to(self.device)
+                label = label.to(self.device)
+
+                out = self_teacher(data)
+
+                loss = F.cross_entropy(out, label)
+
+                if isinstance(out, tuple):
+                    out = out[0]
+
+                pred = out.argmax(dim=1, keepdim=True)
+                correct += pred.eq(label.view_as(pred)).sum().item()
+
+                optimizer_self_teacher.zero_grad()
+                loss.backward()
+                optimizer_self_teacher.step()
+
+                epoch_loss += loss
+
+            epoch_acc = correct / length_of_dataset
+
+            if self.log:
+                self.writer.add_scalar("Training loss/Self Teacher", epoch_loss, epochs)
+                self.writer.add_scalar(
+                    "Training accuracy/Self Teacher", epoch_acc, epochs
+                )
+
+            print(f"Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
+
+        self_teacher.eval()
         self.student_model.train()
         loss_arr = []
         length_of_dataset = len(self.train_loader.dataset)
@@ -100,8 +142,9 @@ class VirtualTeacher:
                 label = label.to(self.device)
 
                 student_out = self.student_model(data)
+                self_teacher_out = self_teacher(data)
 
-                loss = self.calculate_kd_loss(student_out, label)
+                loss = self.calculate_kd_loss(student_out, self_teacher_out, label)
 
                 if isinstance(student_out, tuple):
                     student_out = student_out[0]
@@ -135,19 +178,19 @@ class VirtualTeacher:
         if plot_losses:
             plt.plot(loss_arr)
 
-    def calculate_kd_loss(self, y_pred_student, y_true):
+    def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
+        """
+        Function used for calculating the KD loss during distillation
 
-        num_classes = y_pred_student.shape[1]
-
-        soft_label = torch.ones_like(y_pred_student).to(self.device)
-        soft_label = soft_label * (1 - self.correct_prob) / (num_classes - 1)
-        for i in range(y_pred_student.shape[0]):
-            soft_label[i, y_true[i]] = self.correct_prob
+        :param y_pred_student (torch.FloatTensor): Prediction made by the student model
+        :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model
+        :param y_true (torch.FloatTensor): Original label
+        """
 
         loss = (1 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
         loss += (self.distil_weight) * self.loss_fn(
             F.log_softmax(y_pred_student, dim=1),
-            F.softmax(soft_label / self.temp, dim=1),
+            F.softmax(y_pred_teacher / self.temp, dim=1),
         )
         return loss
 
@@ -178,7 +221,7 @@ class VirtualTeacher:
         print(f"Accuracy: {correct/length_of_dataset}")
 
     def get_parameters(self):
-        """
+        """(
         Get the number of parameters for the student network
         """
 

@@ -3,15 +3,16 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
-from KD_Lib.common import BaseClass
 
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
+from KD_Lib.KD.common import BaseClass
 
-class LabelSmoothReg(BaseClass):
+
+class ProbShift(BaseClass):
     """
-    Implementation of the label smoothening regularization technique from the paper
+    Implementation of the knowledge adjustment technique from the paper
     "Preparing Lessons: Improve Knowledge Distillation with Better Supervision" 
     https://arxiv.org/abs/1911.07471
 
@@ -21,7 +22,8 @@ class LabelSmoothReg(BaseClass):
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
-    :param correct_prob(float): The probability which is given to the correct class
+    :param method (string): Knowledge adjustment method used to correct the teacher's incorrect predictions. "LSR" takes additional prameter "correct_prob"
+    :param correct_prob(float): The probability which is given to the correct class when "LSR" is chosen
     :param loss_fn (torch.nn.Module): Loss Function used for distillation
     :param temp (float): Temperature parameter for distillation
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
@@ -45,7 +47,7 @@ class LabelSmoothReg(BaseClass):
         logdir="./Experiments",
     ):
 
-        super(LabelSmoothReg, self).__init__(
+        super(ProbShift, self).__init__(
             teacher_model,
             student_model,
             train_loader,
@@ -92,14 +94,15 @@ class LabelSmoothReg(BaseClass):
                 start = i + 1
                 count += 1
 
-                lsr = (
-                    torch.ones_like(y_pred_teacher[i])
-                    * (1 - self.correct_prob)
-                    / (num_classes - 1)
-                )
-                lsr[y_true[i].item()] = self.correct_prob
+                _, top_indices = torch.topk(y_pred_teacher[i], 2)
+                index = torch.arange(num_classes).to(self.device)
+                index[top_indices[0]] = top_indices[1]
+                index[top_indices[1]] = top_indices[0]
 
-                soft_pred_teacher = torch.cat((soft_pred_teacher, lsr.view(1, -1)), 0)
+                ps = torch.zeros_like(y_pred_teacher[i]).scatter_(
+                    0, index, F.softmax(y_pred_teacher[i] / self.temp, dim=1)
+                )
+                soft_pred_teacher = torch.cat((soft_pred_teacher, ps.view(1, -1)), 0)
 
         if count:
             soft_pred_teacher = torch.cat(
