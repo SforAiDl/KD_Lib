@@ -7,7 +7,7 @@ from copy import deepcopy
 import matplotlib.pyplot as plt
 import os
 
-from KD_Lib.common import BaseClass
+from KD_Lib.KD.common import BaseClass
 
 
 class MessyCollab(BaseClass):

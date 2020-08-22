@@ -7,7 +7,7 @@ from copy import deepcopy
 import matplotlib.pyplot as plt
 
 from .utils import add_noise
-from KD_Lib.common import BaseClass
+from KD_Lib.KD.common import BaseClass
 
 
 def add_noise(x, variance=0.1):
