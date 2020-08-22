@@ -44,7 +44,7 @@ Usage
 To implement the most basic version of knowledge distillation from `Distilling the Knowledge in a Neural Network <https://arxiv.org/abs/1503.02531>`_
 and plot losses
 
-.. code-block:: console
+.. code-block:: python
 
     from KD_Lib.KD.vision.vanilla import VanillaKD
 
@@ -58,7 +58,7 @@ and plot losses
 To train a collection of 3 models in an online fashion using the framework in `Deep Mutual Learning <https://arxiv.org/abs/1706.00384>`_
 and log training details to Tensorboard
 
-.. code-block:: console
+.. code-block:: python
 
     from KD_Lib.KD.vision.DML import DML
 
