@@ -4,25 +4,6 @@ KD_Lib
 .. image:: https://travis-ci.com/SforAiDl/KD_Lib.svg?branch=master
     :target: https://travis-ci.com/SforAiDl/KD_Lib
 
-Hall of Fame :
-==============
-
-.. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/0
-   :target: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/links/0
-   :alt: 0
-
-.. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/1
-   :target: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/links/1
-   :alt: 1
-
-.. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/2
-   :target: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/links/2
-   :alt: 2
-
-.. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/3
-   :target: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/links/3
-   :alt: 3
-
 
 A PyTorch library to easily facilitate knowledge distillation for custom deep learning models
 
@@ -175,8 +156,7 @@ and log training details to Tensorboard
 Currently implemented works
 ===========================
 
-.. seealso:: Some benchmark results in the :file:`logs.txt` file.
-
+Some benchmark results can be found in the logs.rst file.
 
 +-----------------------------------------------------------+----------------------------------+----------------------+
 |  Paper                                                    |  Link                            | Repository (KD_Lib/) |
