@@ -175,6 +175,9 @@ and log training details to Tensorboard
 Currently implemented works
 ===========================
 
+.. seealso:: Some benchmark results in the :file:`logs.txt` file.
+
+
 +-----------------------------------------------------------+----------------------------------+----------------------+
 |  Paper                                                    |  Link                            | Repository (KD_Lib/) |
 +===========================================================+==================================+======================+
