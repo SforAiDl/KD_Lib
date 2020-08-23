@@ -230,6 +230,7 @@ class BERT2LSTM(BaseClass):
         plot_losses=True,
         save_model=True,
         save_model_pth="./models/student.pth",
+        max_seq_length=128,
     ):
         """
         Function that will be training the student 
@@ -240,7 +241,7 @@ class BERT2LSTM(BaseClass):
         """
 
         self.teacher_distill_loader = self._get_teacher_dataloaders(
-            batch_size=self.train_loader.batch_size, mode="distill"
+            batch_size=self.train_loader.batch_size, mode="distill", max_seq_length=max_seq_length,
         )
 
         y_pred_teacher = []
