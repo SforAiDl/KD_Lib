@@ -115,11 +115,10 @@ class BERT2LSTM(BaseClass):
 
         teacher_out = y_pred_teacher
         student_out = y_pred_student
-        soft_student_out = F.softmax(y_pred_student, dim=0)
         self.criterion_ce = torch.nn.CrossEntropyLoss()
         self.criterion_mse = torch.nn.MSELoss()
 
-        loss = (1 - self.distil_weight) * self.criterion_ce(soft_student_out, y_true)
+        loss = (1 - self.distil_weight) * self.criterion_ce(student_out, y_true)
         loss += (self.distil_weight) * self.criterion_mse(teacher_out, student_out)
         return loss
 
