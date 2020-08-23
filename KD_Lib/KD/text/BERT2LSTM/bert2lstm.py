@@ -247,6 +247,8 @@ class BERT2LSTM(BaseClass):
         y_pred_teacher = []
 
         print("Obtaining teacher predictions...")
+        self.teacher_model.eval()
+        self.teacher_model.to(self.device)
 
         for batch in self.teacher_distill_loader:
             b_input_ids = batch[0].to(self.device)
