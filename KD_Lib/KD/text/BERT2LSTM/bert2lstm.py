@@ -113,14 +113,14 @@ class BERT2LSTM(BaseClass):
         # soft_teacher_out = F.softmax(y_pred_teacher / self.temp, dim=0)
         # soft_student_out = F.log_softmax(y_pred_student / self.temp, dim=0)
 
-        soft_teacher_out = y_pred_teacher
-        soft_student_out = y_pred_student
+        teacher_out = y_pred_teacher
+        student_out = y_pred_student
+        soft_student_out = F.softmax(y_pred_student, dim=0)
         self.criterion_ce = torch.nn.CrossEntropyLoss()
+        self.criterion_mse = torch.nn.MSELoss()
 
         loss = (1 - self.distil_weight) * self.criterion_ce(soft_student_out, y_true)
-        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
-            soft_teacher_out, soft_student_out
-        )
+        loss += (self.distil_weight) * self.criterion_mse(teacher_out, student_out)
         return loss
 
     def train_teacher(
