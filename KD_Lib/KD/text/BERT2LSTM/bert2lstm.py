@@ -36,16 +36,16 @@ class BERT2LSTM(BaseClass):
         student_model,
         distill_train_loader,
         distill_val_loader,
+        optimizer_student,
         train_df,
         val_df,
         num_classes=2,
         seed=42,
-        loss_fn=nn.MSELoss(),
-        temp=20.0,
         distil_weight=0.5,
         device="cpu",
         log=False,
         logdir="./Experiments",
+        max_seq_length=128,
     ):
 
         teacher_model = BertForSequenceClassification.from_pretrained(
@@ -55,15 +55,17 @@ class BERT2LSTM(BaseClass):
             output_hidden_states=False,
         )
 
+        optimizer_teacher = AdamW(teacher_model.parameters(), lr=2e-5, eps=1e-8)
+
         super(BERT2LSTM, self).__init__(
             teacher_model,
             student_model,
             distill_train_loader,
             distill_val_loader,
+            optimizer_teacher,
+            optimizer_student,
             None,
             None,
-            loss_fn,
-            temp,
             distil_weight,
             device,
             log,
@@ -74,17 +76,11 @@ class BERT2LSTM(BaseClass):
 
         self.train_df, self.val_df = train_df, val_df
 
-        self.optimizer_teacher = AdamW(
-            self.teacher_model.parameters(), lr=2e-5, eps=1e-8
-        )
-
         self.bert_tokenizer = BertTokenizer.from_pretrained(
             "bert-base-uncased", do_lower_case=True
         )
 
-        self.optimizer_student = torch.optim.Adam(
-            self.student_model.parameters(), lr=2e-4
-        )
+        self.max_seq_length = max_seq_length
 
     def set_seed(self, seed):
         random.seed(seed)
@@ -92,14 +88,14 @@ class BERT2LSTM(BaseClass):
         torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
 
-    def _get_teacher_dataloaders(self, max_seq_length=128, batch_size=16, mode="train"):
+    def _get_teacher_dataloaders(self, batch_size=16, mode="train"):
         """
         Helper function for generating dataloaders for the teacher
         """
         df = self.val_df if (mode == "validate") else self.train_df
 
         return get_bert_dataloader(
-            df, self.bert_tokenizer, max_seq_length, batch_size, mode
+            df, self.bert_tokenizer, self.max_seq_length, batch_size, mode
         )
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
@@ -109,9 +105,6 @@ class BERT2LSTM(BaseClass):
         :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model 
         :param y_true (torch.FloatTensor): Original label
         """
-
-        # soft_teacher_out = F.softmax(y_pred_teacher / self.temp, dim=0)
-        # soft_student_out = F.log_softmax(y_pred_student / self.temp, dim=0)
 
         teacher_out = y_pred_teacher
         student_out = y_pred_student
@@ -128,7 +121,6 @@ class BERT2LSTM(BaseClass):
         plot_losses=True,
         save_model=True,
         save_model_pth="./models/teacher.pt",
-        max_seq_length=128,
         train_batch_size=16,
         batch_print_freq=40,
     ):
@@ -138,12 +130,11 @@ class BERT2LSTM(BaseClass):
         :param plot_losses (bool): True if you want to plot the losses
         :param save_model (bool): True if you want to save the teacher model
         :param save_model_pth (str): Path where you want to store the teacher model
-        :param max_seq_length (int): Maximum sequence length paramter for generating dataloaders
         :param train_batch_size (int): Batch size paramter for generating dataloaders
         :param batch_print_freq (int): Frequency at which batch number needs to be printed per epoch
         """
         self.teacher_train_loader = self._get_teacher_dataloaders(
-            max_seq_length, train_batch_size, mode="train"
+            train_batch_size, mode="train"
         )
 
         self.teacher_model.to(self.device)
@@ -196,8 +187,8 @@ class BERT2LSTM(BaseClass):
 
                 loss.backward()
 
-                # For preventing exploding gradients
-                torch.nn.utils.clip_grad_norm_(self.teacher_model.parameters(), 1.0)
+                # # For preventing exploding gradients
+                # torch.nn.utils.clip_grad_norm_(self.teacher_model.parameters(), 1.0)
 
                 self.optimizer_teacher.step()
 
@@ -230,7 +221,6 @@ class BERT2LSTM(BaseClass):
         plot_losses=True,
         save_model=True,
         save_model_pth="./models/student.pth",
-        max_seq_length=128,
     ):
         """
         Function that will be training the student 
@@ -241,7 +231,7 @@ class BERT2LSTM(BaseClass):
         """
 
         self.teacher_distill_loader = self._get_teacher_dataloaders(
-            batch_size=self.train_loader.batch_size, mode="distill", max_seq_length=max_seq_length,
+            batch_size=self.train_loader.batch_size, mode="distill"
         )
 
         y_pred_teacher = []
@@ -305,8 +295,8 @@ class BERT2LSTM(BaseClass):
 
                 loss.backward()
 
-                # #For preventing exploding gradients
-                torch.nn.utils.clip_grad_norm_(self.student_model.parameters(), 1.0)
+                # ##For preventing exploding gradients
+                # torch.nn.utils.clip_grad_norm_(self.student_model.parameters(), 1.0)
 
                 self.optimizer_student.step()
 
@@ -366,7 +356,7 @@ class BERT2LSTM(BaseClass):
 
         return outputs
 
-    def evaluate_teacher(self, max_seq_length=128, val_batch_size=16, verbose=True):
+    def evaluate_teacher(self, val_batch_size=16, verbose=True):
         """
         Function used for evaluating student
         :param max_seq_length (int): Maximum sequence length paramter for generating dataloaders
@@ -375,7 +365,7 @@ class BERT2LSTM(BaseClass):
         """
 
         self.teacher_val_loader = self._get_teacher_dataloaders(
-            max_seq_length, val_batch_size, mode="validate"
+            val_batch_size, mode="validate"
         )
 
         self.teacher_model.to(self.device)
