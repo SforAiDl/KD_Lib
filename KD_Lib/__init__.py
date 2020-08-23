@@ -38,4 +38,3 @@ from .models import (
     LeNet,
     ModLeNet,
 )
-
