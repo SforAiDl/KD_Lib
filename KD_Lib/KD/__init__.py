@@ -1,1 +1,1 @@
-from .text import Bert2LSTM, get_essentials
+from .text import BERT2LSTM, get_essentials

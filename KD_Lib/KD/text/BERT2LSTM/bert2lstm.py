@@ -48,8 +48,15 @@ class BERT2LSTM(BaseClass):
         logdir="./Experiments",
     ):
 
-        super(Bert2LSTM, self).__init__(
-            None,
+        teacher_model = BertForSequenceClassification.from_pretrained(
+            "bert-base-uncased",
+            num_labels=num_classes,
+            output_attentions=False,
+            output_hidden_states=False,
+        )
+
+        super(BERT2LSTM, self).__init__(
+            teacher_model,
             student_model,
             distill_train_loader,
             distill_val_loader,
@@ -66,13 +73,6 @@ class BERT2LSTM(BaseClass):
         self.set_seed(42)
 
         self.train_df, self.val_df = train_df, val_df
-
-        self.teacher_model = BertForSequenceClassification.from_pretrained(
-            "bert-base-uncased",
-            num_labels=num_classes,
-            output_attentions=False,
-            output_hidden_states=False,
-        )
 
         self.optimizer_teacher = AdamW(
             self.teacher_model.parameters(), lr=2e-5, eps=1e-8

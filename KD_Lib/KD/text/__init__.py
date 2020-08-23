@@ -1,1 +1,1 @@
-from .Bert2Lstm import Bert2LSTM, get_essentials
+from .BERT2LSTM import BERT2LSTM, get_essentials
