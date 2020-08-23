@@ -126,7 +126,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, "KD_Lib.tex", u"KD_Lib Documentation", u"Het Shah", "manual"),
+    (master_doc, "KD_Lib.tex", u"KD_Lib Documentation", u"Het Shah", "manual")
 ]
 
 
@@ -151,5 +151,5 @@ texinfo_documents = [
         "KD_Lib",
         "One line description of project.",
         "Miscellaneous",
-    ),
+    )
 ]

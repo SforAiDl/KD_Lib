@@ -1,32 +1,48 @@
 # -*- coding: utf-8 -*-
 """Tests for `KD_Lib` package."""
 
+import pandas as pd
+
 import torch
 import torch.optim as optim
 from torchvision import datasets, transforms
-from KD_Lib.models.resnet import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
-from KD_Lib.TAKD.takd import TAKD
-from KD_Lib.attention.attention import attention
-from KD_Lib.vanilla.vanilla_kd import VanillaKD
-from KD_Lib.teacher_free.virtual_teacher import VirtualTeacher
-from KD_Lib.teacher_free.self_training import SelfTraining
-from KD_Lib.noisy.noisy_teacher import NoisyTeacher
-from KD_Lib.noisy.soft_random import SoftRandom
-from KD_Lib.noisy.messy_collab import MessyCollab
-from KD_Lib.mean_teacher import MeanTeacher
-from KD_Lib.RCO import RCO
-from KD_Lib.BANN import BANN
-from KD_Lib.KA import KnowledgeAdjustment
-from KD_Lib.noisy import NoisyTeacher
-from KD_Lib.Bert2Lstm.utils import get_essentials
-from KD_Lib.Bert2Lstm.bert2lstm import Bert2LSTM
-from KD_Lib.DML import DML
-from KD_Lib.models import lenet, nin, shallow, lstm
-from KD_Lib.models.resnet import resnet_book
 
-from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
+from KD_Lib import (
+    TAKD,
+    Attention,
+    VanillaKD,
+    VirtualTeacher,
+    SelfTraining,
+    NoisyTeacher,
+    SoftRandom,
+    MessyCollab,
+    MeanTeacher,
+    RCO,
+    BANN,
+    ProbShift,
+    LabelSmoothReg,
+    DML,
+)
 
-import pandas as pd
+from KD_Lib import (
+    ResNet18,
+    ResNet34,
+    ResNet50,
+    ResNet101,
+    ResNet152,
+    LeNet,
+    ModLeNet,
+    NetworkInNetwork,
+    Shallow,
+    LSTMNet,
+    resnet_book,
+)
+
+
+from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
+from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
+
+from KD_Lib import Lottery_Tickets_Pruner
 
 
 train_loader = torch.utils.data.DataLoader(
@@ -55,7 +71,7 @@ test_loader = torch.utils.data.DataLoader(
 )
 
 ## BERT to LSTM data
-data_csv = "./KD_Lib/Bert2Lstm/IMDB_Dataset.csv"
+data_csv = "./KD_Lib/KD/text/BERT2LSTM/IMDB_Dataset.csv"
 df = pd.read_csv(data_csv)
 df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
 
@@ -97,28 +113,28 @@ def test_meanteacher_model():
 
 def test_NIN():
     sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
-    model = nin.NetworkInNetwork(10, 1)
+    model = NetworkInNetwork(10, 1)
     sample_output = model(sample_input)
     print(sample_output)
 
 
 def test_shallow():
     sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
-    model = shallow.Shallow(32)
+    model = Shallow(32)
     sample_output = model(sample_input)
     print(sample_output)
 
 
 def test_lenet():
     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
-    model = lenet.LeNet()
+    model = LeNet()
     sample_output = model(sample_input)
     print(sample_output)
 
 
 def test_modlenet():
     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
-    model = lenet.ModLeNet()
+    model = ModLeNet()
     sample_output = model(sample_input)
     print(sample_output)
 
@@ -127,12 +143,12 @@ def test_LSTMNet():
     sample_input = torch.tensor([[1, 2, 8, 3, 2], [2, 4, 99, 1, 7]])
 
     # Simple LSTM
-    model = lstm.LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
+    model = LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
     sample_output = model(sample_input)
     print(sample_output)
 
     # Bidirectional LSTM
-    model = lstm.LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
+    model = LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
     sample_output = model(sample_input)
     print(sample_output)
 
@@ -143,8 +159,8 @@ def test_LSTMNet():
 
 
 def test_original():
-    teac = shallow.Shallow(hidden_size=400)
-    stud = shallow.Shallow(hidden_size=100)
+    teac = Shallow(hidden_size=400)
+    stud = Shallow(hidden_size=100)
 
     t_optimizer = optim.SGD(teac.parameters(), 0.01)
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
@@ -204,7 +220,7 @@ def test_attention():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    att = attention(
+    att = Attention(
         teacher_model,
         student_model,
         train_loader,
@@ -247,7 +263,7 @@ def test_NoisyTeacher():
 
 
 def test_VirtualTeacher():
-    stud = shallow.Shallow(hidden_size=300)
+    stud = Shallow(hidden_size=300)
 
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
 
@@ -259,7 +275,7 @@ def test_VirtualTeacher():
 
 
 def test_SelfTraining():
-    stud = shallow.Shallow(hidden_size=300)
+    stud = Shallow(hidden_size=300)
 
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
 
@@ -330,7 +346,7 @@ def test_BANN():
     # distiller.evaluate()
 
 
-def test_KA_PS():
+def test_PS():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
@@ -339,14 +355,13 @@ def test_KA_PS():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = KnowledgeAdjustment(
+    distiller = ProbShift(
         teacher_model,
         student_model,
         train_loader,
         test_loader,
         t_optimizer,
         s_optimizer,
-        "PS",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
@@ -355,7 +370,7 @@ def test_KA_PS():
     distiller.get_parameters()
 
 
-def test_KA_LSR():
+def test_LSR():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
@@ -364,14 +379,13 @@ def test_KA_LSR():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = KnowledgeAdjustment(
+    distiller = LabelSmoothReg(
         teacher_model,
         student_model,
         train_loader,
         test_loader,
         t_optimizer,
         s_optimizer,
-        "LSR",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
@@ -429,12 +443,12 @@ def test_messy_collab():
 
 
 def test_bert2lstm():
-    student_model = lstm.LSTMNet(
+    student_model = LSTMNet(
         input_dim=len(text_field.vocab), num_classes=2, batch_size=2, dropout_prob=0.5
     )
     optimizer = torch.optim.Adam(student_model.parameters())
 
-    experiment = Bert2LSTM(
+    experiment = BERT2LSTM(
         student_model, train_loader, train_loader, optimizer, train_df, val_df
     )
     # experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
