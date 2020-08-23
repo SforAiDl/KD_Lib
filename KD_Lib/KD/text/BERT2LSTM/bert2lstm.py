@@ -187,8 +187,8 @@ class BERT2LSTM(BaseClass):
 
                 loss.backward()
 
-                # # For preventing exploding gradients
-                # torch.nn.utils.clip_grad_norm_(self.teacher_model.parameters(), 1.0)
+                # For preventing exploding gradients
+                torch.nn.utils.clip_grad_norm_(self.teacher_model.parameters(), 1.0)
 
                 self.optimizer_teacher.step()
 
