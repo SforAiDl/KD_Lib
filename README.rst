@@ -7,8 +7,8 @@ KD_Lib
 Hall of Fame :
 ==============
 
-.. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/0
-   :target: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/links/0
+.. image:: https://sourcerer.io/fame/Het-Shah/Het-Shah/KD_Lib/images/0
+   :target: https://sourcerer.io/fame/Het-Shah/Het-Shah/KD_Lib/links/0
    :alt: 0
 
 .. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/1
