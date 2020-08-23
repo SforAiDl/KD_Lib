@@ -110,11 +110,11 @@ class BERT2LSTM(BaseClass):
         :param y_true (torch.FloatTensor): Original label
         """
 
-        soft_teacher_out = F.softmax(y_pred_teacher / self.temp, dim=0)
-        soft_student_out = F.log_softmax(y_pred_student / self.temp, dim=0)
+        # soft_teacher_out = F.softmax(y_pred_teacher / self.temp, dim=0)
+        # soft_student_out = F.log_softmax(y_pred_student / self.temp, dim=0)
 
-        # soft_teacher_out = y_pred_teacher
-        # soft_student_out = y_pred_student
+        soft_teacher_out = y_pred_teacher
+        soft_student_out = y_pred_student
         self.criterion_ce = torch.nn.CrossEntropyLoss()
 
         loss = (1 - self.distil_weight) * self.criterion_ce(soft_student_out, y_true)
