@@ -3,17 +3,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 import random
 
-from transformers import BertForSequenceClassification, AdamW, BertTokenizer
-
-from KD_Lib.common import BaseClass
-from KD_Lib.KD.text.utils.bert import get_bert_dataloader
-
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
+from transformers import BertForSequenceClassification, AdamW, BertTokenizer
 
-class Bert2LSTM(BaseClass):
+from KD_Lib.KD.common import BaseClass
+from KD_Lib.KD.text.utils import get_bert_dataloader
+
+
+class BERT2LSTM(BaseClass):
     """
     Implementation of Knowledge distillation from the paper "Distilling Task-Specific
     Knowledge from BERT into Simple Neural Networks" https://arxiv.org/pdf/1903.12136.pdf
@@ -115,12 +115,11 @@ class Bert2LSTM(BaseClass):
 
         # soft_teacher_out = y_pred_teacher
         # soft_student_out = y_pred_student
-        self.criterion_mse = torch.nn.MSELoss()
         self.criterion_ce = torch.nn.CrossEntropyLoss()
 
         loss = (1 - self.distil_weight) * self.criterion_ce(soft_student_out, y_true)
-        loss += self.distil_weight * self.criterion_mse(
-            soft_student_out, soft_teacher_out
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            soft_teacher_out, soft_student_out
         )
         return loss
 

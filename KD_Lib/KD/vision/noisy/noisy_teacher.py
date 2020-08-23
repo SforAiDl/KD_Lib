@@ -1,13 +1,19 @@
+import torch
+import torch.nn as nn
 import torch.nn.functional as F
-from KD_Lib.common import BaseClass
-from KD_Lib.attention import ATLoss
+
+import random
+from copy import deepcopy
+import matplotlib.pyplot as plt
+
+from .utils import add_noise
+from KD_Lib.KD.common import BaseClass
 
 
-class attention(BaseClass):
+class NoisyTeacher(BaseClass):
     """
-    Implementation of attention-based Knowledge distillation from the paper "Paying More
-    Attention To The Attention - Improving the Performance of CNNs via Attention Transfer"
-    https://arxiv.org/pdf/1612.03928.pdf
+    Implementation of Knowledge distillation using a noisy teacher from the paper "Deep
+    Model Compression: Distilling Knowledge from Noisy Teachers" https://arxiv.org/pdf/1610.09650.pdf
 
     :param teacher_model (torch.nn.Module): Teacher model
     :param student_model (torch.nn.Module): Student model
@@ -15,6 +21,8 @@ class attention(BaseClass):
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
+    :param alpha (float): Threshold for deciding if noise needs to be added
+    :param noise_variance (float): Variance parameter for adding noise
     :param loss_fn (torch.nn.Module):  Calculates loss during distillation
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
@@ -31,19 +39,23 @@ class attention(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
+        alpha=0.5,
+        noise_variance=0.1,
+        loss_fn=nn.MSELoss(),
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
         log=False,
         logdir="./Experiments",
     ):
-        super(attention, self).__init__(
+        super(NoisyTeacher, self).__init__(
             teacher_model,
             student_model,
             train_loader,
             val_loader,
             optimizer_teacher,
             optimizer_student,
+            loss_fn,
             temp,
             distil_weight,
             device,
@@ -51,7 +63,8 @@ class attention(BaseClass):
             logdir,
         )
 
-        self.loss_fn = ATLoss()
+        self.alpha = alpha
+        self.noise_variance = noise_variance
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
@@ -62,7 +75,12 @@ class attention(BaseClass):
         :param y_true (torch.FloatTensor): Original label
         """
 
-        soft_student_out = F.softmax(y_pred_student[0] / self.temp, dim=1)
-        loss = (1 - self.distil_weight) * F.cross_entropy(soft_student_out, y_true)
-        loss += self.distil_weight * self.loss_fn(y_pred_teacher, y_pred_student)
+        if random.uniform(0, 1) <= self.alpha:
+            y_pred_teacher = add_noise(y_pred_teacher, self.noise_variance)
+
+        loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            F.log_softmax(y_pred_student / self.temp, dim=1),
+            F.softmax(y_pred_teacher / self.temp, dim=1),
+        )
         return loss

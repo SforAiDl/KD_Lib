@@ -2,10 +2,11 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
+
 import matplotlib.pyplot as plt
-from KD_Lib.RKD import RKDLoss
-from KD_Lib.common import BaseClass
 from copy import deepcopy
+
+from KD_Lib.KD.common import BaseClass
 
 
 class TAKD(BaseClass):
@@ -25,8 +26,6 @@ class TAKD(BaseClass):
     :param loss_fn (torch.nn.Module):  Calculates loss during distillation
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
-    :param rkd_angle (float): Angle ratio for RKD loss if used
-    :param rkd_dist (float): Distance ratio for RKD loss if used
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
     :param log (bool): True if logging required
     :param logdir (str): Directory for storing logs
@@ -77,8 +76,8 @@ class TAKD(BaseClass):
         :param y_true (torch.FloatTensor): Original label
         """
 
-        loss = (1 - self.distil_weight) * nn.CrossEntropyLoss(y_pred_student, y_true)
-        loss += self.distil_weight * self.loss_fn(
+        loss = (1 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
             F.log_softmax(y_pred_student / self.temp, dim=1),
             F.log_softmax(y_pred_teacher / self.temp, dim=1),
         )

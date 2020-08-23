@@ -3,13 +3,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
-from KD_Lib.common import BaseClass
 
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
+from KD_Lib.KD.common import BaseClass
 
-class KnowledgeAdjustment(BaseClass):
+
+class ProbShift(BaseClass):
     """
     Implementation of the knowledge adjustment technique from the paper
     "Preparing Lessons: Improve Knowledge Distillation with Better Supervision" 
@@ -38,16 +39,15 @@ class KnowledgeAdjustment(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        method="PS",
         correct_prob=0.9,
-        loss_fn=nn.MSELoss(),
+        loss_fn=nn.KLDivLoss(),
         temp=20.0,
         device="cpu",
         log=False,
         logdir="./Experiments",
     ):
 
-        super(KnowledgeAdjustment, self).__init__(
+        super(ProbShift, self).__init__(
             teacher_model,
             student_model,
             train_loader,
@@ -61,7 +61,6 @@ class KnowledgeAdjustment(BaseClass):
             logdir,
         )
 
-        self.method = method.upper()
         self.correct_prob = correct_prob
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
@@ -95,30 +94,15 @@ class KnowledgeAdjustment(BaseClass):
                 start = i + 1
                 count += 1
 
-                if self.method == "PS":
-                    _, top_indices = torch.topk(y_pred_teacher[i], 2)
-                    index = torch.arange(num_classes).to(self.device)
-                    index[top_indices[0]] = top_indices[1]
-                    index[top_indices[1]] = top_indices[0]
+                _, top_indices = torch.topk(y_pred_teacher[i], 2)
+                index = torch.arange(num_classes).to(self.device)
+                index[top_indices[0]] = top_indices[1]
+                index[top_indices[1]] = top_indices[0]
 
-                    ps = torch.zeros_like(y_pred_teacher[i]).scatter_(
-                        0, index, F.softmax(y_pred_teacher[i] / self.temp, dim=0)
-                    )
-                    soft_pred_teacher = torch.cat(
-                        (soft_pred_teacher, ps.view(1, -1)), 0
-                    )
-
-                elif self.method == "LSR":
-                    lsr = (
-                        torch.ones_like(y_pred_teacher[i])
-                        * (1 - self.correct_prob)
-                        / num_classes
-                    )
-                    lsr[y_true[i].item()] = self.correct_prob
-
-                    soft_pred_teacher = torch.cat(
-                        (soft_pred_teacher, lsr.view(1, -1)), 0
-                    )
+                ps = torch.zeros_like(y_pred_teacher[i]).scatter_(
+                    0, index, F.softmax(y_pred_teacher[i] / self.temp, dim=1)
+                )
+                soft_pred_teacher = torch.cat((soft_pred_teacher, ps.view(1, -1)), 0)
 
         if count:
             soft_pred_teacher = torch.cat(
@@ -128,10 +112,12 @@ class KnowledgeAdjustment(BaseClass):
                 ),
                 0,
             )
-            loss = self.loss_fn(soft_pred_teacher, F.log_softmax(y_pred_student, dim=1))
+            loss = (self.temp * self.temp) * self.loss_fn(
+                soft_pred_teacher, F.log_softmax(y_pred_student, dim=1)
+            )
 
         else:
-            loss = self.loss_fn(
+            loss = (self.temp * self.temp) * self.loss_fn(
                 F.softmax(y_pred_teacher / self.temp, dim=1),
                 F.log_softmax(y_pred_student, dim=1),
             )

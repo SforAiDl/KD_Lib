@@ -1,19 +1,19 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
-from KD_Lib.common import BaseClass
 
-import matplotlib.pyplot as plt
 from copy import deepcopy
+import matplotlib.pyplot as plt
+
+from KD_Lib.KD.common import BaseClass
+from .utils import add_noise
 
 
-class RCO(BaseClass):
+class SoftRandom(BaseClass):
     """
-    Implementation of equal epoch interval route constrained optimization 
-    from the paper "Knowledge Distillation via Route Constrained Optimization" 
-    https://arxiv.org/abs/1904.09149
+    Implementation of the soft randomization framework from the paper 
+    "Improving Generalization Robustness with Noisy Collaboration in Knowledge Distillation" 
+    https://arxiv.org/abs/1910.05057
 
     :param teacher_model (torch.nn.Module): Teacher model
     :param student_model (torch.nn.Module): Student model
@@ -21,8 +21,8 @@ class RCO(BaseClass):
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
-    :param loss_fn (torch.nn.Module): Loss Function used for distillation
-    :param epoch_interval (int): Number of epochs after which teacher anchor points are created
+    :param noise_variance (float): Variance parameter for adding noise
+    :param loss_fn (torch.nn.Module):  Calculates loss during distillation
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
@@ -38,16 +38,15 @@ class RCO(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
+        noise_variance=0.1,
         loss_fn=nn.KLDivLoss(),
-        epoch_interval=5,
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
         log=False,
         logdir="./Experiments",
     ):
-
-        super(RCO, self).__init__(
+        super(SoftRandom, self).__init__(
             teacher_model,
             student_model,
             train_loader,
@@ -62,80 +61,9 @@ class RCO(BaseClass):
             logdir,
         )
 
-        self.epoch_interval = epoch_interval
-        self.anchors = []
+        self.noise_variance = noise_variance
 
-    def train_teacher(
-        self,
-        epochs=20,
-        plot_losses=True,
-        save_model=True,
-        save_model_pth="./models/teacher.pt",
-    ):
-        """
-        Function that will be training the teacher
-
-        :param epochs (int): Number of epochs you want to train the teacher
-        :param plot_losses (bool): True if you want to plot the losses
-        :param save_model (bool): True if you want to save the teacher model
-        :param save_model_pth (str): Path where you want to store the teacher model
-        """
-        self.teacher_model.train()
-        loss_arr = []
-        length_of_dataset = len(self.train_loader.dataset)
-        best_acc = 0.0
-        self.best_teacher_model_weights = deepcopy(self.teacher_model.state_dict())
-
-        print("Training Teacher... ")
-
-        for ep in range(epochs):
-            epoch_loss = 0.0
-            correct = 0
-            for (data, label) in self.train_loader:
-                data = data.to(self.device)
-                label = label.to(self.device)
-                out = self.teacher_model(data)
-
-                if isinstance(out, tuple):
-                    out = out[0]
-
-                pred = out.argmax(dim=1, keepdim=True)
-                correct += pred.eq(label.view_as(pred)).sum().item()
-
-                loss = F.cross_entropy(out, label)
-
-                self.optimizer_teacher.zero_grad()
-                loss.backward()
-                self.optimizer_teacher.step()
-
-                epoch_loss += loss
-
-            if (ep + 1) % self.epoch_interval == 0:
-                self.anchors.append(deepcopy(self.teacher_model))
-
-            epoch_acc = correct / length_of_dataset
-            if epoch_acc > best_acc:
-                best_acc = epoch_acc
-                self.best_teacher_model_weights = deepcopy(
-                    self.teacher_model.state_dict()
-                )
-
-            if self.log:
-                self.writer.add_scalar("Training loss/Teacher", epoch_loss, epochs)
-                self.writer.add_scalar("Training accuracy/Teacher", epoch_acc, epochs)
-
-            loss_arr.append(epoch_loss)
-            print(f"Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
-
-            self.post_epoch_call(ep)
-
-        self.teacher_model.load_state_dict(self.best_teacher_model_weights)
-        if save_model:
-            torch.save(self.teacher_model.state_dict(), save_model_pth)
-        if plot_losses:
-            plt.plot(loss_arr)
-
-    def train_student(
+    def _train_student(
         self,
         epochs=10,
         plot_losses=True,
@@ -143,14 +71,14 @@ class RCO(BaseClass):
         save_model_pth="./models/student.pth",
     ):
         """
-        Function that will be training the student
+        Function to train student model - for internal use only.
 
         :param epochs (int): Number of epochs you want to train the teacher
         :param plot_losses (bool): True if you want to plot the losses
         :param save_model (bool): True if you want to save the student model
         :param save_model_pth (str): Path where you want to save the student model
         """
-        anchor_point = 0
+        self.teacher_model.eval()
         self.student_model.train()
         loss_arr = []
         length_of_dataset = len(self.train_loader.dataset)
@@ -163,18 +91,14 @@ class RCO(BaseClass):
             epoch_loss = 0.0
             correct = 0
 
-            if ep % self.epoch_interval == 0 and ep < epochs:
-                teacher_model = self.anchors[anchor_point].to(self.device)
-                teacher_model.eval()
-                anchor_point += 1
-
             for (data, label) in self.train_loader:
 
                 data = data.to(self.device)
+                noisy_data = add_noise(data, self.noise_variance)
                 label = label.to(self.device)
 
-                student_out = self.student_model(data)
-                teacher_out = teacher_model(data)
+                student_out = self.student_model(noisy_data)
+                teacher_out = self.teacher_model(data)
 
                 loss = self.calculate_kd_loss(student_out, teacher_out, label)
 
@@ -214,17 +138,14 @@ class RCO(BaseClass):
         """
         Function used for calculating the KD loss during distillation
 
-        :param y_pred_student (Tensor): Predicted outputs from the student network
-        :param y_pred_teacher (Tensor): Predicted outputs from the teacher network
-        :param y_true (Tensor): True labels
+        :param y_pred_student (torch.FloatTensor): Prediction made by the student model
+        :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model
+        :param y_true (torch.FloatTensor): Original label
         """
-
-        loss = (1 - self.distil_weight) * F.cross_entropy(
-            F.softmax(y_pred_student), y_true
-        )
-        loss += self.distil_weight * self.loss_fn(
+        loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
             F.log_softmax(y_pred_student / self.temp, dim=1),
-            F.log_softmax(y_pred_teacher / self.temp, dim=1),
+            F.softmax(y_pred_teacher / self.temp, dim=1),
         )
 
         return loss

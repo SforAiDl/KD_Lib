@@ -1,11 +1,12 @@
-import os
-import glob
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
+import os
+import glob
 from copy import deepcopy
 
-from KD_Lib.common import BaseClass
+from KD_Lib.KD.common import BaseClass
 
 
 class BANN(BaseClass):
@@ -140,7 +141,9 @@ class BANN(BaseClass):
 
         s_i = F.log_softmax(y_pred_student / self.temp, dim=1)
         t_i = F.softmax(y_pred_teacher / self.temp, dim=1)
-        KD_loss = nn.KLDivLoss()(s_i, t_i) * self.distil_weight
+        KD_loss = nn.KLDivLoss()(s_i, t_i) * (
+            self.distil_weight * self.temp * self.temp
+        )
         KD_loss += F.cross_entropy(y_pred_student, y_true) * (1.0 - self.distil_weight)
 
         return KD_loss

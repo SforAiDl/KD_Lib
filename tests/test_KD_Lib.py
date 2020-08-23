@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 """Tests for `KD_Lib` package."""
 
+import pandas as pd
+
 import torch
 import torch.optim as optim
 from torchvision import datasets, transforms
+
 from KD_Lib.models.resnet import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
+<<<<<<< HEAD
 from KD_Lib.TAKD.takd import TAKD
 from KD_Lib.attention.attention import attention
 from KD_Lib.vanilla.vanilla_kd import VanillaKD
@@ -20,14 +24,32 @@ from KD_Lib.KA import KnowledgeAdjustment
 from KD_Lib.noisy import NoisyTeacher
 
 from KD_Lib.DML import DML
+=======
+>>>>>>> 8b42cfefb601bbfa19ed8928b3405338613a1134
 from KD_Lib.models import lenet, nin, shallow, lstm
 from KD_Lib.models.resnet import resnet_book
 
-from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
+from KD_Lib.KD.vision.TAKD import TAKD
+from KD_Lib.KD.vision.attention import Attention
+from KD_Lib.KD.vision.vanilla import VanillaKD
+from KD_Lib.KD.vision.teacher_free import VirtualTeacher, SelfTraining
+from KD_Lib.KD.vision.noisy import NoisyTeacher, SoftRandom, MessyCollab
+from KD_Lib.KD.vision.mean_teacher import MeanTeacher
+from KD_Lib.KD.vision.RCO import RCO
+from KD_Lib.KD.vision.BANN import BANN
+from KD_Lib.KD.vision.KA import ProbShift, LabelSmoothReg
+from KD_Lib.KD.vision.DML import DML
 
+<<<<<<< HEAD
 from KD_Lib.KD.text import Bert2LSTM, get_essentials
 
 import pandas as pd
+=======
+from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
+from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
+
+from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
+>>>>>>> 8b42cfefb601bbfa19ed8928b3405338613a1134
 
 
 train_loader = torch.utils.data.DataLoader(
@@ -56,7 +78,11 @@ test_loader = torch.utils.data.DataLoader(
 )
 
 ## BERT to LSTM data
+<<<<<<< HEAD
 data_csv = "./KD_Lib/KD/text/Bert2Lstm/IMDB_Dataset.csv"
+=======
+data_csv = "./KD_Lib/KD/text/BERT2LSTM/IMDB_Dataset.csv"
+>>>>>>> 8b42cfefb601bbfa19ed8928b3405338613a1134
 df = pd.read_csv(data_csv)
 df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
 
@@ -206,7 +232,7 @@ def test_attention():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    att = attention(
+    att = Attention(
         teacher_model,
         student_model,
         train_loader,
@@ -332,7 +358,7 @@ def test_BANN():
     # distiller.evaluate()
 
 
-def test_KA_PS():
+def test_PS():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
@@ -341,14 +367,13 @@ def test_KA_PS():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = KnowledgeAdjustment(
+    distiller = ProbShift(
         teacher_model,
         student_model,
         train_loader,
         test_loader,
         t_optimizer,
         s_optimizer,
-        "PS",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
@@ -357,7 +382,7 @@ def test_KA_PS():
     distiller.get_parameters()
 
 
-def test_KA_LSR():
+def test_LSR():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
@@ -366,14 +391,13 @@ def test_KA_LSR():
     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    distiller = KnowledgeAdjustment(
+    distiller = LabelSmoothReg(
         teacher_model,
         student_model,
         train_loader,
         test_loader,
         t_optimizer,
         s_optimizer,
-        "LSR",
     )
 
     distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
@@ -435,8 +459,15 @@ def test_bert2lstm():
         input_dim=len(text_field.vocab), num_classes=2, dropout_prob=0.5
     )
 
+<<<<<<< HEAD
     experiment = Bert2LSTM(student_model, train_loader, train_loader, train_df, val_df)
     experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
+=======
+    experiment = BERT2LSTM(
+        student_model, train_loader, train_loader, optimizer, train_df, val_df
+    )
+    # experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
+>>>>>>> 8b42cfefb601bbfa19ed8928b3405338613a1134
     experiment.train_student(epochs=0, plot_losses=False, save_model=False)
     experiment.evaluate_student()
     experiment.evaluate_teacher()

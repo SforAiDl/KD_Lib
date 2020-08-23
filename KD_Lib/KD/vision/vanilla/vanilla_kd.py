@@ -1,25 +1,13 @@
-import random
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from KD_Lib.common import BaseClass
+
+from KD_Lib.KD.common import BaseClass
 
 
-def add_noise(x, variance=0.1):
+class VanillaKD(BaseClass):
     """
-    Function for adding gaussian noise
-
-    :param x (torch.FloatTensor): Input for adding noise
-    :param variance (float): Variance for adding noise
-    """
-
-    return x * (1 + (variance ** 0.5) * torch.randn_like(x))
-
-
-class NoisyTeacher(BaseClass):
-    """
-    Implementation of Knowledge distillation using a noisy teacher from the paper "Deep
-    Model Compression: Distilling Knowledge from Noisy Teachers" https://arxiv.org/pdf/1610.09650.pdf
+    Original implementation of Knowledge distillation from the paper "Distilling the
+    Knowledge in a Neural Network" https://arxiv.org/pdf/1503.02531.pdf
 
     :param teacher_model (torch.nn.Module): Teacher model
     :param student_model (torch.nn.Module): Student model
@@ -27,8 +15,6 @@ class NoisyTeacher(BaseClass):
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
-    :param alpha (float): Threshold for deciding if noise needs to be added
-    :param noise_variance (float): Variance parameter for adding noise
     :param loss_fn (torch.nn.Module):  Calculates loss during distillation
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
@@ -45,8 +31,6 @@ class NoisyTeacher(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        alpha=0.5,
-        noise_variance=0.1,
         loss_fn=nn.MSELoss(),
         temp=20.0,
         distil_weight=0.5,
@@ -54,7 +38,7 @@ class NoisyTeacher(BaseClass):
         log=False,
         logdir="./Experiments",
     ):
-        super(NoisyTeacher, self).__init__(
+        super(VanillaKD, self).__init__(
             teacher_model,
             student_model,
             train_loader,
@@ -69,9 +53,6 @@ class NoisyTeacher(BaseClass):
             logdir,
         )
 
-        self.alpha = alpha
-        self.noise_variance = noise_variance
-
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
         Function used for calculating the KD loss during distillation
@@ -81,12 +62,12 @@ class NoisyTeacher(BaseClass):
         :param y_true (torch.FloatTensor): Original label
         """
 
-        if random.uniform(0, 1) <= self.alpha:
-            y_pred_teacher = add_noise(y_pred_teacher, self.noise_variance)
+        soft_teacher_out = F.softmax(y_pred_teacher / self.temp, dim=1)
+        soft_student_out = F.softmax(y_pred_student / self.temp, dim=1)
 
-        loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
-        loss += (self.distil_weight) * self.loss_fn(
-            F.log_softmax(y_pred_student / self.temp),
-            F.softmax(y_pred_teacher / self.temp),
+        loss = (1 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            soft_teacher_out, soft_student_out
         )
+
         return loss

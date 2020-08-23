@@ -1,17 +1,20 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
 
-import matplotlib.pyplot as plt
+import random
 from copy import deepcopy
+import matplotlib.pyplot as plt
 import os
 
+from KD_Lib.KD.common import BaseClass
 
-class BaseClass:
+
+class MessyCollab(BaseClass):
     """
-    Basic implementation of a general Knowledge Distillation framework
+    Implementation of the messy collaboration framework from the paper 
+    "Improving Generalization Robustness with Noisy Collaboration in Knowledge Distillation" 
+    https://arxiv.org/abs/1910.05057
 
     :param teacher_model (torch.nn.Module): Teacher model
     :param student_model (torch.nn.Module): Student model
@@ -19,7 +22,9 @@ class BaseClass:
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
-    :param loss_fn (torch.nn.Module): Loss Function used for distillation
+    :param noise_rate (float): Fraction of samples in a batch whose labels are perturbed
+    :param method (string): Decides whether perturbation is done in teacher training('T'), student training('S') or both('TS).
+    :param loss_fn (torch.nn.Module):  Calculates loss during distillation
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
@@ -35,37 +40,32 @@ class BaseClass:
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        loss_fn=nn.MSELoss(),
+        noise_rate=0.02,
+        method="S",
+        loss_fn=nn.KLDivLoss(),
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
         log=False,
         logdir="./Experiments",
     ):
+        super(MessyCollab, self).__init__(
+            teacher_model,
+            student_model,
+            train_loader,
+            val_loader,
+            optimizer_teacher,
+            optimizer_student,
+            loss_fn,
+            temp,
+            distil_weight,
+            device,
+            log,
+            logdir,
+        )
 
-        self.teacher_model = teacher_model
-        self.student_model = student_model
-        self.train_loader = train_loader
-        self.val_loader = val_loader
-        self.optimizer_teacher = optimizer_teacher
-        self.optimizer_student = optimizer_student
-        self.loss_fn = loss_fn
-        self.temp = temp
-        self.distil_weight = distil_weight
-        self.log = log
-        self.logdir = logdir
-
-        if self.log:
-            self.writer = SummaryWriter(logdir)
-
-        try:
-            torch.Tensor(0).to(device)
-            self.device = device
-        except:
-            print(
-                "Either an invalid device or CUDA is not available. Defaulting to CPU."
-            )
-            self.device = "cpu"
+        self.noise_rate = noise_rate
+        self.method = method.upper()
 
     def train_teacher(
         self,
@@ -96,6 +96,17 @@ class BaseClass:
             for (data, label) in self.train_loader:
                 data = data.to(self.device)
                 label = label.to(self.device)
+                if self.method in ("T", "TS"):
+                    for i in range(int(self.noise_rate * data.shape[0])):
+                        perturbation = random.randint(0, data.shape[1] - 1)
+                        if perturbation != label[i]:
+                            label[i] = perturbation
+                        else:
+                            try:
+                                perturbation + 1 < data.shape[1]
+                                label[i] = perturbation + 1
+                            except:
+                                label[i] = perturbation - 1
                 out = self.teacher_model(data)
 
                 if isinstance(out, tuple):
@@ -170,6 +181,17 @@ class BaseClass:
 
                 data = data.to(self.device)
                 label = label.to(self.device)
+                if self.method in ("S", "TS"):
+                    for i in range(int(self.noise_rate * data.shape[0])):
+                        perturbation = random.randint(0, data.shape[1] - 1)
+                        if perturbation != label[i]:
+                            label[i] = perturbation
+                        else:
+                            try:
+                                perturbation + 1 < data.shape[1]
+                                label[i] = perturbation + 1
+                            except:
+                                label[i] = perturbation - 1
 
                 student_out = self.student_model(data)
                 teacher_out = self.teacher_model(data)
@@ -208,94 +230,18 @@ class BaseClass:
         if plot_losses:
             plt.plot(loss_arr)
 
-    def train_student(
-        self,
-        epochs=10,
-        plot_losses=True,
-        save_model=True,
-        save_model_pth="./models/student.pth",
-    ):
-        """
-        Function that will be training the student
-
-        :param epochs (int): Number of epochs you want to train the teacher
-        :param plot_losses (bool): True if you want to plot the losses
-        :param save_model (bool): True if you want to save the student model
-        :param save_model_pth (str): Path where you want to save the student model
-        """
-        self._train_student(epochs, plot_losses, save_model, save_model_pth)
-
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
-        Custom loss function to calculate the KD loss for various implementations
+        Function used for calculating the KD loss during distillation
 
-        :param y_pred_student (Tensor): Predicted outputs from the student network
-        :param y_pred_teacher (Tensor): Predicted outputs from the teacher network
-        :param y_true (Tensor): True labels
+        :param y_pred_student (torch.FloatTensor): Prediction made by the student model
+        :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model
+        :param y_true (torch.FloatTensor): Original label
         """
+        loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            F.log_softmax(y_pred_student / self.temp, dim=1),
+            F.softmax(y_pred_teacher / self.temp, dim=1),
+        )
 
-        raise NotImplementedError
-
-    def _evaluate_model(self, model, verbose=True):
-        """
-        Evaluate the given model's accuaracy over val set.
-        For internal use only.
-
-        :param model (nn.Module): Model to be used for evaluation
-        :param verbose (bool): Display Accuracy
-        """
-        model.eval()
-        length_of_dataset = len(self.val_loader.dataset)
-        correct = 0
-        outputs = []
-
-        with torch.no_grad():
-            for data, target in self.val_loader:
-                data = data.to(self.device)
-                target = target.to(self.device)
-                output = model(data)
-
-                if isinstance(output, tuple):
-                    output = output[0]
-                outputs.append(output)
-
-                pred = output.argmax(dim=1, keepdim=True)
-                correct += pred.eq(target.view_as(pred)).sum().item()
-
-        if verbose:
-            print("-" * 80)
-            print(f"Accuracy: {correct/length_of_dataset}")
-        return outputs
-
-    def evaluate(self, teacher=False):
-        """
-        Evaluate method for printing accuracies of the trained network
-
-        :param teacher (bool): True if you want accuracy of the teacher network
-        """
-        if teacher:
-            model = deepcopy(self.teacher_model).to(self.device)
-        else:
-            model = deepcopy(self.student_model).to(self.device)
-        _ = self._evaluate_model(model)
-
-    def get_parameters(self):
-        """
-        Get the number of parameters for the teacher and the student network
-        """
-        teacher_params = sum(p.numel() for p in self.teacher_model.parameters())
-        student_params = sum(p.numel() for p in self.student_model.parameters())
-
-        print("-" * 80)
-        print(f"Total parameters for the teacher network are: {teacher_params}")
-        print(f"Total parameters for the student network are: {student_params}")
-
-    def post_epoch_call(self, epoch):
-        """
-        Any changes to be made after an epoch is completed.
-
-        :param epoch (int) : current epoch number
-        :return            : nothing (void)
-        """
-
-        pass
+        return loss

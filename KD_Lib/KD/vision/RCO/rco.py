@@ -1,19 +1,20 @@
-import random
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from KD_Lib.common import BaseClass
+import torch.optim as optim
+from torch.utils.tensorboard import SummaryWriter
 
-from copy import deepcopy
 import matplotlib.pyplot as plt
-import os
+from copy import deepcopy
+
+from KD_Lib.KD.common import BaseClass
 
 
-class MessyCollab(BaseClass):
+class RCO(BaseClass):
     """
-    Implementation of the messy collaboration framework from the paper 
-    "Improving Generalization Robustness with Noisy Collaboration in Knowledge Distillation" 
-    https://arxiv.org/abs/1910.05057
+    Implementation of equal epoch interval route constrained optimization 
+    from the paper "Knowledge Distillation via Route Constrained Optimization" 
+    https://arxiv.org/abs/1904.09149
 
     :param teacher_model (torch.nn.Module): Teacher model
     :param student_model (torch.nn.Module): Student model
@@ -21,9 +22,8 @@ class MessyCollab(BaseClass):
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
-    :param noise_rate (float): Fraction of samples in a batch whose labels are perturbed
-    :param method (string): Decides whether perturbation is done in teacher training('T'), student training('S') or both('TS).
-    :param loss_fn (torch.nn.Module):  Calculates loss during distillation
+    :param loss_fn (torch.nn.Module): Loss Function used for distillation
+    :param epoch_interval (int): Number of epochs after which teacher anchor points are created
     :param temp (float): Temperature parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
@@ -39,16 +39,16 @@ class MessyCollab(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        noise_rate=0.02,
-        method="S",
         loss_fn=nn.KLDivLoss(),
+        epoch_interval=5,
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
         log=False,
         logdir="./Experiments",
     ):
-        super(MessyCollab, self).__init__(
+
+        super(RCO, self).__init__(
             teacher_model,
             student_model,
             train_loader,
@@ -63,8 +63,8 @@ class MessyCollab(BaseClass):
             logdir,
         )
 
-        self.noise_rate = noise_rate
-        self.method = method.upper()
+        self.epoch_interval = epoch_interval
+        self.anchors = []
 
     def train_teacher(
         self,
@@ -95,17 +95,6 @@ class MessyCollab(BaseClass):
             for (data, label) in self.train_loader:
                 data = data.to(self.device)
                 label = label.to(self.device)
-                if self.method in ("T", "TS"):
-                    for i in range(int(self.noise_rate * data.shape[0])):
-                        perturbation = random.randint(0, data.shape[1] - 1)
-                        if perturbation != label[i]:
-                            label[i] = perturbation
-                        else:
-                            try:
-                                perturbation + 1 < data.shape[1]
-                                label[i] = perturbation + 1
-                            except:
-                                label[i] = perturbation - 1
                 out = self.teacher_model(data)
 
                 if isinstance(out, tuple):
@@ -121,6 +110,9 @@ class MessyCollab(BaseClass):
                 self.optimizer_teacher.step()
 
                 epoch_loss += loss
+
+            if (ep + 1) % self.epoch_interval == 0 or (ep + 1) == epochs:
+                self.anchors.append(deepcopy(self.teacher_model))
 
             epoch_acc = correct / length_of_dataset
             if epoch_acc > best_acc:
@@ -140,15 +132,11 @@ class MessyCollab(BaseClass):
 
         self.teacher_model.load_state_dict(self.best_teacher_model_weights)
         if save_model:
-            if os.path.isdir("./models"):
-                torch.save(self.teacher_model.state_dict(), save_model_pth)
-            else:
-                os.mkdir("./models")
-                torch.save(self.teacher_model.state_dict(), save_model_pth)
+            torch.save(self.teacher_model.state_dict(), save_model_pth)
         if plot_losses:
             plt.plot(loss_arr)
 
-    def _train_student(
+    def train_student(
         self,
         epochs=10,
         plot_losses=True,
@@ -156,14 +144,14 @@ class MessyCollab(BaseClass):
         save_model_pth="./models/student.pth",
     ):
         """
-        Function to train student model - for internal use only.
+        Function that will be training the student
 
         :param epochs (int): Number of epochs you want to train the teacher
         :param plot_losses (bool): True if you want to plot the losses
         :param save_model (bool): True if you want to save the student model
         :param save_model_pth (str): Path where you want to save the student model
         """
-        self.teacher_model.eval()
+        anchor_point = 0
         self.student_model.train()
         loss_arr = []
         length_of_dataset = len(self.train_loader.dataset)
@@ -176,24 +164,18 @@ class MessyCollab(BaseClass):
             epoch_loss = 0.0
             correct = 0
 
+            if ep % self.epoch_interval == 0 and ep < epochs:
+                teacher_model = self.anchors[anchor_point].to(self.device)
+                teacher_model.eval()
+                anchor_point += 1
+
             for (data, label) in self.train_loader:
 
                 data = data.to(self.device)
                 label = label.to(self.device)
-                if self.method in ("S", "TS"):
-                    for i in range(int(self.noise_rate * data.shape[0])):
-                        perturbation = random.randint(0, data.shape[1] - 1)
-                        if perturbation != label[i]:
-                            label[i] = perturbation
-                        else:
-                            try:
-                                perturbation + 1 < data.shape[1]
-                                label[i] = perturbation + 1
-                            except:
-                                label[i] = perturbation - 1
 
                 student_out = self.student_model(data)
-                teacher_out = self.teacher_model(data)
+                teacher_out = teacher_model(data)
 
                 loss = self.calculate_kd_loss(student_out, teacher_out, label)
 
@@ -233,14 +215,17 @@ class MessyCollab(BaseClass):
         """
         Function used for calculating the KD loss during distillation
 
-        :param y_pred_student (torch.FloatTensor): Prediction made by the student model
-        :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model
-        :param y_true (torch.FloatTensor): Original label
+        :param y_pred_student (Tensor): Predicted outputs from the student network
+        :param y_pred_teacher (Tensor): Predicted outputs from the teacher network
+        :param y_true (Tensor): True labels
         """
-        loss = (1.0 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
-        loss += self.distil_weight * self.loss_fn(
-            F.log_softmax(y_pred_student / self.temp),
-            F.softmax(y_pred_teacher / self.temp),
+
+        loss = (1 - self.distil_weight) * F.cross_entropy(
+            F.softmax(y_pred_student, dim=1), y_true
+        )
+        loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+            F.log_softmax(y_pred_student / self.temp, dim=1),
+            F.log_softmax(y_pred_teacher / self.temp, dim=1),
         )
 
         return loss
