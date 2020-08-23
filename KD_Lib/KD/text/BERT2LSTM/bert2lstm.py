@@ -168,7 +168,7 @@ class BERT2LSTM(BaseClass):
                 b_input_mask = batch[1].to(self.device)
                 b_labels = batch[2].to(self.device)
 
-                self.teacher_model.zero_grad()
+                self.optimizer_teacher.zero_grad()
 
                 loss, logits = self.teacher_model(
                     b_input_ids,
@@ -284,7 +284,7 @@ class BERT2LSTM(BaseClass):
                 bert_prob = torch.tensor(bert_prob, dtype=torch.float)
                 teacher_out = bert_prob.to(self.device)
 
-                self.student_model.zero_grad()
+                self.optimizer_student.zero_grad()
 
                 student_out = self.student_model(data, data_len).squeeze(1)
 
