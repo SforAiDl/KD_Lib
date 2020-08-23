@@ -7,25 +7,42 @@ import torch
 import torch.optim as optim
 from torchvision import datasets, transforms
 
-from KD_Lib.models.resnet import ResNet18, ResNet34, ResNet50, ResNet101, ResNet152
-from KD_Lib.models import lenet, nin, shallow, lstm
-from KD_Lib.models.resnet import resnet_book
+from KD_Lib import (
+    TAKD,
+    Attention,
+    VanillaKD,
+    VirtualTeacher,
+    SelfTraining,
+    NoisyTeacher,
+    SoftRandom,
+    MessyCollab,
+    MeanTeacher,
+    RCO,
+    BANN,
+    ProbShift,
+    LabelSmoothReg,
+    DML,
+)
 
-from KD_Lib.KD.vision.TAKD import TAKD
-from KD_Lib.KD.vision.attention import Attention
-from KD_Lib.KD.vision.vanilla import VanillaKD
-from KD_Lib.KD.vision.teacher_free import VirtualTeacher, SelfTraining
-from KD_Lib.KD.vision.noisy import NoisyTeacher, SoftRandom, MessyCollab
-from KD_Lib.KD.vision.mean_teacher import MeanTeacher
-from KD_Lib.KD.vision.RCO import RCO
-from KD_Lib.KD.vision.BANN import BANN
-from KD_Lib.KD.vision.KA import ProbShift, LabelSmoothReg
-from KD_Lib.KD.vision.DML import DML
+from KD_Lib import (
+    ResNet18,
+    ResNet34,
+    ResNet50,
+    ResNet101,
+    ResNet152,
+    LeNet,
+    ModLeNet,
+    NetworkInNetwork,
+    Shallow,
+    LSTMNet,
+    resnet_book,
+)
+
 
 from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
 
-from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
+from KD_Lib import Lottery_Tickets_Pruner
 
 
 train_loader = torch.utils.data.DataLoader(
@@ -96,28 +113,28 @@ def test_meanteacher_model():
 
 def test_NIN():
     sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
-    model = nin.NetworkInNetwork(10, 1)
+    model = NetworkInNetwork(10, 1)
     sample_output = model(sample_input)
     print(sample_output)
 
 
 def test_shallow():
     sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
-    model = shallow.Shallow(32)
+    model = Shallow(32)
     sample_output = model(sample_input)
     print(sample_output)
 
 
 def test_lenet():
     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
-    model = lenet.LeNet()
+    model = LeNet()
     sample_output = model(sample_input)
     print(sample_output)
 
 
 def test_modlenet():
     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
-    model = lenet.ModLeNet()
+    model = ModLeNet()
     sample_output = model(sample_input)
     print(sample_output)
 
@@ -126,12 +143,12 @@ def test_LSTMNet():
     sample_input = torch.tensor([[1, 2, 8, 3, 2], [2, 4, 99, 1, 7]])
 
     # Simple LSTM
-    model = lstm.LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
+    model = LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
     sample_output = model(sample_input)
     print(sample_output)
 
     # Bidirectional LSTM
-    model = lstm.LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
+    model = LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
     sample_output = model(sample_input)
     print(sample_output)
 
@@ -142,8 +159,8 @@ def test_LSTMNet():
 
 
 def test_original():
-    teac = shallow.Shallow(hidden_size=400)
-    stud = shallow.Shallow(hidden_size=100)
+    teac = Shallow(hidden_size=400)
+    stud = Shallow(hidden_size=100)
 
     t_optimizer = optim.SGD(teac.parameters(), 0.01)
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
@@ -246,7 +263,7 @@ def test_NoisyTeacher():
 
 
 def test_VirtualTeacher():
-    stud = shallow.Shallow(hidden_size=300)
+    stud = Shallow(hidden_size=300)
 
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
 
@@ -258,7 +275,7 @@ def test_VirtualTeacher():
 
 
 def test_SelfTraining():
-    stud = shallow.Shallow(hidden_size=300)
+    stud = Shallow(hidden_size=300)
 
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
 
@@ -426,7 +443,7 @@ def test_messy_collab():
 
 
 def test_bert2lstm():
-    student_model = lstm.LSTMNet(
+    student_model = LSTMNet(
         input_dim=len(text_field.vocab), num_classes=2, batch_size=2, dropout_prob=0.5
     )
     optimizer = torch.optim.Adam(student_model.parameters())
