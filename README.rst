@@ -1,9 +1,28 @@
 KD_Lib
 ======
 
-
 .. image:: https://travis-ci.com/SforAiDl/KD_Lib.svg?branch=master
     :target: https://travis-ci.com/SforAiDl/KD_Lib
+
+Hall of Fame :
+==============
+
+.. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/0
+   :target: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/links/0
+   :alt: 0
+
+.. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/1
+   :target: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/links/1
+   :alt: 1
+
+.. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/2
+   :target: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/links/2
+   :alt: 2
+
+.. image:: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/images/3
+   :target: https://sourcerer.io/fame/Het-Shah/SforAiDl/KD_Lib/links/3
+   :alt: 3
+
 
 A PyTorch library to easily facilitate knowledge distillation for custom deep learning models
 
@@ -46,13 +65,53 @@ and plot losses
 
 .. code-block:: python
 
-    from KD_Lib.KD.vision.vanilla import VanillaKD
+    import torch
+    import torch.optim as optim
+    from torchvision import datasets, transforms
+    from KD_Lib import VanillaKD
+
+    # This part is where you define your datasets, dataloaders, models and optimizers
+
+    train_loader = torch.utils.data.DataLoader(
+        datasets.MNIST(
+            "mnist_data",
+            train=True,
+            download=True,
+            transform=transforms.Compose(
+                [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+            ),
+        ),
+        batch_size=32,
+        shuffle=True,
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        datasets.MNIST(
+            "mnist_data",
+            train=False,
+            transform=transforms.Compose(
+                [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+            ),
+        ),
+        batch_size=32,
+        shuffle=True,
+    )
+
+    teacher_model = Shallow(hidden_size=400)
+    student_model = Shallow(hidden_size=100)
+
+    teacher_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
+    student_optimizer = optim.SGD(student_model.parameters(), 0.01)
+
+    # Now, this is where KD_Lib comes into the picture
 
     distiller = VanillaKD(teacher_model, student_model, train_loader, test_loader, 
-                          teacher_optimizer, student_optimizer)
-    distiller.train_teacher(epochs=5, plot_losses=True, save_model=True)
-    distiller.train_student(epochs=5, plot_losses=True, save_model=True)
-    distiller.evaluate()
+                          teacher_optimizer, student_optimizer)  
+    distiller.train_teacher(epochs=5, plot_losses=True, save_model=True)    # Train the teacher network
+    distiller.train_student(epochs=5, plot_losses=True, save_model=True)    # Train the student network
+    distiller.evaluate(teacher=False)                                       # Evaluate the student network
+    distiller.get_parameters()                                              # A utility function to get the number of parameters in the teacher and the student network 
+
 
 
 To train a collection of 3 models in an online fashion using the framework in `Deep Mutual Learning <https://arxiv.org/abs/1706.00384>`_
@@ -60,14 +119,57 @@ and log training details to Tensorboard
 
 .. code-block:: python
 
-    from KD_Lib.KD.vision.DML import DML
-
-    student_cohort = (student_model_1, student_model_2, student_model_3)
-    student_optimizers = (s_optimizer_1, s_optimizer_2, student_optimizer_3)
+    import torch
+    import torch.optim as optim
+    from torchvision import datasets, transforms
+    from KD_Lib import DML
+    from KD_Lib import ResNet18, ResNet50
     
-    distiller = DML(student_cohort, train_loader, test_loader, student_optimizers, log=True)
-    distiller.train_students(epochs=5)
+    # This part is where you define your datasets, dataloaders, models and optimizers
+
+    train_loader = torch.utils.data.DataLoader(
+        datasets.MNIST(
+            "mnist_data",
+            train=True,
+            download=True,
+            transform=transforms.Compose(
+                [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+            ),
+        ),
+        batch_size=32,
+        shuffle=True,
+    )
+
+    test_loader = torch.utils.data.DataLoader(
+        datasets.MNIST(
+            "mnist_data",
+            train=False,
+            transform=transforms.Compose(
+                [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+            ),
+        ),
+        batch_size=32,
+        shuffle=True,
+    )
+
+    student_params = [4, 4, 4, 4, 4]
+    student_model_1 = ResNet50(student_params, 1, 10)
+    student_model_2 = ResNet18(student_params, 1, 10)
+
+    student_cohort = (student_model_1, student_model_2)
+
+    student_optimizer_1 = optim.SGD(student_model_1.parameters(), 0.01)
+    student_optimizer_2 = optim.SGD(student_model_2.parameters(), 0.01)
+
+    student_optimizers = (student_optimizer_1, student_optimizer_2)
+
+    # Now, this is where KD_Lib comes into the picture 
+
+    distiller = DML(student_cohort, train_loader, test_loader, student_optimizers)
+
+    distiller.train_students(epochs=5, save_model=True)
     distiller.evaluate()
+    distiller.get_parameters()
 
 
 Currently implemented works
