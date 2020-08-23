@@ -38,3 +38,5 @@ from .models import (
     LeNet,
     ModLeNet,
 )
+
+from .Pruning import Lottery_Tickets_Pruner

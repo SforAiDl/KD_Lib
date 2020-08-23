@@ -42,7 +42,7 @@ from KD_Lib import (
 from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
 
-from KD_Lib.Pruning.lottery_tickets import Lottery_Tickets_Pruner
+from KD_Lib import Lottery_Tickets_Pruner
 
 
 train_loader = torch.utils.data.DataLoader(
