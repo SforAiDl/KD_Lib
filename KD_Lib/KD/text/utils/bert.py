@@ -15,13 +15,12 @@ def get_bert_dataloader(df, tokenizer, max_seq_length=64, batch_size=16, mode="t
     Helper function for generating dataloaders for BERT
     """
 
-    if mode == "validate":
-        val_dataset = df_to_bert_dataset(df, max_seq_length, tokenizer)
-        val_sampler = SequentialSampler(val_dataset)
-        val_loader = DataLoader(val_dataset, sampler=val_sampler, batch_size=batch_size)
-        return val_loader
-
     dataset = df_to_bert_dataset(df, max_seq_length, tokenizer)
+
+    if mode == "validate":
+        val_sampler = SequentialSampler(dataset)
+        val_loader = DataLoader(dataset, sampler=val_sampler, batch_size=batch_size)
+        return val_loader
 
     if mode == "distill":
         distill_sampler = SequentialSampler(dataset)
@@ -47,7 +46,7 @@ def df_to_bert_format(df, max_length, tokenizer):
         encoded_dict = tokenizer.encode_plus(
             sent,
             add_special_tokens=True,
-            max_length=64,
+            max_length=max_length,
             pad_to_max_length=True,
             truncation=True,
             return_attention_mask=True,
