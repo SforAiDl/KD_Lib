@@ -12,7 +12,7 @@ Welcome to KD_Lib's documentation!
 
    usage/about
    usage/install
-
+   usage/tutorials/index
 
 Indices and tables
 ==================
