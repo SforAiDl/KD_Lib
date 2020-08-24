@@ -152,7 +152,7 @@ and log training details to Tensorboard
 
     distiller = DML(student_cohort, train_loader, test_loader, student_optimizers)
 
-    distiller.train_students(epochs=5, save_model=True)
+    distiller.train_students(epochs=5, log=True, logdir="./Logs")
     distiller.evaluate()
     distiller.get_parameters()
 
