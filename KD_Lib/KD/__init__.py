@@ -15,3 +15,5 @@ from .vision import (
     BANN,
     Attention,
 )
+
+from .text import BERT2LSTM, get_essentials

@@ -22,6 +22,7 @@ from .KD import (
     DML,
     BANN,
     Attention,
+    BERT2LSTM,
 )
 
 from .models import (

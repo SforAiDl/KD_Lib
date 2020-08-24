@@ -44,7 +44,6 @@ from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
 
 from KD_Lib import Lottery_Tickets_Pruner
 
-
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST(
         "mnist_data",
@@ -141,15 +140,16 @@ def test_modlenet():
 
 def test_LSTMNet():
     sample_input = torch.tensor([[1, 2, 8, 3, 2], [2, 4, 99, 1, 7]])
+    sample_lengths = torch.tensor([5, 5])
 
     # Simple LSTM
-    model = LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
-    sample_output = model(sample_input)
+    model = LSTMNet(num_classes=2, dropout_prob=0.5)
+    sample_output = model(sample_input, sample_lengths)
     print(sample_output)
 
     # Bidirectional LSTM
-    model = LSTMNet(num_classes=2, batch_size=2, dropout_prob=0.5)
-    sample_output = model(sample_input)
+    model = LSTMNet(num_classes=2, dropout_prob=0.5, bidirectional=True)
+    sample_output = model(sample_input, sample_lengths)
     print(sample_output)
 
 
@@ -444,9 +444,9 @@ def test_messy_collab():
 
 def test_bert2lstm():
     student_model = LSTMNet(
-        input_dim=len(text_field.vocab), num_classes=2, batch_size=2, dropout_prob=0.5
+        input_dim=len(text_field.vocab), num_classes=2, dropout_prob=0.5
     )
-    optimizer = torch.optim.Adam(student_model.parameters())
+    optimizer = optim.Adam(student_model.parameters())
 
     experiment = BERT2LSTM(
         student_model, train_loader, train_loader, optimizer, train_df, val_df
