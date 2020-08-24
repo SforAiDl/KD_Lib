@@ -4,6 +4,10 @@ KD_Lib
 .. image:: https://travis-ci.com/SforAiDl/KD_Lib.svg?branch=master
     :target: https://travis-ci.com/SforAiDl/KD_Lib
 
+.. image:: https://readthedocs.org/projects/kd-lib/badge/?version=latest
+    :target: https://kd-lib.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 
 A PyTorch library to easily facilitate knowledge distillation for custom deep learning models
 
