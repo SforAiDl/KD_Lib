@@ -27,18 +27,15 @@ class Dynamic_Quantizer:
         """
         Function for printing sizes of the original and quantized model
         """
-        original_size = get_size_of_model(self.model)
-        quantized_size = get_size_of_model(self.quantized_model)
+        original_size = self._get_size_of_model(self.model)
+        quantized_size = self._get_size_of_model(self.quantized_model)
 
         print("-" * 80)
         print(f"Size of original model (MB): {original_size}")
         print(f"Size of quantized_model (MB): {quantized_size}")
 
-
-### Helper Functions
-
-
-def get_size_of_model(model):
-    torch.save(model.state_dict(), "temp.p")
-    model_size = os.path.getsize("temp.p") / 1e6
-    os.remove("temp.p")
+    def _get_size_of_model(self, model):
+        torch.save(model.state_dict(), "temp.p")
+        model_size = os.path.getsize("temp.p") / 1e6
+        os.remove("temp.p")
+        return model_size
