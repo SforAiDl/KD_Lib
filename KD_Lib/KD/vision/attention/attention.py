@@ -63,11 +63,10 @@ class Attention(BaseClass):
         :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model
         :param y_true (torch.FloatTensor): Original label
         """
-        soft_student_out = F.softmax(y_pred_student[0] / self.temp, dim=1)
         loss = (
             (1.0 - self.distil_weight)
             * self.temp
-            * F.cross_entropy(soft_student_out, y_true)
+            * F.cross_entropy(y_pred_student[0] / self.temp, y_true)
         )
         loss += self.distil_weight * self.loss_fn(y_pred_teacher, y_pred_student)
         return loss
