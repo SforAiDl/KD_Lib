@@ -41,3 +41,5 @@ from .models import (
 )
 
 from .Pruning import Lottery_Tickets_Pruner
+
+from .Quantization import Dynamic_Quantizer
