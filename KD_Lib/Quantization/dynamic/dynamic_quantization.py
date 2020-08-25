@@ -1,4 +1,5 @@
 import torch
+import os
 
 
 class Dynamic_Quantizer:
@@ -9,6 +10,7 @@ class Dynamic_Quantizer:
 
     def __init__(self, model):
         self.model = model
+        self.quantized_model = model
 
     def quantize(self, layers, dtype=torch.qint8):
         """
@@ -16,7 +18,27 @@ class Dynamic_Quantizer:
 		:param layers (list or tuple): Layer types that need to be quantized (for example, nn.Linear)
 		:param dtype (torch.dtype): Dtype of the layers are quantization (torch.qint8 by default)
 		"""
-        quantized_model = torch.quantization.quantize_dynamic(
+        self.quantized_model = torch.quantization.quantize_dynamic(
             self.model, layers, dtype=dtype
         )
-        return quantized_model
+        return self.quantized_model
+
+    def compare_model_sizes(self):
+        """
+        Function for printing sizes of the original and quantized model
+        """
+        original_size = get_size_of_model(self.model)
+        quantized_size = get_size_of_model(self.quantized_model)
+
+        print("-" * 80)
+        print(f"Size of original model (MB): {original_size}")
+        print(f"Size of quantized_model (MB): {quantized_size}")
+
+
+### Helper Functions
+
+
+def get_size_of_model(model):
+    torch.save(model.state_dict(), "temp.p")
+    model_size = os.path.getsize("temp.p") / 1e6
+    os.remove("temp.p")

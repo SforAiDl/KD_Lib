@@ -500,3 +500,4 @@ def test_lottery_tickets():
     model = ResNet50(model_params, 1, 10, True)
     quantizer = Dynamic_Quantizer(model)
     quantized_model = quantizer.quantize(layers={torch.nn.Linear})
+    quantizer.compare_model_sizes()
