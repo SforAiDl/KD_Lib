@@ -4,6 +4,10 @@ KD_Lib
 .. image:: https://travis-ci.com/SforAiDl/KD_Lib.svg?branch=master
     :target: https://travis-ci.com/SforAiDl/KD_Lib
 
+.. image:: https://readthedocs.org/projects/kd-lib/badge/?version=latest
+    :target: https://kd-lib.readthedocs.io/en/latest/?badge=latest
+    :alt: Documentation Status
+
 
 A PyTorch library to easily facilitate knowledge distillation for custom deep learning models
 
@@ -34,7 +38,7 @@ If you intend to install the latest unreleased version of the library (i.e from 
 .. code-block:: console
 
     $ git clone https://github.com/SforAiDl/KD_Lib.git
-    $ cd KD_lib
+    $ cd KD_Lib
     $ python setup.py install
 
 
@@ -78,8 +82,8 @@ and plot losses
         shuffle=True,
     )
 
-    teacher_model = Shallow(hidden_size=400)
-    student_model = Shallow(hidden_size=100)
+    teacher_model = <your model>
+    student_model = <your model>
 
     teacher_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     student_optimizer = optim.SGD(student_model.parameters(), 0.01)
@@ -104,7 +108,7 @@ and log training details to Tensorboard
     import torch.optim as optim
     from torchvision import datasets, transforms
     from KD_Lib import DML
-    from KD_Lib import ResNet18, ResNet50
+    from KD_Lib import ResNet18, ResNet50                                   # To use models packaged in KD_Lib
     
     # This part is where you define your datasets, dataloaders, models and optimizers
 
@@ -148,7 +152,7 @@ and log training details to Tensorboard
 
     distiller = DML(student_cohort, train_loader, test_loader, student_optimizers)
 
-    distiller.train_students(epochs=5, save_model=True)
+    distiller.train_students(epochs=5, log=True, logdir="./Logs")
     distiller.evaluate()
     distiller.get_parameters()
 
@@ -156,7 +160,7 @@ and log training details to Tensorboard
 Currently implemented works
 ===========================
 
-Some benchmark results can be found in the logs.rst file.
+Some benchmark results can be found in the `logs <./logs.rst>`_ file.
 
 +-----------------------------------------------------------+----------------------------------+----------------------+
 |  Paper                                                    |  Link                            | Repository (KD_Lib/) |
