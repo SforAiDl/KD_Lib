@@ -101,6 +101,7 @@ class BERT2LSTM(BaseClass):
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
         Function used for calculating the KD loss during distillation
+
         :param y_pred_student (torch.FloatTensor): Prediction made by the student model
         :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model 
         :param y_true (torch.FloatTensor): Original label
@@ -126,6 +127,7 @@ class BERT2LSTM(BaseClass):
     ):
         """
         Function that will be training the teacher 
+
         :param epochs (int): Number of epochs you want to train the teacher 
         :param plot_losses (bool): True if you want to plot the losses
         :param save_model (bool): True if you want to save the teacher model
@@ -224,6 +226,7 @@ class BERT2LSTM(BaseClass):
     ):
         """
         Function that will be training the student 
+
         :param epochs (int): Number of epochs you want to train the teacher 
         :param plot_losses (bool): True if you want to plot the losses
         :param save_model (bool): True if you want to save the student model
@@ -330,6 +333,7 @@ class BERT2LSTM(BaseClass):
     def evaluate_student(self, verbose=True):
         """
         Function used for evaluating student
+        
         :param verbose (bool): True if the accuracy needs to be printed else False
         """
 
@@ -359,6 +363,7 @@ class BERT2LSTM(BaseClass):
     def evaluate_teacher(self, val_batch_size=16, verbose=True):
         """
         Function used for evaluating student
+        
         :param max_seq_length (int): Maximum sequence length paramter for generating dataloaders
         :param val_batch_size (int): Batch size paramter for generating dataloaders
         :param verbose (bool): True if the accuracy needs to be printed else False
