@@ -5,6 +5,7 @@ from KD_Lib.Quantization.common import Quantizer
 class Dynamic_Quantizer(Quantizer):
     """
     Implementation of Dynamic Quantization for PyTorch models.
+    
     :param model (torch.nn.Module): Model that needs to be quantized
     """
 
@@ -16,6 +17,7 @@ class Dynamic_Quantizer(Quantizer):
     ):
         """
 		Function used for quantization
+
 		:param qconfig_spec: Either:
             - A dictionary that maps from name or type of submodule to quantization
               configuration, qconfig applies to all submodules of a given

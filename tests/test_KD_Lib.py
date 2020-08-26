@@ -501,8 +501,8 @@ def test_dynamic_quantization():
     model = ResNet50(model_params, 1, 10, True)
     quantizer = Dynamic_Quantizer(model)
     quantized_model = quantizer.quantize({torch.nn.Linear})
-    quantizer.compare_model_sizes()
-    quantizer.compare_inference_performance(test_loader)
+    quantizer.get_model_sizes()
+    quantizer.get_performance_statistics(test_loader)
 
 
 transform = transforms.Compose(
@@ -522,5 +522,5 @@ def test_static_quantization():
     model.fc.out_features = 10
     quantizer = Static_Quantizer(model)
     quantized_model = quantizer.quantize(testloader, torch.nn.CrossEntropyLoss(), 1)
-    quantizer.compare_model_sizes()
-    quantizer.compare_inference_performance(testloader)
+    quantizer.get_model_sizes()
+    quantizer.get_performance_statistics(testloader)

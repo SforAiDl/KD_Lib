@@ -6,6 +6,7 @@ from copy import deepcopy
 class Static_Quantizer(Quantizer):
     """
     Implementation of Static Quantization for PyTorch models.
+    
     :param model (torch.nn.Module): (Quantizable) Model that needs to be quantized
     """
 
@@ -21,6 +22,7 @@ class Static_Quantizer(Quantizer):
     ):
         """
 		Function used for quantization
+        
         :param data_loader(torch.utils.data.DataLoader): DataLoader used for calibration
         :param criterion(torch Loss_fn): Loss function used for calibration
         :param num_calibration_batches(int): Number of batches used for calibration
@@ -42,6 +44,14 @@ class Static_Quantizer(Quantizer):
         return self.quantized_model
 
     def _calibrate_model(self, data_loader, num_batches, criterion):
+        """
+        Function used for calibrating the model for quantization
+        
+        :param data_loader(torch.utils.data.DataLoader): DataLoader used for calibration
+        :param num_batches(int): Number of batches used for calibration
+        :param criterion(torch Loss_fn): Loss function used for calibration
+        """
+
         self.quantized_model.eval()
         correct = 0
         cnt = 0
