@@ -505,22 +505,22 @@ def test_dynamic_quantization():
     quantizer.get_performance_statistics(test_loader)
 
 
-transform = transforms.Compose(
-    [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-)
+# transform = transforms.Compose(
+#     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+# )
 
-testset = datasets.CIFAR10(
-    root="cifar_data", train=False, download=True, transform=transform
-)
-testloader = torch.utils.data.DataLoader(
-    testset, batch_size=4, shuffle=False, num_workers=2
-)
+# testset = datasets.CIFAR10(
+#     root="cifar_data", train=False, download=True, transform=transform
+# )
+# testloader = torch.utils.data.DataLoader(
+#     testset, batch_size=4, shuffle=False, num_workers=2
+# )
 
 
-def test_static_quantization():
-    model = models.quantization.resnet18(quantize=False)
-    model.fc.out_features = 10
-    quantizer = Static_Quantizer(model)
-    quantized_model = quantizer.quantize(testloader, torch.nn.CrossEntropyLoss(), 1)
-    quantizer.get_model_sizes()
-    quantizer.get_performance_statistics(testloader)
+# def test_static_quantization():
+#     model = models.quantization.resnet18(quantize=False)
+#     model.fc.out_features = 10
+#     quantizer = Static_Quantizer(model)
+#     quantized_model = quantizer.quantize(testloader, torch.nn.CrossEntropyLoss(), 1)
+#     quantizer.get_model_sizes()
+#     quantizer.get_performance_statistics(testloader)
