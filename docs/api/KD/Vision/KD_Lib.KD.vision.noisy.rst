@@ -1,8 +1,5 @@
-KD\_Lib.KD.vision.noisy package
-===============================
-
-Submodules
-----------
+KD\_Lib.KD.vision.noisy
+=======================
 
 KD\_Lib.KD.vision.noisy.messy\_collab module
 --------------------------------------------
@@ -32,14 +29,6 @@ KD\_Lib.KD.vision.noisy.utils module
 ------------------------------------
 
 .. automodule:: KD_Lib.KD.vision.noisy.utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: KD_Lib.KD.vision.noisy
    :members:
    :undoc-members:
    :show-inheritance:
