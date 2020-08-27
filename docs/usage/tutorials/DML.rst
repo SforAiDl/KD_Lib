@@ -8,6 +8,11 @@ Deep Mutual Learning using KD_Lib
 * Rather performing a one way transfer from a powerful and large and pre-trained teacher network, DML uses a pool of untrained students who learn simultaneously to solve the task together. 
 * Each student is trained with two losses: a conventional supervised learning loss, and a mimicry loss that aligns each student’s class posterior with the class probabilities of other students.
 
+Algorithm snippet from the paper -
+
+.. image:: ../../assets/dml.png
+  :width: 400
+
 To use DML with KD_Lib, create a list of student models (student cohort) to be used for collective training and a list of optmizers for them as well. 
 The student models may have different architectures.
 Remember to match the order of the students with that of their optimizers in the list.
