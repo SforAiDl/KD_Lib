@@ -28,6 +28,7 @@ class Static_Quantizer(Quantizer):
         :param num_calibration_batches(int): Number of batches used for calibration
         :param qconfig: Configuration used for quantization
         """
+
         self.quantized_model = deepcopy(self.model)
         self.quantized_model.eval()
         self.quantized_model.fuse_model()

@@ -221,6 +221,7 @@ class Lottery_Tickets_Pruner:
                                      containing alive neurons percentage for each saved model
                                      Else returns -1
         """
+
         if model_path is not None:
             alive = _get_pruning_statistics(model_path)
         else:

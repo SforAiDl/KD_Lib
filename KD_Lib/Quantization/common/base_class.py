@@ -18,12 +18,14 @@ class Quantizer:
         """
         Function used for quantization
         """
+
         raise NotImplementedError
 
     def get_model_sizes(self):
         """
         Function for printing sizes of the original and quantized model
         """
+
         original_size = self._get_size_of_model(self.model)
         quantized_size = self._get_size_of_model(self.quantized_model)
 
@@ -35,11 +37,12 @@ class Quantizer:
         """
         Function used for reporting inference performance of original and quantized models
         Note that performance here referes to the following:
-            1. Accuracy achieved on the testset
-            2. Time taken for evaluating on the testset
+        1. Accuracy achieved on the testset
+        2. Time taken for evaluating on the testset
 
         :param data_loader(torch.utils.data.DataLoader): DataLoader used for evaluation
         """
+
         acc, elapsed = self._time_model_evaluation(self.model, data_loader)
         print(f"Original Model: Acc: {acc} | Time: {elapsed}s")
 
@@ -52,6 +55,7 @@ class Quantizer:
 
         :param model(torch.nn.Module): Model
         """
+
         torch.save(model.state_dict(), "temp.p")
         model_size = os.path.getsize("temp.p") / 1e6
         os.remove("temp.p")
@@ -64,6 +68,7 @@ class Quantizer:
         :param model(torch.nn.Module): Model
         :param data_loader(torch.utils.data.DataLoader): DataLoader for evaluation
         """
+
         s = time.time()
         acc = self._evaluate_model(model, data_loader)
         elapsed = time.time() - s
@@ -76,6 +81,7 @@ class Quantizer:
         :param model(torch.nn.Module): Model
         :param data_loader(torch.utils.data.DataLoader): DataLoader for evaluation
         """
+
         model.eval()
         correct = 0
         len_dataset = len(data_loader.dataset)
