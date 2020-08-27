@@ -12,8 +12,8 @@ from KD_Lib.KD.common import BaseClass
 
 class MessyCollab(BaseClass):
     """
-    Implementation of the messy collaboration framework from the paper 
-    "Improving Generalization Robustness with Noisy Collaboration in Knowledge Distillation" 
+    Implementation of the messy collaboration framework from the paper
+    "Improving Generalization Robustness with Noisy Collaboration in Knowledge Distillation"
     https://arxiv.org/abs/1910.05057
 
     :param teacher_model (torch.nn.Module): Teacher model
