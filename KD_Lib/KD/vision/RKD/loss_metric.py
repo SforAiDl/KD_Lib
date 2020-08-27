@@ -11,8 +11,9 @@ def pairwaise_distance(output):
     """
 
     output_squared = output.pow(2).sum(dim=1)
-    product = torch.mm(output, output.t())
+    product = torch.matmul(output, output.t())
     result = output_squared.unsqueeze(0) + output_squared.unsqueeze(1) - 2 * product
+    result = result.clamp(min=1e-10)
     result = result.sqrt()
     result = result.clone()
     result[range(len(output)), range(len(output))] = 0
