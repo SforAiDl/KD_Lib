@@ -11,8 +11,8 @@ from .utils import add_noise
 
 class SoftRandom(BaseClass):
     """
-    Implementation of the soft randomization framework from the paper 
-    "Improving Generalization Robustness with Noisy Collaboration in Knowledge Distillation" 
+    Implementation of the soft randomization framework from the paper
+    "Improving Generalization Robustness with Noisy Collaboration in Knowledge Distillation"
     https://arxiv.org/abs/1910.05057
 
     :param teacher_model (torch.nn.Module): Teacher model

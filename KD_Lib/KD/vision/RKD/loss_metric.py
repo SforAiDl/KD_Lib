@@ -27,8 +27,8 @@ class RKDDistanceLoss(nn.Module):
         Forward function
 
         :param teacher (torch.FloatTensor): Prediction made by the teacher model
-        :param student (torch.FloatTensor): Prediction made by the student model 
-        :param normalize (bool): True if inputs need to be normalized 
+        :param student (torch.FloatTensor): Prediction made by the student model
+        :param normalize (bool): True if inputs need to be normalized
         """
 
         with torch.no_grad():
@@ -54,8 +54,8 @@ class RKDAngleLoss(nn.Module):
         Forward function
 
         :param teacher (torch.FloatTensor): Prediction made by the teacher model
-        :param student (torch.FloatTensor): Prediction made by the student model 
-        :param normalize (bool): True if inputs need to be normalized 
+        :param student (torch.FloatTensor): Prediction made by the student model
+        :param normalize (bool): True if inputs need to be normalized
         """
 
         with torch.no_grad():
@@ -91,8 +91,8 @@ class RKDLoss(nn.Module):
         Forward function
 
         :param teacher (torch.FloatTensor): Prediction made by the teacher model
-        :param student (torch.FloatTensor): Prediction made by the student model 
-        :param normalize (bool): True if inputs need to be normalized 
+        :param student (torch.FloatTensor): Prediction made by the student model
+        :param normalize (bool): True if inputs need to be normalized
         """
 
         loss = angle_loss(teacher, student, normalize) * self.angle_ratio

@@ -6,7 +6,7 @@ import time
 class Quantizer:
     """
     Baisc Implementation of Quantization for PyTorch models.
-    
+
     :param model (torch.nn.Module): Model that needs to be pruned
     """
 
@@ -16,8 +16,8 @@ class Quantizer:
 
     def quantize(self):
         """
-		Function used for quantization
-		"""
+        Function used for quantization
+        """
         raise NotImplementedError
 
     def get_model_sizes(self):
@@ -37,7 +37,7 @@ class Quantizer:
         Note that performance here referes to the following:
             1. Accuracy achieved on the testset
             2. Time taken for evaluating on the testset
-        
+
         :param data_loader(torch.utils.data.DataLoader): DataLoader used for evaluation
         """
         acc, elapsed = self._time_model_evaluation(self.model, data_loader)
