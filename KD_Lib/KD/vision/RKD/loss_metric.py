@@ -35,11 +35,11 @@ class RKDDistanceLoss(nn.Module):
 
         with torch.no_grad():
             t = pairwaise_distance(teacher)
-            t_mean = t[t>0].mean()
+            t_mean = t[t > 0].mean()
             t = t / (t_mean + 1e-7)
 
         s = pairwaise_distance(student)
-        s_mean = s[s>0].mean()
+        s_mean = s[s > 0].mean()
         s = s / (s_mean + 1e-7)
         return F.smooth_l1_loss(s, t)
 

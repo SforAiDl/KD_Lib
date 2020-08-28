@@ -13,7 +13,7 @@ from KD_Lib.KD.common import BaseClass
 class ProbShift(BaseClass):
     """
     Implementation of the knowledge adjustment technique from the paper
-    "Preparing Lessons: Improve Knowledge Distillation with Better Supervision" 
+    "Preparing Lessons: Improve Knowledge Distillation with Better Supervision"
     https://arxiv.org/abs/1911.07471
 
     :param teacher_model (torch.nn.Module): Teacher model

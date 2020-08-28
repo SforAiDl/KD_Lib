@@ -5,7 +5,7 @@ from torch import nn
 class ATLoss(nn.Module):
     """
     Module for calculating AT Loss
-    
+
     :param norm_type (int): Norm to be used in calculating loss
     """
 
@@ -18,7 +18,7 @@ class ATLoss(nn.Module):
         Forward function
 
         :param teacher_output (torch.FloatTensor): Prediction made by the teacher model
-        :param student_output (torch.FloatTensor): Prediction made by the student model 
+        :param student_output (torch.FloatTensor): Prediction made by the student model
         """
 
         A_t = teacher_output[1:]

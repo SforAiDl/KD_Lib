@@ -218,7 +218,7 @@ class Lottery_Tickets_Pruner:
         :return alive (int or list): If model_path is specified, percentage of alive neurons is returned.
                                      If model_path is None and saved_models are available, returns a list
                                      containing alive neurons percentage for each saved model
-                                     Else returns -1 
+                                     Else returns -1
         """
         if model_path is not None:
             alive = _get_pruning_statistics(model_path)
