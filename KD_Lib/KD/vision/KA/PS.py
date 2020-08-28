@@ -58,7 +58,6 @@ class ProbShift(BaseClass):
             logdir,
         )
 
-
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
         Custom loss function to calculate the KD loss for various implementations
