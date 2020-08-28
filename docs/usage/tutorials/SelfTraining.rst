@@ -1,19 +1,14 @@
 ===========================================
-Route Constrained Optimization using KD_Lib
+Self Training using KD_Lib
 ===========================================
 
-`Paper <https://arxiv.org/abs/1904.09149>`_
+`Paper <https://arxiv.org/abs/1909.11723>`_
 
-* The route constrained optimization algorithm considers knowledge distillation from the perspective of curriculum learning by routing
-* Instead of supervising the student model with a converged teacher model, it is supervised with some anchor points
-selected from the route in parameter space that the teacher model passed by
-* This has been demonstrated to greatly reduce the lower bound of congruence loss for knowledge distillation, hint and mimicking learning
+* The student model is first trained in the normal way to obtain a pre-trained model, which is then used as the teacher to 
+train itself by transferring soft targets
 
 
-.. image:: ../../assets/RCO.png
-  :width: 400
-
-To use RCO with the the student mimicking the teacher's trajectory at an interval of 5 epochs -
+To use the self training algorithm to train a student on MNIST for 5 epcohs -
 
 .. code-block:: python
 
@@ -21,7 +16,7 @@ To use RCO with the the student mimicking the teacher's trajectory at an interva
     import torch.nn as nn
     import torch.optim as optim
     from torchvision import datasets, transforms
-    from KD_Lib.KD import RCO
+    from KD_Lib.KD import SelfTraining
 
     # Define datasets, dataloaders, models and optimizers
 
@@ -56,21 +51,18 @@ To use RCO with the the student mimicking the teacher's trajectory at an interva
 
     # Define student and teacher models
 
-    teacher_model = <your model>
     student_model = <your model>
 
     # Define optimizers
 
-    teacher_optimizer = optim.SGD(teacher_model.parameters(), lr=0.01)
     student_optimizer = optim.SGD(student_model.parameters(), lr=0.01)
+
 
     # Train using KD_Lib
 
-    distiller = RCO(teacher_model, student_model, train_loader, test_loader, teacher_optimizer, 
-                    student_optimizer, epoch_interval=5, device=device)  
-    distiller.train_teacher(epochs=20)                                      # Train the teacher model
-    distiller.train_students(epochs=20)                                     # Train the student model
-    distiller.evaluate(teacher=True)                                        # Evaluate the teacher model
+    distiller = SelfTraining(student_model, train_loader, test_loader, student_optimizer, 
+                             device=device)  
+    distiller.train_student(epochs=5)                                      # Train the student model
     distiller.evaluate()                                                    # Evaluate the student model
     
 
