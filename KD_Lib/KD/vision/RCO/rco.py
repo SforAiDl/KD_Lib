@@ -12,8 +12,8 @@ from KD_Lib.KD.common import BaseClass
 
 class RCO(BaseClass):
     """
-    Implementation of equal epoch interval route constrained optimization 
-    from the paper "Knowledge Distillation via Route Constrained Optimization" 
+    Implementation of equal epoch interval route constrained optimization
+    from the paper "Knowledge Distillation via Route Constrained Optimization"
     https://arxiv.org/abs/1904.09149
 
     :param teacher_model (torch.nn.Module): Teacher model

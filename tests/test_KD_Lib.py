@@ -6,6 +6,7 @@ import pandas as pd
 import torch
 import torch.optim as optim
 from torchvision import datasets, transforms
+import torchvision.models as models
 
 from KD_Lib.KD import (
     TAKD,
@@ -42,7 +43,8 @@ from KD_Lib.models import (
 from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
 
-from KD_Lib.Pruning import Lottery_Tickets_Pruner
+from KD_Lib import Lottery_Tickets_Pruner
+from KD_Lib import Dynamic_Quantizer, Static_Quantizer
 
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST(
@@ -487,3 +489,38 @@ def test_lottery_tickets():
     teacher_model = ResNet50(teacher_params, 1, 10, True)
     pruner = Lottery_Tickets_Pruner(teacher_model, train_loader, test_loader)
     pruner.prune(num_iterations=0, train_iterations=0, valid_freq=1, print_freq=1)
+
+
+#
+# Quantization tests
+#
+
+
+def test_dynamic_quantization():
+    model_params = [4, 4, 8, 4, 4]
+    model = ResNet50(model_params, 1, 10, True)
+    quantizer = Dynamic_Quantizer(model)
+    quantized_model = quantizer.quantize({torch.nn.Linear})
+    quantizer.get_model_sizes()
+    quantizer.get_performance_statistics(test_loader)
+
+
+transform = transforms.Compose(
+    [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+)
+
+testset = datasets.CIFAR10(
+    root="cifar_data", train=False, download=True, transform=transform
+)
+testloader = torch.utils.data.DataLoader(
+    testset, batch_size=4, shuffle=False, num_workers=2
+)
+
+
+def test_static_quantization():
+    model = models.quantization.resnet18(quantize=False)
+    model.fc.out_features = 10
+    quantizer = Static_Quantizer(model)
+    quantized_model = quantizer.quantize(testloader, torch.nn.CrossEntropyLoss(), 1)
+    quantizer.get_model_sizes()
+    quantizer.get_performance_statistics(testloader)

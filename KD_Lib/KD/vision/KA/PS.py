@@ -13,7 +13,7 @@ from KD_Lib.KD.common import BaseClass
 class ProbShift(BaseClass):
     """
     Implementation of the knowledge adjustment technique from the paper
-    "Preparing Lessons: Improve Knowledge Distillation with Better Supervision" 
+    "Preparing Lessons: Improve Knowledge Distillation with Better Supervision"
     https://arxiv.org/abs/1911.07471
 
     :param teacher_model (torch.nn.Module): Teacher model
@@ -22,8 +22,6 @@ class ProbShift(BaseClass):
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
     :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
     :param optimizer_student (torch.optim.*): Optimizer used for training student
-    :param method (string): Knowledge adjustment method used to correct the teacher's incorrect predictions. "LSR" takes additional prameter "correct_prob"
-    :param correct_prob(float): The probability which is given to the correct class when "LSR" is chosen
     :param loss_fn (torch.nn.Module): Loss Function used for distillation
     :param temp (float): Temperature parameter for distillation
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
@@ -39,7 +37,6 @@ class ProbShift(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        correct_prob=0.9,
         loss_fn=nn.KLDivLoss(),
         temp=20.0,
         device="cpu",
@@ -61,7 +58,6 @@ class ProbShift(BaseClass):
             logdir,
         )
 
-        self.correct_prob = correct_prob
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """

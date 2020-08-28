@@ -108,3 +108,4 @@ ENV/
 data
 mnist_data
 Experiments
+cifar_data
