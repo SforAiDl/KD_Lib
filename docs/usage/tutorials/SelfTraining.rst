@@ -4,8 +4,7 @@ Self Training using KD_Lib
 
 `Paper <https://arxiv.org/abs/1909.11723>`_
 
-* The student model is first trained in the normal way to obtain a pre-trained model, which is then used as the teacher to 
-train itself by transferring soft targets
+* The student model is first trained in the normal way to obtain a pre-trained model, which is then used as the teacher to train itself by transferring soft targets
 
 
 To use the self training algorithm to train a student on MNIST for 5 epcohs -

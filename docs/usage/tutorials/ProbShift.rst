@@ -4,8 +4,7 @@ Probability Shift using KD_Lib
 
 `Paper <https://arxiv.org/abs/1911.07471>`_
 
-* Given an incorrect soft target, the probability shift algorithm simply swaps the value of ground truth (the theoretical maximum) and
-the value of predicted class (the predicted maximum), to assure the maximum confidence is reached at ground truth label
+* Given an incorrect soft target, the probability shift algorithm simply swaps the value of ground truth (the theoretical maximum) and the value of predicted class (the predicted maximum), to assure the maximum confidence is reached at ground truth label
 
 
 .. image:: ../../assets/PS.png

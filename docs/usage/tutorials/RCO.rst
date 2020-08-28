@@ -5,8 +5,7 @@ Route Constrained Optimization using KD_Lib
 `Paper <https://arxiv.org/abs/1904.09149>`_
 
 * The route constrained optimization algorithm considers knowledge distillation from the perspective of curriculum learning by routing
-* Instead of supervising the student model with a converged teacher model, it is supervised with some anchor points
-selected from the route in parameter space that the teacher model passed by
+* Instead of supervising the student model with a converged teacher model, it is supervised with some anchor points selected from the route in parameter space that the teacher model passed by
 * This has been demonstrated to greatly reduce the lower bound of congruence loss for knowledge distillation, hint and mimicking learning
 
 

@@ -4,8 +4,7 @@ Label Smooth Regularization using KD_Lib
 
 `Paper <https://arxiv.org/abs/1911.07471>`_
 
-* Considering a sample x of class k with ground truth label distribution l = δ(k), where δ(·) is impulse signal,
-the LSR label is given as -
+* Considering a sample x of class k with ground truth label distribution l = δ(k), where δ(·) is impulse signal, the LSR label is given as -
 
 .. image:: ../../assets/LSR.png
   :width: 400
