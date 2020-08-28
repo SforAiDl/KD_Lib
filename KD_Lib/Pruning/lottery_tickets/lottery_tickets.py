@@ -8,6 +8,7 @@ import os
 class Lottery_Tickets_Pruner:
     """
     Implementation of Lottery Tickets Pruning for PyTorch models.
+
     :param model (torch.nn.Module): Model that needs to be pruned
     :param train_loader (torch.utils.data.DataLoader): Dataloader for training
     :param test_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
@@ -220,6 +221,7 @@ class Lottery_Tickets_Pruner:
                                      containing alive neurons percentage for each saved model
                                      Else returns -1
         """
+
         if model_path is not None:
             alive = _get_pruning_statistics(model_path)
         else:

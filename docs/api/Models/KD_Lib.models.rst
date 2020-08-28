@@ -1,8 +1,5 @@
-KD\_Lib.models package
-======================
-
-Submodules
-----------
+Models
+======
 
 KD\_Lib.models.lenet module
 ---------------------------
@@ -40,14 +37,6 @@ KD\_Lib.models.shallow module
 -----------------------------
 
 .. automodule:: KD_Lib.models.shallow
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: KD_Lib.models
    :members:
    :undoc-members:
    :show-inheritance:

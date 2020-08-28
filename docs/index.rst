@@ -18,7 +18,10 @@ Welcome to KD_Lib's documentation!
    :maxdepth: 2
    :caption: API:
 
-   api/modules
+   api/KD/KD_Lib.KD
+   api/Pruning/KD_Lib.Pruning
+   api/Models/KD_Lib.models
+   api/Quantization/KD_Lib.Quantization
 
 Indices and tables
 ==================
