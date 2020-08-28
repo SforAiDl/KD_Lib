@@ -1,19 +1,18 @@
 ===========================================
-Route Constrained Optimization using KD_Lib
+Label Smooth Regularization using KD_Lib
 ===========================================
 
-`Paper <https://arxiv.org/abs/1904.09149>`_
+`Paper <https://arxiv.org/abs/1911.07471>`_
 
-* The route constrained optimization algorithm considers knowledge distillation from the perspective of curriculum learning by routing
-* Instead of supervising the student model with a converged teacher model, it is supervised with some anchor points
-selected from the route in parameter space that the teacher model passed by
-* This has been demonstrated to greatly reduce the lower bound of congruence loss for knowledge distillation, hint and mimicking learning
+* Considering a sample x of class k with ground truth label distribution l = δ(k), where δ(·) is impulse signal,
+the LSR label is given as -
 
-
-.. image:: ../../assets/RCO.png
+.. image:: ../../assets/LSR.png
   :width: 400
 
-To use RCO with the the student mimicking the teacher's trajectory at an interval of 5 epochs -
+ where K is the number of classes
+
+To use the label smooth regularization with incorrect teacher predictions replaced with labels where the correct classes have a probability of 0.9 -
 
 .. code-block:: python
 
@@ -21,7 +20,7 @@ To use RCO with the the student mimicking the teacher's trajectory at an interva
     import torch.nn as nn
     import torch.optim as optim
     from torchvision import datasets, transforms
-    from KD_Lib.KD import RCO
+    from KD_Lib.KD import LabelSmoothReg
 
     # Define datasets, dataloaders, models and optimizers
 
@@ -66,8 +65,8 @@ To use RCO with the the student mimicking the teacher's trajectory at an interva
 
     # Train using KD_Lib
 
-    distiller = ProbShift(teacher_model, student_model, train_loader, test_loader, teacher_optimizer, 
-                    student_optimizer, device=device)  
+    distiller = LabelSmoothReg(teacher_model, student_model, train_loader, test_loader, teacher_optimizer, 
+                               student_optimizer, correct_prob=0.9, device=device)  
     distiller.train_teacher(epochs=5)                                       # Train the teacher model
     distiller.train_students(epochs=5)                                      # Train the student model
     distiller.evaluate(teacher=True)                                        # Evaluate the teacher model

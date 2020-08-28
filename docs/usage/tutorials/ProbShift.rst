@@ -65,7 +65,7 @@ To use the probability shift  algorithm to train a student on MNIST for 5 epcohs
     # Train using KD_Lib
 
     distiller = ProbShift(teacher_model, student_model, train_loader, test_loader, teacher_optimizer, 
-                    student_optimizer, device=device)  
+                          student_optimizer, device=device)  
     distiller.train_teacher(epochs=5)                                       # Train the teacher model
     distiller.train_students(epochs=5)                                      # Train the student model
     distiller.evaluate(teacher=True)                                        # Evaluate the teacher model
