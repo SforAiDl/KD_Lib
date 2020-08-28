@@ -8,7 +8,7 @@ import torch.optim as optim
 from torchvision import datasets, transforms
 import torchvision.models as models
 
-from KD_Lib import (
+from KD_Lib.KD import (
     TAKD,
     Attention,
     VanillaKD,
@@ -25,7 +25,7 @@ from KD_Lib import (
     DML,
 )
 
-from KD_Lib import (
+from KD_Lib.models import (
     ResNet18,
     ResNet34,
     ResNet50,

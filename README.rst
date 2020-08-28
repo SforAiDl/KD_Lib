@@ -141,12 +141,12 @@ and log training details to Tensorboard
     student_model_1 = ResNet50(student_params, 1, 10)
     student_model_2 = ResNet18(student_params, 1, 10)
 
-    student_cohort = (student_model_1, student_model_2)
+    student_cohort = [student_model_1, student_model_2]
 
     student_optimizer_1 = optim.SGD(student_model_1.parameters(), 0.01)
     student_optimizer_2 = optim.SGD(student_model_2.parameters(), 0.01)
 
-    student_optimizers = (student_optimizer_1, student_optimizer_2)
+    student_optimizers = [student_optimizer_1, student_optimizer_2]
 
     # Now, this is where KD_Lib comes into the picture 
 

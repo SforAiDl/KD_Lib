@@ -10,9 +10,9 @@ and plot losses
     import torch
     import torch.optim as optim
     from torchvision import datasets, transforms
-    from KD_Lib import VanillaKD
+    from KD_Lib.KD import VanillaKD
 
-    # This part is where you define your datasets, dataloaders, models and optimizers
+    # Define datasets, dataloaders, models and optimizers
 
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST(
@@ -39,8 +39,8 @@ and plot losses
         shuffle=True,
     )
 
-    teacher_model = Shallow(hidden_size=400)
-    student_model = Shallow(hidden_size=100)
+    teacher_model = <your model>
+    student_model = <your model>
 
     teacher_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
     student_optimizer = optim.SGD(student_model.parameters(), 0.01)
