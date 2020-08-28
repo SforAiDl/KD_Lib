@@ -8,9 +8,9 @@ Deep Mutual Learning using KD_Lib
 * Rather performing a one way transfer from a powerful and large and pre-trained teacher network, DML uses a pool of untrained students who learn simultaneously to solve the task together. 
 * Each student is trained with two losses: a conventional supervised learning loss, and a mimicry loss that aligns each student’s class posterior with the class probabilities of other students.
 
-Algorithm snippet from the paper -
+Snippet from the paper illustrating the DML algorithm -
 
-.. image:: ../../assets/dml.png
+.. image:: ../../assets/DML.png
   :width: 400
 
 To use DML with KD_Lib, create a list of student models (student cohort) to be used for collective training and a list of optmizers for them as well. 
@@ -76,8 +76,8 @@ To use DML with 3 students on MNIST -
 
     # Train using KD_Lib
 
-    distiller = DML(student_cohort, train_loader, test_loader, optimizers, loss_fn=nn.KLDivLoss(), 
-                    device=device, log=True, logdir="./Logs")  
+    distiller = DML(student_cohort, train_loader, test_loader, optimizers,
+                    device=device)  
     distiller.train_students(epochs=5, plot_losses=True, save_model=True)   # Train the student cohort
     distiller.evaluate()                                                    # Evaluate the student models
     
