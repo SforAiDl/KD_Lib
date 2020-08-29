@@ -43,8 +43,8 @@ from KD_Lib.models import (
 from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
 
-from KD_Lib import Lottery_Tickets_Pruner
-from KD_Lib import Dynamic_Quantizer, Static_Quantizer
+from KD_Lib.Pruning import Lottery_Tickets_Pruner
+from KD_Lib.Quantization import Dynamic_Quantizer, Static_Quantizer
 
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST(
