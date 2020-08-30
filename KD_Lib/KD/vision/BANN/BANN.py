@@ -110,7 +110,7 @@ class BANN(BaseClass):
         model = self.student_model
         for model_weight in models_dir:
             model.load_state_dict(torch.load(model_weight))
-            output = self._evaluate_model(model, verbose=False)
+            output, _ = self._evaluate_model(model, verbose=False)
             outputs.append(output)
         print("Total Models: ", len(outputs))
         total = len(self.val_loader)

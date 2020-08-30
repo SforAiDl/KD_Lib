@@ -160,7 +160,7 @@ def test_LSTMNet():
 #
 
 
-def test_original():
+def test_VanillaKD():
     teac = Shallow(hidden_size=400)
     stud = Shallow(hidden_size=100)
 
