@@ -5,16 +5,18 @@ Hyperparameter Tuning using Optuna
 Hyperparameter optimization is one of the crucial steps in training machine learning models. It is often 
 quite a tedious process with many parameters to optimize and long training times for models.
 Optuna is an automatic hyperparameter optimization software framework, particularly designed for machine learning
-You can find more about Optuna `here <https://github.com/optuna/optuna>`_
+You can find more about Optuna `here <https://github.com/optuna/optuna>`_.
 
 Optuna an be installed using *pip* -
 
 .. code-block:: console
+
     $ pip install optuna
 
 or using *conda* -
 
 .. code-block:: console
+
     $ conda install -c conda-forge optuna
 
 To search for the best hyperparameters fot the VanillaKD algorithm -
