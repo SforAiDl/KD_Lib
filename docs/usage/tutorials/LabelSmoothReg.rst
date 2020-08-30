@@ -9,7 +9,7 @@ Label Smooth Regularization using KD_Lib
 .. image:: ../../assets/LSR.png
   :width: 400
 
- where K is the number of classes
+where K is the number of classes
 
 To use the label smooth regularization with incorrect teacher predictions replaced with labels where the correct classes have a probability of 0.9 -
 

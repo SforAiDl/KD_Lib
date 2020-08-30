@@ -6,3 +6,9 @@ Tutorials
     
     VanillaKD
     DML
+    LabelSmoothReg
+    ProbShift
+    RCO
+    SelfTraining
+    VitualTeacher
+    optuna_with_KD_Lib

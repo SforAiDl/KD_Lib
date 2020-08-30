@@ -262,11 +262,12 @@ class BaseClass:
 
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
+                accuracy = correct / length_of_dataset
 
         if verbose:
             print("-" * 80)
-            print(f"Accuracy: {correct/length_of_dataset}")
-        return outputs
+            print(f"Accuracy: {accuracy}")
+        return outputs, accuracy
 
     def evaluate(self, teacher=False):
         """
@@ -278,7 +279,9 @@ class BaseClass:
             model = deepcopy(self.teacher_model).to(self.device)
         else:
             model = deepcopy(self.student_model).to(self.device)
-        _ = self._evaluate_model(model)
+        _, accuracy = self._evaluate_model(model)
+
+        return accuracy
 
     def get_parameters(self):
         """
