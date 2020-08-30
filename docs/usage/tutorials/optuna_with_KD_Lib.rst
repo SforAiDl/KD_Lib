@@ -88,7 +88,7 @@ To search for the best hyperparameters for the VanillaKD algorithm -
 
         distiller = VanillaKD(teacher_model, student_model, train_loader, test_loader,
                               teacher_optimizer, student_optimizer, loss_fn, 
-                              tempereature, distil_weight, device)
+                              temperature, distil_weight, device)
         distiller.train_teacher(epochs=10)
         distiller.train_student(epochs=10)
         test_accuracy = disitller.evaluate()
