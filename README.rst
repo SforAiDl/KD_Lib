@@ -197,3 +197,5 @@ Some benchmark results can be found in the `logs <./logs.rst>`_ file.
 | The Lottery Ticket Hypothesis: Finding                    | https://arxiv.org/abs/1803.03635 | Pruning/             |
 | Sparse, Trainable Neural Networks                         |                                  | lottery_tickets      |
 +-----------------------------------------------------------+----------------------------------+----------------------+
+
+
