@@ -44,7 +44,7 @@ from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
 
 from KD_Lib import Lottery_Tickets_Pruner
-from KD_Lib import Dynamic_Quantizer, Static_Quantizer
+from KD_Lib import Dynamic_Quantizer, Static_Quantizer, QAT_Quantizer
 
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST(
@@ -499,20 +499,28 @@ def test_lottery_tickets():
 def test_dynamic_quantization():
     model_params = [4, 4, 8, 4, 4]
     model = ResNet50(model_params, 1, 10, True)
-    quantizer = Dynamic_Quantizer(model)
-    quantized_model = quantizer.quantize({torch.nn.Linear})
+    quantizer = Dynamic_Quantizer(model, test_loader, {torch.nn.Linear})
+    quantized_model = quantizer.quantize()
     quantizer.get_model_sizes()
-    quantizer.get_performance_statistics(test_loader)
+    quantizer.get_performance_statistics()
 
 
 transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
 )
 
+trainset = datasets.CIFAR10(
+    root="cifar_data", train=True, download=True, transform=transform
+)
+cifar_trainloader = torch.utils.data.DataLoader(
+    trainset, batch_size=4, shuffle=True, num_workers=2
+)
+
+
 testset = datasets.CIFAR10(
     root="cifar_data", train=False, download=True, transform=transform
 )
-testloader = torch.utils.data.DataLoader(
+cifar_testloader = torch.utils.data.DataLoader(
     testset, batch_size=4, shuffle=False, num_workers=2
 )
 
@@ -520,7 +528,17 @@ testloader = torch.utils.data.DataLoader(
 def test_static_quantization():
     model = models.quantization.resnet18(quantize=False)
     model.fc.out_features = 10
-    quantizer = Static_Quantizer(model)
-    quantized_model = quantizer.quantize(testloader, torch.nn.CrossEntropyLoss(), 1)
+    quantizer = Static_Quantizer(model, cifar_trainloader, cifar_testloader)
+    quantized_model = quantizer.quantize(1)
     quantizer.get_model_sizes()
-    quantizer.get_performance_statistics(testloader)
+    quantizer.get_performance_statistics()
+
+
+def test_qat_quantization():
+    model = models.quantization.resnet18(quantize=False)
+    model.fc.out_features = 10
+    optimizer = torch.optim.Adam(model.parameters())
+    quantizer = QAT_Quantizer(model, cifar_trainloader, cifar_testloader, optimizer)
+    quantized_model = quantizer.quantize(1, 1, -1, -1)
+    quantizer.get_model_sizes()
+    quantizer.get_performance_statistics()
