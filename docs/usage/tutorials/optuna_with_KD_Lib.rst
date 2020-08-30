@@ -19,7 +19,7 @@ or using *conda* -
 
     $ conda install -c conda-forge optuna
 
-To search for the best hyperparameters fot the VanillaKD algorithm -
+To search for the best hyperparameters for the VanillaKD algorithm -
 
 .. code-block:: python
 
@@ -82,12 +82,13 @@ To search for the best hyperparameters fot the VanillaKD algorithm -
         temperature = trial.suggest_float("temperature", 5.0, 20.0)
         distil_weight = trial.suggest_float("distil_weight", 0.0, 1.0)
 
-        loss_fn = trial.suggest_categorical('optimizer',[nn.KLDivLoss(), nn.MSELoss()])
+        loss_fn = trial.suggest_categorical("loss_fn",[nn.KLDivLoss(), nn.MSELoss()])
 
         # Instiate disitller object using KD_Lib and train
 
         distiller = VanillaKD(teacher_model, student_model, train_loader, test_loader,
-                              teacher_optimizer, student_optimizer, tempereature, distil_weight, device)
+                              teacher_optimizer, student_optimizer, loss_fn, 
+                              tempereature, distil_weight, device)
         distiller.train_teacher(epochs=10)
         distiller.train_student(epochs=10)
         test_accuracy = disitller.evaluate()
