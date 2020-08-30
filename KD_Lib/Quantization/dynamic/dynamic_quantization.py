@@ -27,7 +27,7 @@ class Dynamic_Quantizer(Quantizer):
         """
         Function used for quantization
 
-        :param inplace(bool): carry out model transformations in-place, the original module is mutated
+        :param inplace (bool): carry out model transformations in-place, the original module is mutated
         :param mapping: maps type of a submodule to a type of corresponding dynamically quantized version with which the submodule needs to be replaced
         """
 

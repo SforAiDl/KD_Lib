@@ -9,10 +9,10 @@ class Static_Quantizer(Quantizer):
 
     :param model (torch.nn.Module): (Quantizable) Model that needs to be quantized
     :param qconfig: Configuration used for quantization
-    :param train_loader(torch.utils.data.DataLoader): DataLoader used for calibration
-    :param test_loader(torch.utils.data.DataLoader): DataLoader used for testing
-    :param criterion(torch Loss_fn): Loss function used for calibration
-    :param device(torch.device): Device used for training ("cpu" or "cuda")
+    :param train_loader (torch.utils.data.DataLoader): DataLoader used for calibration
+    :param test_loader (torch.utils.data.DataLoader): DataLoader used for testing
+    :param criterion (torch Loss_fn): Loss function used for calibration
+    :param device (torch.device): Device used for training ("cpu" or "cuda")
     """
 
     def __init__(
@@ -32,7 +32,7 @@ class Static_Quantizer(Quantizer):
         """
         Function used for quantization
 
-        :param num_calibration_batches(int): Number of batches used for calibration
+        :param num_calibration_batches (int): Number of batches used for calibration
         """
 
         self.quantized_model = deepcopy(self.model)
@@ -54,7 +54,7 @@ class Static_Quantizer(Quantizer):
         """
         Function used for calibrating the model for quantization
 
-        :param num_batches(int): Number of batches used for calibration
+        :param num_batches (int): Number of batches used for calibration
         """
 
         self.quantized_model.eval()

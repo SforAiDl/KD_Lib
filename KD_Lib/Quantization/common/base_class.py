@@ -9,11 +9,11 @@ class Quantizer:
 
     :param model (torch.nn.Module): Model that needs to be pruned
     :param qconfig: Configuration used for quantization
-    :param train_loader(torch.utils.data.DataLoader): DataLoader used for training
-    :param test_loader(torch.utils.data.DataLoader): DataLoader used for testing
+    :param train_loader (torch.utils.data.DataLoader): DataLoader used for training
+    :param test_loader (torch.utils.data.DataLoader): DataLoader used for testing
     :param optimizer (torch.optim.*): Optimizer for training
-    :param criterion(torch Loss_fn): Loss function used for calibration
-    :param device(torch.device): Device used for training ("cpu" or "cuda")
+    :param criterion (torch Loss_fn): Loss function used for calibration
+    :param device (torch.device): Device used for training ("cpu" or "cuda")
     """
 
     def __init__(
@@ -72,7 +72,7 @@ class Quantizer:
         """
         Function used for fetching size of a model
 
-        :param model(torch.nn.Module): Model
+        :param model (torch.nn.Module): Model
         """
 
         torch.save(model.state_dict(), "temp.p")
@@ -84,7 +84,7 @@ class Quantizer:
         """
         Function used for fetching time taken by the model for inference
 
-        :param model(torch.nn.Module): Model
+        :param model (torch.nn.Module): Model
         """
 
         s = time.time()
@@ -96,7 +96,7 @@ class Quantizer:
         """
         Function used for evaluating the model
 
-        :param model(torch.nn.Module): Model
+        :param model (torch.nn.Module): Model
         """
 
         model.eval()

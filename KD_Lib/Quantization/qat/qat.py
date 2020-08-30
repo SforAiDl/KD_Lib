@@ -8,12 +8,12 @@ class QAT_Quantizer(Quantizer):
     Implementation of Quantization-Aware Training (QAT) for PyTorch models.
 
     :param model (torch.nn.Module): (Quantizable) Model that needs to be quantized
-    :param train_loader(torch.utils.data.DataLoader): DataLoader used for training
-    :param test_loader(torch.utils.data.DataLoader): DataLoader used for testing
+    :param train_loader (torch.utils.data.DataLoader): DataLoader used for training
+    :param test_loader (torch.utils.data.DataLoader): DataLoader used for testing
     :param optimizer (torch.optim.*): Optimizer for training
     :param qconfig: Configuration used for quantization
-    :param criterion(torch Loss_fn): Loss function used for calibration
-    :param device(torch.device): Device used for training ("cpu" or "cuda")
+    :param criterion (torch Loss_fn): Loss function used for calibration
+    :param device (torch.device): Device used for training ("cpu" or "cuda")
     """
 
     def __init__(
@@ -38,12 +38,12 @@ class QAT_Quantizer(Quantizer):
         bn_freeze_epoch=2,
     ):
         """
-        Function used for quantization
+        Function used for quantization.
 
-        :param num_train_epochs(int): Number of epochs for training
-        :param num_train_batches(int): Number of batches used for training
-        :param param_freeze_epoch(int): Epoch after which quantizer parameters need to be freezed
-        :param bn_free_epoch(int): Epoch after which batch norm mean and variance stats are freezed
+        :param num_train_epochs (int): Number of epochs used for training
+        :param num_train_batches (int): Number of batches used for training
+        :param param_freeze_epoch (int): Epoch after which quantizer parameters need to be freezed
+        :param bn_free_epoch (int): Epoch after which batch norm mean and variance stats are freezed
         """
 
         qat_model = deepcopy(self.model)
@@ -84,9 +84,9 @@ class QAT_Quantizer(Quantizer):
         """
         Function used for training the model
 
-        :param model(torch.nn.Module): Model that needs to be trained
+        :param model (torch.nn.Module): Model that needs to be trained
         :param optimizer (torch.optim.*): Optimizer for training
-        :param num_batches(int): Number of batches used for calibration
+        :param num_batches (int): Number of batches used for calibration
         """
 
         model.to(self.device)
