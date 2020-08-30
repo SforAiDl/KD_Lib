@@ -11,7 +11,7 @@ class QAT_Quantizer(Quantizer):
     :param train_loader (torch.utils.data.DataLoader): DataLoader used for training
     :param test_loader (torch.utils.data.DataLoader): DataLoader used for testing
     :param optimizer (torch.optim.*): Optimizer for training
-    :param qconfig: Configuration used for quantization
+    :param qconfig (Any): Configuration used for quantization
     :param criterion (torch Loss_fn): Loss function used for calibration
     :param device (torch.device): Device used for training ("cpu" or "cuda")
     """
