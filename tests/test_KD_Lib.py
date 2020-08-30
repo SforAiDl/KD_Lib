@@ -44,7 +44,7 @@ from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
 
 from KD_Lib import Lottery_Tickets_Pruner
-from KD_Lib import Dynamic_Quantizer, Static_Quantizer
+from KD_Lib import Dynamic_Quantizer, Static_Quantizer, QAT_Quantizer
 
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST(
@@ -509,6 +509,14 @@ transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
 )
 
+trainset = datasets.CIFAR10(
+    root="cifar_data", train=True, download=True, transform=transform
+)
+trainloader = torch.utils.data.DataLoader(
+    trainset, batch_size=4, shuffle=True, num_workers=2
+)
+
+
 testset = datasets.CIFAR10(
     root="cifar_data", train=False, download=True, transform=transform
 )
@@ -522,5 +530,17 @@ def test_static_quantization():
     model.fc.out_features = 10
     quantizer = Static_Quantizer(model)
     quantized_model = quantizer.quantize(testloader, torch.nn.CrossEntropyLoss(), 1)
+    quantizer.get_model_sizes()
+    quantizer.get_performance_statistics(testloader)
+
+
+def test_qat_quantization():
+    model = models.quantization.resnet18(quantize=False)
+    model.fc.out_features = 10
+    quantizer = QAT_Quantizer(model)
+    optimizer = torch.optim.Adam(model.parameters())
+    quantized_model = quantizer.quantize(
+        trainloader, testloader, optimizer, torch.nn.CrossEntropyLoss(), 1, 1, -1, -1
+    )
     quantizer.get_model_sizes()
     quantizer.get_performance_statistics(testloader)
