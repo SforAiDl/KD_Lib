@@ -5,15 +5,22 @@ import time
 
 class Quantizer:
     """
-    Baisc Implementation of Quantization for PyTorch models.
+    Basic Implementation of Quantization for PyTorch models.
 
-    :param model (torch.nn.Module): Model that needs to be pruned
+    :param model: Model that needs to be pruned
+    :type model: torch.nn.Module
     :param qconfig: Configuration used for quantization
-    :param train_loader (torch.utils.data.DataLoader): DataLoader used for training
-    :param test_loader (torch.utils.data.DataLoader): DataLoader used for testing
-    :param optimizer (torch.optim.*): Optimizer for training
-    :param criterion (torch Loss_fn): Loss function used for calibration
-    :param device (torch.device): Device used for training ("cpu" or "cuda")
+    :type qconfig: Qconfig
+    :param train_loader: DataLoader used for training
+    :type train_loader: torch.utils.data.DataLoader
+    :param test_loader: DataLoader used for testing
+    :type test_loader: torch.utils.data.DataLoader
+    :param optimizer: Optimizer for training
+    :type optimizer: torch.optim.*
+    :param criterion: Loss function used for calibration
+    :type criterion: Loss_fn
+    :param device: Device used for training ("cpu" or "cuda")
+    :type device: torch.device
     """
 
     def __init__(
@@ -72,7 +79,8 @@ class Quantizer:
         """
         Function used for fetching size of a model
 
-        :param model (torch.nn.Module): Model
+        :param model: Model
+        :type model: torch.nn.Module
         """
 
         torch.save(model.state_dict(), "temp.p")
@@ -84,7 +92,8 @@ class Quantizer:
         """
         Function used for fetching time taken by the model for inference
 
-        :param model (torch.nn.Module): Model
+        :param model: Model
+        :type model: torch.nn.Module
         """
 
         s = time.time()
@@ -96,7 +105,8 @@ class Quantizer:
         """
         Function used for evaluating the model
 
-        :param model (torch.nn.Module): Model
+        :param model: Model
+        :type model: torch.nn.Module
         """
 
         model.eval()

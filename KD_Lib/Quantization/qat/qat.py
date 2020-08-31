@@ -7,13 +7,20 @@ class QAT_Quantizer(Quantizer):
     """
     Implementation of Quantization-Aware Training (QAT) for PyTorch models.
 
-    :param model (torch.nn.Module): (Quantizable) Model that needs to be quantized
-    :param train_loader (torch.utils.data.DataLoader): DataLoader used for training
-    :param test_loader (torch.utils.data.DataLoader): DataLoader used for testing
-    :param optimizer (torch.optim.*): Optimizer for training
-    :param qconfig (Any): Configuration used for quantization
-    :param criterion (torch Loss_fn): Loss function used for calibration
-    :param device (torch.device): Device used for training ("cpu" or "cuda")
+    :param model: (Quantizable) Model that needs to be quantized
+    :type model: torch.nn.Module
+    :param train_loader: DataLoader used for training
+    :type train_loader: torch.utils.data.DataLoader
+    :param test_loader: DataLoader used for testing
+    :type test_loader: torch.utils.data.DataLoader
+    :param optimizer: Optimizer for training
+    :type optimizer: torch.optim.*
+    :param qconfig: Configuration used for quantization
+    :type qconfig: Qconfig
+    :param criterion: Loss function used for calibration
+    :type criterion: Loss_fn
+    :param device: Device used for training ("cpu" or "cuda")
+    :type device: torch.device
     """
 
     def __init__(
@@ -38,12 +45,16 @@ class QAT_Quantizer(Quantizer):
         bn_freeze_epoch=2,
     ):
         """
-        Function used for quantization.
+        Function used for quantization
 
-        :param num_train_epochs (int): Number of epochs used for training
-        :param num_train_batches (int): Number of batches used for training
-        :param param_freeze_epoch (int): Epoch after which quantizer parameters need to be freezed
-        :param bn_free_epoch (int): Epoch after which batch norm mean and variance stats are freezed
+        :param num_train_epochs: Number of epochs used for training
+        :type num_train_epochs: int
+        :param num_train_batches: Number of batches used for training
+        :type num_train_batches: int
+        :param param_freeze_epoch: Epoch after which quantizer parameters need to be freezed
+        :type param_freeze_epoch: int
+        :param bn_freeze_epoch: Epoch after which batch norm mean and variance stats are freezed
+        :type bn_freeze_epoch: int
         """
 
         qat_model = deepcopy(self.model)
