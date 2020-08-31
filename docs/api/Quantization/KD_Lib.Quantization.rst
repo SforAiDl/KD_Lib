@@ -1,22 +1,6 @@
 Quantization
 ============
 
-.. KD\_Lib.Quantization.common module
-.. ---------------------------
-
-..    :members:
-..    :undoc-members:
-..    :show-inheritance:
-
-
-.. Subpackages
-.. -----------
-
-
-..     Common/KD_Lib.Quantization.common
-..     Dynamic/KD_Lib.Quantization.dynamic
-..     Static/KD_Lib.Quantization.static
-
 .. toctree::
    :maxdepth: 3
    :caption: Common
@@ -34,3 +18,9 @@ Quantization
    :caption: Static
 
    Static/KD_Lib.Quantization.static
+
+.. toctree::
+   :maxdepth: 4
+   :caption: QAT
+
+   QAT/KD_Lib.Quantization.qat

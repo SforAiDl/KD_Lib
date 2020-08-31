@@ -20,9 +20,9 @@ Welcome to KD_Lib's documentation!
 
    api/KD/KD_Lib.KD
    api/Pruning/KD_Lib.Pruning
-   api/Models/KD_Lib.models
    api/Quantization/KD_Lib.Quantization
-
+   api/Models/KD_Lib.models
+   
 Indices and tables
 ==================
 
