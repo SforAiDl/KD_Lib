@@ -11,7 +11,7 @@ class Static_Quantizer(Quantizer):
     :type model: torch.nn.Module
     :param qconfig: Configuration used for quantization
     :type qconfig: Qconfig
-    :param train_loader: DataLoader used for training
+    :param train_loader: DataLoader used for training (calibration)
     :type train_loader: torch.utils.data.DataLoader
     :param test_loader: DataLoader used for testing
     :type test_loader: torch.utils.data.DataLoader

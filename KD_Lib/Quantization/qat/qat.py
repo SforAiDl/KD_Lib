@@ -17,7 +17,7 @@ class QAT_Quantizer(Quantizer):
     :type optimizer: torch.optim.*
     :param qconfig: Configuration used for quantization
     :type qconfig: Qconfig
-    :param criterion: Loss function used for calibration
+    :param criterion: Loss function used for training
     :type criterion: Loss_fn
     :param device: Device used for training ("cpu" or "cuda")
     :type device: torch.device
