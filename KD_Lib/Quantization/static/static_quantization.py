@@ -7,12 +7,19 @@ class Static_Quantizer(Quantizer):
     """
     Implementation of Static Quantization for PyTorch models.
 
-    :param model (torch.nn.Module): (Quantizable) Model that needs to be quantized
+    :param model: Model that needs to be pruned
+    :type model: torch.nn.Module
     :param qconfig: Configuration used for quantization
-    :param train_loader(torch.utils.data.DataLoader): DataLoader used for calibration
-    :param test_loader(torch.utils.data.DataLoader): DataLoader used for testing
-    :param criterion(torch Loss_fn): Loss function used for calibration
-    :param device(torch.device): Device used for training ("cpu" or "cuda")
+    :type qconfig: Qconfig
+    :param train_loader: DataLoader used for training (calibration)
+    :type train_loader: torch.utils.data.DataLoader
+    :param test_loader: DataLoader used for testing
+    :type test_loader: torch.utils.data.DataLoader
+    :param criterion: Loss function used for calibration
+    :type criterion: Loss_fn
+    :param device: Device used for training ("cpu" or "cuda")
+    :type device: torch.device
+
     """
 
     def __init__(
@@ -32,7 +39,8 @@ class Static_Quantizer(Quantizer):
         """
         Function used for quantization
 
-        :param num_calibration_batches(int): Number of batches used for calibration
+        :param num_calibration_batches: Number of batches used for calibration
+        :type num_calibration_batches: int
         """
 
         self.quantized_model = deepcopy(self.model)
@@ -54,7 +62,8 @@ class Static_Quantizer(Quantizer):
         """
         Function used for calibrating the model for quantization
 
-        :param num_batches(int): Number of batches used for calibration
+        :param num_batches: Number of batches used for calibration
+        :type num_batches: int
         """
 
         self.quantized_model.eval()
