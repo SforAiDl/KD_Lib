@@ -20,6 +20,7 @@ class LabelSmoothReg(BaseClass):
     :param correct_prob(float): The probability which is given to the correct class
     :param loss_fn (torch.nn.Module): Loss Function used for distillation
     :param temp (float): Temperature parameter for distillation
+    :param ka_weight (float): Weight (0 to 1) given to knowledge adjusted loss.
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
     :param log (bool): True if logging required
     :param logdir (str): Directory for storing logs
@@ -36,6 +37,7 @@ class LabelSmoothReg(BaseClass):
         correct_prob=0.99,
         loss_fn=nn.KLDivLoss(reduction='batchmean'),
         temp=20.0,
+        ka_weight=0.85,
         device="cpu",
         log=False,
         logdir="./Experiments",
@@ -50,7 +52,7 @@ class LabelSmoothReg(BaseClass):
             optimizer_student,
             loss_fn=loss_fn,
             temp=temp,
-            distil_weight=0.5,
+            distil_weight=ka_weight,
             device=device,
             log=log,
             logdir=logdir,
@@ -82,8 +84,10 @@ class LabelSmoothReg(BaseClass):
                     activated_label[i] = (1 - self.correct_prob) / (num_classes - 1)
                     activated_label[i][y_true[i]] = self.correct_prob
 
-        loss = (self.temp * self.temp) * self.loss_fn(
+        ka_loss = (self.temp * self.temp) * self.loss_fn(
             activated_label, soft_pred_student
         )
 
-        return loss
+        ce_loss = self.temp * nn.CrossEntropyLoss()(y_pred_student / self.temp, y_true)
+
+        return (1 - self.ka_weight) * ce_loss + self.ka_weight * ka_loss
