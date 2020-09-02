@@ -6,9 +6,12 @@ class Dynamic_Quantizer(Quantizer):
     """
     Implementation of Dynamic Quantization for PyTorch models.
 
-    :param model (torch.nn.Module): Model that needs to be quantized
+    :param model: Model that needs to be quantized
+    :type model: torch.nn.Module
     :param qconfig_spec: Qconfig spec
-    :param test_loader(torch.utils.data.DataLoader): DataLoader used for testing
+    :type qconfig_spec: Qconfig_spec
+    :param test_loader: DataLoader used for testing
+    :type test_loader: torch.utils.data.DataLoader
     """
 
     def __init__(
@@ -27,8 +30,10 @@ class Dynamic_Quantizer(Quantizer):
         """
         Function used for quantization
 
-        :param inplace(bool): carry out model transformations in-place, the original module is mutated
+        :param dtype: dtype for quantized modules
+        :type dtype: torch.dtype
         :param mapping: maps type of a submodule to a type of corresponding dynamically quantized version with which the submodule needs to be replaced
+        :type mapping: mapping
         """
 
         self.quantized_model = torch.quantization.quantize_dynamic(
