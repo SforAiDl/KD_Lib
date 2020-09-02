@@ -1,11 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import torch.optim as optim
-from torch.utils.tensorboard import SummaryWriter
-
-import matplotlib.pyplot as plt
-from copy import deepcopy
 
 from KD_Lib.KD.common import BaseClass
 
@@ -37,8 +32,9 @@ class ProbShift(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        loss_fn=nn.KLDivLoss(),
+        loss_fn=nn.KLDivLoss(reduction="batchmean"),
         temp=20.0,
+        ka_weight=0.5,
         device="cpu",
         log=False,
         logdir="./Experiments",
@@ -51,70 +47,36 @@ class ProbShift(BaseClass):
             val_loader,
             optimizer_teacher,
             optimizer_student,
-            loss_fn,
-            temp,
-            device,
-            log,
-            logdir,
+            loss_fn=loss_fn,
+            temp=temp,
+            distil_weight=ka_weight,
+            device=device,
+            log=log,
+            logdir=logdir,
         )
+        self.label_loss = nn.CrossEntropyLoss().to(self.device)
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
-        Custom loss function to calculate the KD loss for various implementations
+        Swaps probabilty of incorrectly predicted class with true class.
 
         :param y_pred_student (Tensor): Predicted outputs from the student network
         :param y_pred_teacher (Tensor): Predicted outputs from the teacher network
         :param y_true (Tensor): True labels
         """
+        soft_pred_student = F.softmax(y_pred_student / self.temp, dim=1)
 
-        start = 0
-        count = 0
+        with torch.no_grad():
+            soft_pred_teacher = F.softmax(y_pred_teacher / self.temp, dim=1)
+            for i in range(y_pred_teacher.shape[0]):
+                t_label = torch.argmax(soft_pred_teacher[i])
+                if t_label != y_true[i]:
+                    temp_prob = soft_pred_teacher[i][t_label]
+                    soft_pred_teacher[i][t_label] = soft_pred_teacher[i][y_true[i]]
+                    soft_pred_teacher[i][y_true[i]] = temp_prob
 
-        num_classes = y_pred_teacher.shape[1]
-        soft_pred_teacher = torch.Tensor([]).to(self.device)
-
-        for i in range(y_pred_teacher.shape[0]):
-
-            if torch.argmax(y_pred_teacher[i]) != y_true[i]:
-
-                if i:
-                    soft_pred_teacher = torch.cat(
-                        (
-                            soft_pred_teacher,
-                            F.softmax(y_pred_teacher[start:i, :] / self.temp, dim=1),
-                        ),
-                        0,
-                    )
-
-                start = i + 1
-                count += 1
-
-                _, top_indices = torch.topk(y_pred_teacher[i], 2)
-                index = torch.arange(num_classes).to(self.device)
-                index[top_indices[0]] = top_indices[1]
-                index[top_indices[1]] = top_indices[0]
-
-                ps = torch.zeros_like(y_pred_teacher[i]).scatter_(
-                    0, index, F.softmax(y_pred_teacher[i] / self.temp, dim=1)
-                )
-                soft_pred_teacher = torch.cat((soft_pred_teacher, ps.view(1, -1)), 0)
-
-        if count:
-            soft_pred_teacher = torch.cat(
-                (
-                    soft_pred_teacher,
-                    F.softmax(y_pred_teacher[start:, :] / self.temp, dim=1),
-                ),
-                0,
-            )
-            loss = (self.temp * self.temp) * self.loss_fn(
-                soft_pred_teacher, F.log_softmax(y_pred_student, dim=1)
-            )
-
-        else:
-            loss = (self.temp * self.temp) * self.loss_fn(
-                F.softmax(y_pred_teacher / self.temp, dim=1),
-                F.log_softmax(y_pred_student, dim=1),
-            )
-
-        return loss
+        ka_loss = (
+            self.temp * self.temp * self.loss_fn(soft_pred_teacher, soft_pred_student)
+        )
+        ce_loss = self.temp * self.label_loss(y_pred_student / self.temp, y_true)
+        return ka_loss * self.distil_weight + (1 - self.distil_weight) * ce_loss
