@@ -47,7 +47,6 @@ class BaseClass:
         self.val_loader = val_loader
         self.optimizer_teacher = optimizer_teacher
         self.optimizer_student = optimizer_student
-        self.loss_fn = loss_fn
         self.temp = temp
         self.distil_weight = distil_weight
         self.log = log
@@ -67,6 +66,11 @@ class BaseClass:
 
         self.teacher_model = teacher_model.to(self.device)
         self.student_model = student_model.to(self.device)
+        try:
+            self.loss_fn = loss_fn.to(self.device)
+        except:
+            self.loss_fn = loss_fn
+            print("Warning: Loss Function can't be moved to device.")
 
     def train_teacher(
         self,
