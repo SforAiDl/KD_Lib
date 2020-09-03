@@ -1,7 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
 import matplotlib.pyplot as plt
@@ -47,7 +45,6 @@ class BaseClass:
         self.val_loader = val_loader
         self.optimizer_teacher = optimizer_teacher
         self.optimizer_student = optimizer_student
-        self.loss_fn = loss_fn
         self.temp = temp
         self.distil_weight = distil_weight
         self.log = log
@@ -67,6 +64,13 @@ class BaseClass:
 
         self.teacher_model = teacher_model.to(self.device)
         self.student_model = student_model.to(self.device)
+        try:
+            self.loss_fn = loss_fn.to(self.device)
+            self.ce_fn = nn.CrossEntropyLoss().to(self.device)
+        except:
+            self.loss_fn = loss_fn
+            self.ce_fn = nn.CrossEntropyLoss()
+            print("Warning: Loss Function can't be moved to device.")
 
     def train_teacher(
         self,
@@ -89,6 +93,10 @@ class BaseClass:
         best_acc = 0.0
         self.best_teacher_model_weights = deepcopy(self.teacher_model.state_dict())
 
+        save_dir = os.path.dirname(save_model_pth)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
         print("Training Teacher... ")
 
         for ep in range(epochs):
@@ -105,7 +113,7 @@ class BaseClass:
                 pred = out.argmax(dim=1, keepdim=True)
                 correct += pred.eq(label.view_as(pred)).sum().item()
 
-                loss = F.cross_entropy(out, label)
+                loss = self.ce_fn(out, label)
 
                 self.optimizer_teacher.zero_grad()
                 loss.backward()
@@ -131,11 +139,7 @@ class BaseClass:
 
         self.teacher_model.load_state_dict(self.best_teacher_model_weights)
         if save_model:
-            if os.path.isdir("./models"):
-                torch.save(self.teacher_model.state_dict(), save_model_pth)
-            else:
-                os.mkdir("./models")
-                torch.save(self.teacher_model.state_dict(), save_model_pth)
+            torch.save(self.teacher_model.state_dict(), save_model_pth)
         if plot_losses:
             plt.plot(loss_arr)
 
@@ -161,7 +165,11 @@ class BaseClass:
         best_acc = 0.0
         self.best_student_model_weights = deepcopy(self.student_model.state_dict())
 
-        print("\nTraining student...")
+        save_dir = os.path.dirname(save_model_pth)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        print("Training Student...")
 
         for ep in range(epochs):
             epoch_loss = 0.0

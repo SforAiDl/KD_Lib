@@ -90,4 +90,4 @@ class LabelSmoothReg(BaseClass):
 
         ce_loss = self.temp * nn.CrossEntropyLoss()(y_pred_student / self.temp, y_true)
 
-        return (1 - self.ka_weight) * ce_loss + self.ka_weight * ka_loss
+        return (1 - self.distil_weight) * ce_loss + self.distil_weight * ka_loss
