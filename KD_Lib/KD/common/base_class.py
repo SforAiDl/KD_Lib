@@ -1,7 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
 import matplotlib.pyplot as plt
@@ -68,8 +66,10 @@ class BaseClass:
         self.student_model = student_model.to(self.device)
         try:
             self.loss_fn = loss_fn.to(self.device)
+            self.ce_fn = nn.CrossEntropyLoss().to(self.device)
         except:
             self.loss_fn = loss_fn
+            self.ce_fn = nn.CrossEntropyLoss()
             print("Warning: Loss Function can't be moved to device.")
 
     def train_teacher(
@@ -113,7 +113,7 @@ class BaseClass:
                 pred = out.argmax(dim=1, keepdim=True)
                 correct += pred.eq(label.view_as(pred)).sum().item()
 
-                loss = F.cross_entropy(out, label)
+                loss = self.ce_fn(out, label)
 
                 self.optimizer_teacher.zero_grad()
                 loss.backward()
