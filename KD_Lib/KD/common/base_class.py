@@ -93,6 +93,10 @@ class BaseClass:
         best_acc = 0.0
         self.best_teacher_model_weights = deepcopy(self.teacher_model.state_dict())
 
+        save_dir = os.path.dirname(save_model_pth)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
         print("Training Teacher... ")
 
         for ep in range(epochs):
@@ -135,11 +139,7 @@ class BaseClass:
 
         self.teacher_model.load_state_dict(self.best_teacher_model_weights)
         if save_model:
-            if os.path.isdir("./models"):
-                torch.save(self.teacher_model.state_dict(), save_model_pth)
-            else:
-                os.mkdir("./models")
-                torch.save(self.teacher_model.state_dict(), save_model_pth)
+            torch.save(self.teacher_model.state_dict(), save_model_pth)
         if plot_losses:
             plt.plot(loss_arr)
 
@@ -165,7 +165,11 @@ class BaseClass:
         best_acc = 0.0
         self.best_student_model_weights = deepcopy(self.student_model.state_dict())
 
-        print("\nTraining student...")
+        save_dir = os.path.dirname(save_model_pth)
+        if not os.path.exists(save_dir):
+            os.makedirs(save_dir)
+
+        print("Training Student...")
 
         for ep in range(epochs):
             epoch_loss = 0.0
