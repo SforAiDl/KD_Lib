@@ -66,6 +66,7 @@ class TAKD(BaseClass):
         self.assistant_models = assistant_models
         self.optimizer_assistants = optimizer_assistants
         self.assistant_train_order = assistant_train_order
+        self.log_softmax = nn.LogSoftmax(dim=1).to(self.device)
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
@@ -76,10 +77,10 @@ class TAKD(BaseClass):
         :param y_true (torch.FloatTensor): Original label
         """
 
-        loss = (1 - self.distil_weight) * F.cross_entropy(y_pred_student, y_true)
+        loss = (1 - self.distil_weight) * self.ce_fn(y_pred_student, y_true)
         loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
-            F.log_softmax(y_pred_student / self.temp, dim=1),
-            F.log_softmax(y_pred_teacher / self.temp, dim=1),
+            self.log_softmax(y_pred_student / self.temp),
+            self.log_softmax(y_pred_teacher / self.temp),
         )
 
         return loss
@@ -92,7 +93,7 @@ class TAKD(BaseClass):
         epochs=20,
         plot_losses=True,
         save_model=True,
-        save_model_pth="./models/teacher.pt",
+        save_model_pth="./models/student.pt",
     ):
         """
         Function used for distillation
@@ -144,7 +145,7 @@ class TAKD(BaseClass):
                 best_acc = epoch_acc
                 self.best_model_weights = deepcopy(model.state_dict())
 
-            print(f"Epoch: {epoch}, Loss: {loss.item()}, Accuracy: {epoch_acc}")
+            print(f"Epoch: {epoch}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
 
         model.load_state_dict(self.best_model_weights)
         if save_model:
