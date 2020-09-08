@@ -1,6 +1,11 @@
+import torch
 from torch import nn
-
+import torch.nn.functional as F
 from KD_Lib.KD.common import BaseClass
+
+
+def symmetric_mse_loss(input1, input2):
+    return torch.sum((input1 - input2)**2)
 
 
 class MeanTeacher(BaseClass):
@@ -37,8 +42,8 @@ class MeanTeacher(BaseClass):
         optimizer_teacher,
         optimizer_student,
         loss_fn=nn.MSELoss(),
-        class_loss=nn.MSELoss(),
-        res_loss=nn.MSELoss(),
+        class_loss=nn.CrossEntropyLoss(),
+        res_loss=symmetric_mse_loss,
         temp=20.0,
         distil_weight=0.5,
         device="cpu",
@@ -59,8 +64,13 @@ class MeanTeacher(BaseClass):
             log,
             logdir,
         )
-        self.class_loss = class_loss
-        self.res_loss = res_loss
+        self.class_loss = class_loss.to(self.device)
+        try:
+            self.res_loss = res_loss.to(self.device)
+        except:
+            self.res_loss = res_loss
+        self.loss_fn = loss_fn.to(self.device)
+        self.log_softmax = nn.LogSoftmax(dim=1).to(self.device)
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
@@ -72,8 +82,14 @@ class MeanTeacher(BaseClass):
         """
         class_logit, consis_logit = y_pred_student
         class_loss = self.class_loss(class_logit, y_true)
-        res_loss = self.res_loss(class_logit, consis_logit)
-        consis_loss = self.loss_fn(consis_logit, y_pred_teacher[0])
+
+        num_classes = consis_logit.size()[1]
+        res_loss = self.res_loss(class_logit, consis_logit) / num_classes
+
+        student_softmax = self.log_softmax(consis_logit, dim=1)
+        teacher_softmax = self.log_softmax(y_pred_teacher[0], dim=1)
+        consis_loss = self.loss_fn(student_softmax, teacher_softmax) / num_classes
+
         return class_loss + res_loss + consis_loss
 
     def post_epoch_call(self, epoch):
