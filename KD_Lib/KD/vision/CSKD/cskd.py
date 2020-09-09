@@ -9,19 +9,6 @@ from copy import deepcopy
 from KD_Lib.KD.common import BaseClass
 
 
-class KDLoss(nn.Module):
-    def __init__(self, temp_factor):
-        super(KDLoss, self).__init__()
-        self.temp_factor = temp_factor
-        self.kl_div = nn.KLDivLoss(reduction="sum")
-
-    def forward(self, input, target):
-        log_p = torch.log_softmax(input / self.temp_factor, dim=1)
-        q = torch.softmax(target / self.temp_factor, dim=1)
-        loss = self.kl_div(log_p, q) * (self.temp_factor ** 2) / input.size(0)
-        return loss
-
-
 class CSKD(BaseClass):
     """
     Implementation of assisted Knowledge distillation from the paper "Improved Knowledge
@@ -74,26 +61,23 @@ class CSKD(BaseClass):
         )
         self.lamda = lamda
 
-    def calculate_kd_loss(self, input , target):
+    def calculate_kd_loss(self, y_pred_pair_1, y_pred_pair_2):
         """
         Function used for calculating the KD loss during distillation
 
-        :param y_pred_student (torch.FloatTensor): Prediction made by the student model
-        :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model
-        :param y_true (torch.FloatTensor): Original label
+        :param y_pred_pair_1 (torch.FloatTensor): Prediction made by the student model for first pair elements
+        :param y_pred_pair_2 (torch.FloatTensor): Prediction made by the student models for second pair elements
         """
-        log_p = torch.log_softmax(input / self.temp, dim=1)
-        q = torch.softmax(target / self.temp, dim=1)
-        loss = nn.KLDivLoss(reduction="sum")(log_p, q) * (self.temp ** 2) / input.size(0)
-        
-        # loss = (1 - self.distil_weight) * self.ce_fn(y_pred_student, y_true)
-        # loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
-        #     self.log_softmax(y_pred_student / self.temp),
-        #     self.log_softmax(y_pred_teacher / self.temp),
-        # )
+        log_p = torch.log_softmax(y_pred_pair_1 / self.temp, dim=1)
+        q = torch.softmax(y_pred_pair_2 / self.temp, dim=1)
+        loss = (
+            nn.KLDivLoss(reduction="sum")(log_p, q)
+            * (self.temp ** 2)
+            / y_pred_pair_1.size(0)
+        )
 
         return loss
-    
+
     def train_distil_model(
         self,
         model,
@@ -115,7 +99,6 @@ class CSKD(BaseClass):
         :param save_model_path (str): Path used for storing the model
         """
 
-        # kdloss = KDLoss(self.temp)
         model.train()
         length_of_dataset = len(self.train_loader.dataset)
         best_acc = 0.0
@@ -140,7 +123,6 @@ class CSKD(BaseClass):
 
                 with torch.no_grad():
                     outputs_cls = model(data[batch_size // 2 :])
-                # cls_loss = kdloss(outputs, outputs_cls.detach())
                 cls_loss = self.calculate_kd_loss(outputs, outputs_cls.detach())
                 loss += self.lamda * cls_loss
                 train_cls_loss += cls_loss.item()

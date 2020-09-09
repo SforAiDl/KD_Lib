@@ -23,6 +23,7 @@ class PairBatchSampler(Sampler):
     :param batch_size (int): batch_size
     :param num_iterations (int): num_iterations
     """
+
     def __init__(self, dataset, batch_size, num_iterations=None):
         self.dataset = dataset
         self.batch_size = batch_size
@@ -59,6 +60,7 @@ class DatasetWrapper(Dataset):
     :param dataset (torchvision.datasets): dataset
     :param indices (int): indices
     """
+
     def __init__(self, dataset, indices=None):
         self.base_dataset = dataset
         if indices is None:
