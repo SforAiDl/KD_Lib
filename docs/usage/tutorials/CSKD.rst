@@ -3,7 +3,9 @@ Regularizing Class-wise Predictions via Self-knowledge Distillation using KD_Lib
 ======================
 
 To implement the most basic version of knowledge distillation from `Regularizing Class-wise Predictions via Self-knowledge Distillation <https://arxiv.org/abs/2003.13964>`_
-and plot losses
+and plot losses.
+Deep neural networks with millions of parameters may suffer from poor generalization due to overfitting. To mitigate the issue, CSKD, a new regularization method, penalizes the predictive distribution between similar samples. In particular, CSKD distills the predictive distribution between different samples of the same label during training. This results in regularizing the dark knowledge (i.e., the knowledge on wrong predictions) of a single network (i.e., a self-knowledge distillation) by forcing it to produce more meaningful and consistent predictions in a class-wise manner. Consequently, it mitigates overconfident predictions
+and reduces intra-class variations. Experimental results on various image classification tasks demonstrate that the simple yet powerful method can significantly improve not only the generalization ability but also the calibration performance of modern convolutional neural networks.
 
 .. code-block:: python
 

@@ -35,6 +35,7 @@ class CSKD(BaseClass):
     :param optimizer_student (torch.optim.*): Optimizer used for training student
     :param loss_fn (torch.nn.Module):  Calculates loss during distillation
     :param temp (float): Temperature parameter for distillation
+    :param lambda (float): loss controlling parameter for distillation
     :param distil_weight (float): Weight paramter for distillation loss
     :param device (str): Device used for training; 'cpu' for cpu and 'cuda' for gpu
     :param log (bool): True if logging required
@@ -49,7 +50,7 @@ class CSKD(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        loss_fn=nn.MSELoss(),
+        loss_fn=nn.CrossEntropyLoss(),
         temp=4.0,
         lamda=1,
         distil_weight=0.4,
@@ -73,6 +74,26 @@ class CSKD(BaseClass):
         )
         self.lamda = lamda
 
+    def calculate_kd_loss(self, input , target):
+        """
+        Function used for calculating the KD loss during distillation
+
+        :param y_pred_student (torch.FloatTensor): Prediction made by the student model
+        :param y_pred_teacher (torch.FloatTensor): Prediction made by the teacher model
+        :param y_true (torch.FloatTensor): Original label
+        """
+        log_p = torch.log_softmax(input / self.temp, dim=1)
+        q = torch.softmax(target / self.temp, dim=1)
+        loss = nn.KLDivLoss(reduction="sum")(log_p, q) * (self.temp ** 2) / input.size(0)
+        
+        # loss = (1 - self.distil_weight) * self.ce_fn(y_pred_student, y_true)
+        # loss += (self.distil_weight * self.temp * self.temp) * self.loss_fn(
+        #     self.log_softmax(y_pred_student / self.temp),
+        #     self.log_softmax(y_pred_teacher / self.temp),
+        # )
+
+        return loss
+    
     def train_distil_model(
         self,
         model,
@@ -94,7 +115,7 @@ class CSKD(BaseClass):
         :param save_model_path (str): Path used for storing the model
         """
 
-        kdloss = KDLoss(self.temp)
+        # kdloss = KDLoss(self.temp)
         model.train()
         length_of_dataset = len(self.train_loader.dataset)
         best_acc = 0.0
@@ -119,12 +140,12 @@ class CSKD(BaseClass):
 
                 with torch.no_grad():
                     outputs_cls = model(data[batch_size // 2 :])
-                cls_loss = kdloss(outputs, outputs_cls.detach())
+                # cls_loss = kdloss(outputs, outputs_cls.detach())
+                cls_loss = self.calculate_kd_loss(outputs, outputs_cls.detach())
                 loss += self.lamda * cls_loss
                 train_cls_loss += cls_loss.item()
 
                 _, pred = torch.max(outputs, 1)
-                # pred = outputs.argmax(dim=1, keepdim=True)
                 total += targets_.size(0)
                 correct += pred.eq(targets_.data).sum().item()
 

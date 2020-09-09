@@ -15,6 +15,14 @@ from collections import defaultdict
 
 
 class PairBatchSampler(Sampler):
+    """
+    Sampling inputs in the dataloader pairwise as mentioned in the paper "Regularizing Class-wise Predictions via Self-knowledge Distillation"
+     https://arxiv.org/pdf/2003.13964.pdf
+
+    :param dataset (torchvision.dataset): dataset
+    :param batch_size (int): batch_size
+    :param num_iterations (int): num_iterations
+    """
     def __init__(self, dataset, batch_size, num_iterations=None):
         self.dataset = dataset
         self.batch_size = batch_size
@@ -45,12 +53,12 @@ class PairBatchSampler(Sampler):
 
 
 class DatasetWrapper(Dataset):
-    # Additinoal attributes
-    # - indices
-    # - classwise_indices
-    # - num_classes
-    # - get_class
+    """
+    Default dataset wrapper
 
+    :param dataset (torchvision.datasets): dataset
+    :param indices (int): indices
+    """
     def __init__(self, dataset, indices=None):
         self.base_dataset = dataset
         if indices is None:
@@ -85,9 +93,17 @@ class DatasetWrapper(Dataset):
 
 
 def load_dataset(name, root, sample="default", **kwargs):
+    """
+    Default dataset wrapper
+
+    :param name (string): Name of the dataset (Out of cifar10/100, imagenet, tinyimagenet, CUB200, STANFORD120, MIT67).
+    :param root (string): Path to download the dataset.
+    :param sample (string): Default (random) sampling as the classic pytorch dataloader or Pairwise sampling as mentioned in
+    the paper "Regularizing Class-wise Predictions via Self-knowledge Distillation"
+    """
+
     # Dataset
     if name in ["imagenet", "tinyimagenet", "CUB200", "STANFORD120", "MIT67"]:
-        # TODO
         if name == "tinyimagenet":
             transform_train = transforms.Compose(
                 [
@@ -228,11 +244,11 @@ def load_dataset(name, root, sample="default", **kwargs):
     else:
         raise Exception("Unknown sampling: {}".format(sampling))
 
-    trainloader = DataLoader(
+    train_loader = DataLoader(
         trainset, batch_sampler=get_train_sampler(trainset), num_workers=4
     )
-    valloader = DataLoader(
+    val_loader = DataLoader(
         valset, batch_sampler=get_test_sampler(valset), num_workers=4
     )
 
-    return trainloader, valloader
+    return train_loader, val_loader
