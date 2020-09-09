@@ -8,6 +8,7 @@ from copy import deepcopy
 
 from KD_Lib.KD.common import BaseClass
 
+
 class KDLoss(nn.Module):
     def __init__(self, temp_factor):
         super(KDLoss, self).__init__()
@@ -15,10 +16,11 @@ class KDLoss(nn.Module):
         self.kl_div = nn.KLDivLoss(reduction="sum")
 
     def forward(self, input, target):
-        log_p = torch.log_softmax(input/self.temp_factor, dim=1)
-        q = torch.softmax(target/self.temp_factor, dim=1)
-        loss = self.kl_div(log_p, q)*(self.temp_factor**2)/input.size(0)
+        log_p = torch.log_softmax(input / self.temp_factor, dim=1)
+        q = torch.softmax(target / self.temp_factor, dim=1)
+        loss = self.kl_div(log_p, q) * (self.temp_factor ** 2) / input.size(0)
         return loss
+
 
 class CSKD(BaseClass):
     """
@@ -110,14 +112,13 @@ class CSKD(BaseClass):
                 target = target.to(self.device)
                 batch_size = data.size(0)
 
-                
-                targets_ = target[:batch_size//2]
-                outputs = model(data[:batch_size//2])
+                targets_ = target[: batch_size // 2]
+                outputs = model(data[: batch_size // 2])
                 loss = torch.mean(self.loss_fn(outputs, targets_))
                 train_loss += loss.item()
 
                 with torch.no_grad():
-                    outputs_cls = model(data[batch_size//2:])
+                    outputs_cls = model(data[batch_size // 2 :])
                 cls_loss = kdloss(outputs, outputs_cls.detach())
                 loss += self.lamda * cls_loss
                 train_cls_loss += cls_loss.item()
@@ -138,7 +139,9 @@ class CSKD(BaseClass):
                 best_acc = epoch_acc
                 self.best_model_weights = deepcopy(model.state_dict())
 
-            print(f"Epoch: {epoch}, Loss: {epoch_loss/batch_idx} Loss_cls: {train_cls_loss/batch_idx}, Accuracy: {epoch_acc*100.}")
+            print(
+                f"Epoch: {epoch}, Loss: {epoch_loss/batch_idx} Loss_cls: {train_cls_loss/batch_idx}, Accuracy: {epoch_acc*100.}"
+            )
 
         model.load_state_dict(self.best_model_weights)
         if save_model:
@@ -167,5 +170,3 @@ class CSKD(BaseClass):
             save_model,
             save_model_pth,
         )
-
-

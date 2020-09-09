@@ -65,9 +65,7 @@ class BaseClass:
         try:
             self.teacher_model = teacher_model.to(self.device)
         except:
-            print(
-                "Warning!!! Teacher is NONE."
-            )
+            print("Warning!!! Teacher is NONE.")
         self.student_model = student_model.to(self.device)
         try:
             self.loss_fn = loss_fn.to(self.device)
