@@ -5,7 +5,7 @@ from KD_Lib.KD.common import BaseClass
 
 
 def symmetric_mse_loss(input1, input2):
-    return torch.sum((input1 - input2)**2)
+    return torch.sum((input1 - input2) ** 2)
 
 
 class MeanTeacher(BaseClass):
