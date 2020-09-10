@@ -197,5 +197,8 @@ Some benchmark results can be found in the `logs <./logs.rst>`_ file.
 | The Lottery Ticket Hypothesis: Finding                    | https://arxiv.org/abs/1803.03635 | Pruning/             |
 | Sparse, Trainable Neural Networks                         |                                  | lottery_tickets      |
 +-----------------------------------------------------------+----------------------------------+----------------------+
+| Regularizing Class-wise Predictions via Self-             | https://arxiv.org/abs/2003.13964 | KD/vision/CSDK       |
+| knowledge Distillation.                                   |                                  |                      |
++-----------------------------------------------------------+----------------------------------+----------------------+
 
 

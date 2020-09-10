@@ -80,7 +80,7 @@ Ready to contribute? Here's how to set up `KD_Lib` for local development.
    tests, including testing other Python versions with tox::
 
     $ black KD_Lib/
-    $ python setup.py test or py.test
+    $ python setup.py test #or py.test
     $ tox
 
    To get black and tox, just pip install them into your virtualenv.
