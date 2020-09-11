@@ -10,6 +10,7 @@ Vision
     KD_Lib.KD.vision.RCO
     KD_Lib.KD.vision.RKD
     KD_Lib.KD.vision.TAKD
+    KD_Lib.KD.vision.CSKD
     KD_Lib.KD.vision.attention
     KD_Lib.KD.vision.mean_teacher
     KD_Lib.KD.vision.noisy
