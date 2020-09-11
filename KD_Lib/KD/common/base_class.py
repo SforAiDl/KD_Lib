@@ -273,7 +273,8 @@ class BaseClass:
 
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
-                accuracy = correct / length_of_dataset
+
+        accuracy = correct / length_of_dataset
 
         if verbose:
             print("-" * 80)

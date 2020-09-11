@@ -34,7 +34,7 @@ class LabelSmoothReg(BaseClass):
         val_loader,
         optimizer_teacher,
         optimizer_student,
-        correct_prob=0.99,
+        correct_prob=0.90,
         loss_fn=nn.KLDivLoss(reduction="batchmean"),
         temp=20.0,
         ka_weight=0.85,
