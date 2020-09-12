@@ -61,7 +61,9 @@ class CSKD(BaseClass):
         )
         self.lamda = lamda
         if teacher_model is not None or optimizer_teacher is not None:
-            print("Error!!! Teacher model and Teacher optimizer should be None for self-distillation, please refer to the documentation.")
+            print(
+                "Error!!! Teacher model and Teacher optimizer should be None for self-distillation, please refer to the documentation."
+            )
         assert teacher_model == None
 
     def calculate_kd_loss(self, y_pred_pair_1, y_pred_pair_2):
