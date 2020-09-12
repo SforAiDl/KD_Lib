@@ -11,8 +11,8 @@ from KD_Lib.KD.common import BaseClass
 
 class CSKD(BaseClass):
     """
-    Implementation of assisted Knowledge distillation from the paper "Improved Knowledge
-    Distillation via Teacher Assistant" https://arxiv.org/pdf/1902.03393.pdf
+    Implementation of "Regularizing Class-wise Predictions via Self-knowledge Distillation"
+     https://arxiv.org/pdf/2003.13964.pdf
 
     :param teacher_model (torch.nn.Module): Teacher model
     :param student_model (torch.nn.Module): Student model
