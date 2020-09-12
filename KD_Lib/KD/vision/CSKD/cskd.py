@@ -14,11 +14,11 @@ class CSKD(BaseClass):
     Implementation of "Regularizing Class-wise Predictions via Self-knowledge Distillation"
      https://arxiv.org/pdf/2003.13964.pdf
 
-    :param teacher_model (torch.nn.Module): Teacher model
+    :param teacher_model (torch.nn.Module): Teacher model -> Should be None
     :param student_model (torch.nn.Module): Student model
     :param train_loader (torch.utils.data.DataLoader): Dataloader for training
     :param val_loader (torch.utils.data.DataLoader): Dataloader for validation/testing
-    :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher
+    :param optimizer_teacher (torch.optim.*): Optimizer used for training teacher -> Should be None
     :param optimizer_student (torch.optim.*): Optimizer used for training student
     :param loss_fn (torch.nn.Module):  Calculates loss during distillation
     :param temp (float): Temperature parameter for distillation
@@ -60,6 +60,9 @@ class CSKD(BaseClass):
             logdir,
         )
         self.lamda = lamda
+        if teacher_model is not None or optimizer_teacher is not None:
+            print("Error!!! Teacher model and Teacher optimizer should be None for self-distillation, please refer to the documentation.")
+        assert teacher_model == None
 
     def calculate_kd_loss(self, y_pred_pair_1, y_pred_pair_2):
         """
