@@ -11,7 +11,7 @@ with open("README.rst") as readme_file:
 with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
-with open("requirements_dev.txt", 'r') as file_handle:
+with open("./requirements_dev.txt", 'r') as file_handle:
     # convert file contents into a list
     requirements = file_handle.read().splitlines()
 
