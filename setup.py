@@ -11,7 +11,8 @@ with open("README.rst") as readme_file:
 with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
-requirements = []
+with open("requirements_dev.txt") as requirements_file:
+    requirements = requirements_file.read()
 
 setup_requirements = ["pytest-runner"]
 
@@ -35,7 +36,7 @@ setup(
     include_package_data=True,
     keywords="KD_Lib",
     name="KD_Lib",
-    packages=find_packages(include=["KD_Lib"]),
+    packages=find_packages(),
     setup_requires=setup_requirements,
     test_suite="tests",
     tests_require=test_requirements,
