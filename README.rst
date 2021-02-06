@@ -11,18 +11,6 @@ KD_Lib
 
 A PyTorch library to easily facilitate knowledge distillation for custom deep learning models
 
-Please cite the paper in your publications if this library helps your research:
-
-.. code-block:: console 
-
-    @misc{shah2020kdlib,
-      title={KD-Lib: A PyTorch library for Knowledge Distillation, Pruning and Quantization}, 
-      author={Het Shah and Avishree Khare and Neelay Shah and Khizir Siddiqui},
-      year={2020},
-      eprint={2011.14691},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
-    }
 
 Installation :
 ==============
@@ -215,4 +203,15 @@ Some benchmark results can be found in the `logs <./logs.rst>`_ file.
 +-----------------------------------------------------------+----------------------------------+----------------------+
 
 
+Please cite our pre-print if you find KD_Lib useful in any way :)
 
+.. code-block:: console 
+
+    @misc{shah2020kdlib,
+      title={KD-Lib: A PyTorch library for Knowledge Distillation, Pruning and Quantization}, 
+      author={Het Shah and Avishree Khare and Neelay Shah and Khizir Siddiqui},
+      year={2020},
+      eprint={2011.14691},
+      archivePrefix={arXiv},
+      primaryClass={cs.LG}
+    }

@@ -12,15 +12,15 @@ with open("HISTORY.rst") as history_file:
     history = history_file.read()
 
 requirements = [
-    'matplotlib>=3.2.1',
-    'torch>=1.5.0',
-    'torchvision>=0.6.0',
-    'tensorboard>=2.2.1',
-    'torchtext>=0.6.0',
-    'transformers>=0.6.0',
-    'pandas>=1.0.1',
-    'tqdm>=4.42.1',
-    'numpy>=1.18.1'
+    "matplotlib>=3.2.1",
+    "torch>=1.5.0",
+    "torchvision>=0.6.0",
+    "tensorboard>=2.2.1",
+    "torchtext>=0.6.0",
+    "transformers>=0.6.0",
+    "pandas>=1.0.1",
+    "tqdm>=4.42.1",
+    "numpy>=1.18.1",
 ]
 
 setup_requirements = ["pytest-runner"]
