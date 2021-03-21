@@ -54,7 +54,7 @@ and plot losses
     import torch
     import torch.optim as optim
     from torchvision import datasets, transforms
-    from KD_Lib import VanillaKD
+    from KD_Lib.KD import VanillaKD
 
     # This part is where you define your datasets, dataloaders, models and optimizers
 
@@ -108,8 +108,8 @@ and log training details to Tensorboard
     import torch
     import torch.optim as optim
     from torchvision import datasets, transforms
-    from KD_Lib import DML
-    from KD_Lib import ResNet18, ResNet50                                   # To use models packaged in KD_Lib
+    from KD_Lib.KD import DML
+    from KD_Lib.models import ResNet18, ResNet50                                   # To use models packaged in KD_Lib
     
     # This part is where you define your datasets, dataloaders, models and optimizers
 
@@ -151,9 +151,9 @@ and log training details to Tensorboard
 
     # Now, this is where KD_Lib comes into the picture 
 
-    distiller = DML(student_cohort, train_loader, test_loader, student_optimizers)
+    distiller = DML(student_cohort, train_loader, test_loader, student_optimizers, log=True, logdir="./Logs")
 
-    distiller.train_students(epochs=5, log=True, logdir="./Logs")
+    distiller.train_students(epochs=5)
     distiller.evaluate()
     distiller.get_parameters()
 
