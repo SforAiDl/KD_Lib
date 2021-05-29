@@ -6,7 +6,6 @@ python:
 
 # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install: pip install -U tox-travis codecov black
-install: travis_wait 30 mvn install
 
 # Command to run tests, e.g. python setup.py test
 script:
@@ -15,11 +14,4 @@ script:
         - black --check tests
 
 # Codecov after success
-after_success: codecov --token=d25a9eb9-4e77-4d38-8862-6d447be11830
-
-deploy:
-  provider: pypi
-  username: "__token__"
-  password: pypi-AgEIcHlwaS5vcmcCJDRkYjQ3MDBjLTI3MWEtNGM1Ny05NTBjLWZiNmFjNTBhODRiOQACN3sicGVybWlzc2lvbnMiOiB7InByb2plY3RzIjogWyJrZC1saWIiXX0sICJ2ZXJzaW9uIjogMX0AAAYgI0Xwagi3dnvYYMRZYWRFEHiArHMMkf1pQYXqPXnyV-k
-  on:
-    tags: true
+after_success: travis_wait 30 codecov --token=d25a9eb9-4e77-4d38-8862-6d447be11830
