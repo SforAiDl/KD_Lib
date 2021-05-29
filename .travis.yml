@@ -24,6 +24,7 @@ install:
   - python setup.py install
   - pip install codecov
   - pip install pytest-cov
+  - pip install cython
   
 jobs:
   include:
