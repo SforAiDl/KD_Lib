@@ -21,10 +21,11 @@ language: python
 python:
   - "3.6"      
 install:
-  - python setup.py install
   - pip install codecov
   - pip install pytest-cov
   - pip install cython
+  - python setup.py install
+  
   
 jobs:
   include:
