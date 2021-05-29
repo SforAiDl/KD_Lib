@@ -1,24 +1,52 @@
 # Config file for automatic testing at travis-ci.org
 
+# language: python
+# python:
+#   - 3.6
+
+# # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
+# install: pip install -U tox-travis codecov black
+
+# # Command to run tests, e.g. python setup.py test
+# script:
+#         - travis_wait tox
+#         - travis_wait black --check KD_Lib
+#         - travis_wait black --check tests
+
+# # Codecov after success
+# after_success: travis_wait 30 codecov --token=d25a9eb9-4e77-4d38-8862-6d447be11830
+
+
 language: python
 python:
-  - 3.6
+  - "3.7"      
+install:
+  - pip install --upgrade pip
+  - pip install codecov
+  - pip install pytest-cov
+  - pip install cython
+  - pip install -U tox-travis codecov black
+  - python setup.py install
+  
+  
+jobs:
+  include:
+    # Deploy Documentation
+    - stage: Docs
+      python: "3.7"
+      if: type != cron
+      # Use previously defined before_install
 
-# Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-install: pip install -U tox-travis codecov black
+      install:
+        - pip install -r docs/requirements.txt
 
-# Command to run tests, e.g. python setup.py test
-script:
-        - tox
-        - black --check KD_Lib
-        - black --check tests
-
-# Codecov after success
-after_success: codecov --token=d25a9eb9-4e77-4d38-8862-6d447be11830
-
-deploy:
-  provider: pypi
-  username: "__token__"
-  password: pypi-AgEIcHlwaS5vcmcCJDRkYjQ3MDBjLTI3MWEtNGM1Ny05NTBjLWZiNmFjNTBhODRiOQACN3sicGVybWlzc2lvbnMiOiB7InByb2plY3RzIjogWyJrZC1saWIiXX0sICJ2ZXJzaW9uIjogMX0AAAYgI0Xwagi3dnvYYMRZYWRFEHiArHMMkf1pQYXqPXnyV-k
-  on:
-    tags: true
+      script:
+        - make clean -C docs/ html
+        
+    - stage: black
+      python: "3.7"
+      script: 
+        - travis_wait 30 tox
+        - travis_wait black --check KD_Lib
+        - travis_wait black --check tests
+      after_success: # Nothing to do
