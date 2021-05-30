@@ -36,7 +36,7 @@ jobs:
         - travis_wait black --check tests
       after_success: # Nothing to do
 
-	  deploy:
+      deploy:
         - provider: pages
           edge: true
           token: $GITHUB_TOKEN # Set in the settings page of your repository, as a secure variable
@@ -52,9 +52,9 @@ jobs:
           on:
             tags: true
 
-	  deploy: 
-		provider: pypi
+      deploy: 
+        provider: pypi
         username: "__token__"
-  		password: $PYPI_API_TOKEN
+        password: $PYPI_API_TOKEN
         on: 
           tags: true
