@@ -56,3 +56,5 @@ jobs:
 		provider: pypi
         username: "__token__"
   		password: $PYPI_API_TOKEN
+        on: 
+          tags: true
