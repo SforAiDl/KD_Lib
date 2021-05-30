@@ -138,17 +138,30 @@ class CSKD(BaseClass):
                 epoch_loss += loss.item()
 
             epoch_acc = correct / length_of_dataset
-            if epoch_acc > best_acc:
-                best_acc = epoch_acc
+            epoch_val_acc = self.evaluate(teacher=False)
+
+            if epoch_val_acc > best_acc:
+                best_acc = epoch_val_acc
                 self.best_model_weights = deepcopy(model.state_dict())
 
+            if self.log:
+                self.writer.add_scalar("Training loss/Student", epoch_loss/batch_idx, epochs)
+                self.write.add_scalar("Training Cls loss/Student", train_cls_loss/batch_idx, epochs)
+                self.writer.add_scalar("Training accuracy/Student", epoch_acc, epochs)
+                self.writer.add_scalar("Validation accuracy/Student", epoch_val_acc, epochs)
+
+            loss_arr.append(epoch_loss)
+            
             print(
-                f"Epoch: {epoch}, Loss: {epoch_loss/batch_idx} Loss_cls: {train_cls_loss/batch_idx}, Accuracy: {epoch_acc*100.}"
+                f"Epoch: {epoch+1}, Loss: {epoch_loss/batch_idx} Loss_cls: {train_cls_loss/batch_idx}, Accuracy: {epoch_acc*100.}"
             )
 
         model.load_state_dict(self.best_model_weights)
         if save_model:
             torch.save(model.state_dict(), save_model_pth)
+
+        if plot_losses:
+            plt.plot(loss_arr)
 
     def train_student(
         self,

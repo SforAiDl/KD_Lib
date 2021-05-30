@@ -125,8 +125,11 @@ class BANN(BaseClass):
             pred = output.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
 
+        accuracy = {correct/total}
         print("-" * 80)
-        print(f"Accuracy: {correct/total}")
+        print(f"Accuracy: {accuracy}")
+
+        return accuracy
 
     def calculate_kd_loss(self, y_pred_student, y_pred_teacher, y_true):
         """
