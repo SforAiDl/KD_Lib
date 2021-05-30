@@ -1,19 +1,5 @@
 # Config file for automatic testing at travis-ci.org
 
-# language: python
-# python:
-#   - 3.6
-
-# # Command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
-# install: pip install -U tox-travis codecov black
-
-# # Command to run tests, e.g. python setup.py test
-# script:
-#         - travis_wait tox
-#         - travis_wait black --check KD_Lib
-#         - travis_wait black --check tests
-
-# # Codecov after success
 # after_success: travis_wait 30 codecov --token=d25a9eb9-4e77-4d38-8862-6d447be11830
 
 
@@ -22,7 +8,6 @@ python:
   - "3.7"      
 install:
   - pip install --upgrade pip
-  - pip install codecov
   - pip install pytest-cov
   - pip install cython
   - pip install -U tox-travis codecov black
