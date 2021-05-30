@@ -125,7 +125,7 @@ class BANN(BaseClass):
             pred = output.argmax(dim=1, keepdim=True)
             correct += pred.eq(target.view_as(pred)).sum().item()
 
-        accuracy = {correct/total}
+        accuracy = {correct / total}
         print("-" * 80)
         print(f"Accuracy: {accuracy}")
 

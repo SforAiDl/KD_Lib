@@ -127,7 +127,9 @@ class SoftRandom(BaseClass):
             if self.log:
                 self.writer.add_scalar("Training loss/Student", epoch_loss, epochs)
                 self.writer.add_scalar("Training accuracy/Student", epoch_acc, epochs)
-                self.writer.add_scalar("Validation accuracy/Student", epoch_val_acc, epochs)
+                self.writer.add_scalar(
+                    "Validation accuracy/Student", epoch_val_acc, epochs
+                )
 
             loss_arr.append(epoch_loss)
             print(f"Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")

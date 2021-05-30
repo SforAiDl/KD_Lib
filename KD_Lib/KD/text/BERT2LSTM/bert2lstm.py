@@ -124,7 +124,7 @@ class BERT2LSTM(BaseClass):
         save_model_pth="./models/teacher.pt",
         train_batch_size=16,
         batch_print_freq=40,
-        val_batch_size=16
+        val_batch_size=16,
     ):
         """
         Function that will be training the teacher
@@ -209,7 +209,9 @@ class BERT2LSTM(BaseClass):
             if self.log:
                 self.writer.add_scalar("Training loss/Teacher", epoch_loss, epochs)
                 self.writer.add_scalar("Training accuracy/Teacher", epoch_acc, epochs)
-                self.writer.add_scalar("Validation accuracy/Teacher", epoch_val_acc, epochs)
+                self.writer.add_scalar(
+                    "Validation accuracy/Teacher", epoch_val_acc, epochs
+                )
 
             loss_arr.append(epoch_loss)
 
@@ -322,7 +324,9 @@ class BERT2LSTM(BaseClass):
             if self.log:
                 self.writer.add_scalar("Training loss/Student", epoch_loss, epochs)
                 self.writer.add_scalar("Training accuracy/Student", epoch_acc, epochs)
-                self.writer.add_scalar("Validation accuracy/Student", epoch_val_acc, epochs)
+                self.writer.add_scalar(
+                    "Validation accuracy/Student", epoch_val_acc, epochs
+                )
 
             loss_arr.append(epoch_loss)
             print(f"Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
@@ -359,7 +363,7 @@ class BERT2LSTM(BaseClass):
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
-        accuracy = correct/length_of_dataset
+        accuracy = correct / length_of_dataset
         if verbose:
             print("-" * 80)
             print(f"Accuracy: {accuracy}")
@@ -411,7 +415,7 @@ class BERT2LSTM(BaseClass):
                 correct += np.sum(preds == labels)
                 outputs.append(preds)
 
-        accuracy = correct/length_of_dataset
+        accuracy = correct / length_of_dataset
         if verbose:
             print("-" * 80)
             print(f"Accuracy: {accuracy}")

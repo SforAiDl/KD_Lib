@@ -145,13 +145,19 @@ class CSKD(BaseClass):
                 self.best_model_weights = deepcopy(model.state_dict())
 
             if self.log:
-                self.writer.add_scalar("Training loss/Student", epoch_loss/batch_idx, epochs)
-                self.write.add_scalar("Training Cls loss/Student", train_cls_loss/batch_idx, epochs)
+                self.writer.add_scalar(
+                    "Training loss/Student", epoch_loss / batch_idx, epochs
+                )
+                self.write.add_scalar(
+                    "Training Cls loss/Student", train_cls_loss / batch_idx, epochs
+                )
                 self.writer.add_scalar("Training accuracy/Student", epoch_acc, epochs)
-                self.writer.add_scalar("Validation accuracy/Student", epoch_val_acc, epochs)
+                self.writer.add_scalar(
+                    "Validation accuracy/Student", epoch_val_acc, epochs
+                )
 
             loss_arr.append(epoch_loss)
-            
+
             print(
                 f"Epoch: {epoch+1}, Loss: {epoch_loss/batch_idx} Loss_cls: {train_cls_loss/batch_idx}, Accuracy: {epoch_acc*100.}"
             )
