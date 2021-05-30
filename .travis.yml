@@ -35,3 +35,24 @@ jobs:
         - travis_wait black --check KD_Lib
         - travis_wait black --check tests
       after_success: # Nothing to do
+
+	  deploy:
+        - provider: pages
+          edge: true
+          token: $GITHUB_TOKEN # Set in the settings page of your repository, as a secure variable
+          keep_history: false
+          local_dir: docs/build/html
+          on:
+            branch: master
+        - provider: pages
+          edge: true
+          token: $GITHUB_TOKEN # Set in the settings page of your repository, as a secure variable
+          keep_history: false
+          local_dir: docs/build/html
+          on:
+            tags: true
+
+	  deploy: 
+		provider: pypi
+        username: "__token__"
+  		password: $PYPI_API_TOKEN
