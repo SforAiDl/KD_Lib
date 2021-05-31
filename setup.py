@@ -21,21 +21,21 @@ with open("README.rst", "r") as f:
     LONG_DESCRIPTION = f.read()
 
 # Define the keywords
-KEYWORDS = ("Knowledge Distillation", "Pruning", "Quantization", "pytorch", "machine learning", "deep learning")
+KEYWORDS = ["Knowledge Distillation", "Pruning", "Quantization", "pytorch", "machine learning", "deep learning"]
 setup_requirements = ['pytest-runner']
 
 test_requirements = ['pytest', 'pytest-cov']
 
 # Define the classifiers
 # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
-CLASSIFIERS = (
+CLASSIFIERS = [
 	'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
-)
+]
 
 # Important Paths
 PROJECT = os.path.abspath(os.path.dirname(__file__))
