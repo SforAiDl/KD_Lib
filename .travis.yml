@@ -47,6 +47,6 @@ jobs:
             tags: true
         - provider: pypi
           username: "__token__"
-          password: $({ secrets.PYPI_API_TOKEN })
+          password: $PYPI_TOKEN
           on:
             tags: true
