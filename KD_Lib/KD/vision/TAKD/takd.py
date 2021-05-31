@@ -141,8 +141,11 @@ class TAKD(BaseClass):
                 epoch_loss += loss.item()
 
             epoch_acc = correct / length_of_dataset
-            if epoch_acc > best_acc:
-                best_acc = epoch_acc
+
+            _, epoch_val_acc = self._evaluate_model(model)
+
+            if epoch_val_acc > best_acc:
+                best_acc = epoch_val_acc
                 self.best_model_weights = deepcopy(model.state_dict())
 
             print(f"Epoch: {epoch}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
