@@ -68,7 +68,7 @@ def get_requires(path=REQUIRE_PATH):
 # Define the configuration
 CONFIG = {
     "name": NAME,
-    "version": '0.0.19',
+    "version": 'version='0.0.20'',
     "description": DESCRIPTION,
     "long_description": LONG_DESCRIPTION,
     "long_description_content_type": "text/markdown",
