@@ -67,7 +67,7 @@ def get_requires(path=REQUIRE_PATH):
 if __name__ == "__main__":
     setup(
 	name= NAME,
-    	version='0.0.22',
+    	version='0.0.23',
    	description=DESCRIPTION,
     	long_description=LONG_DESCRIPTION,
     	classifiers=CLASSIFIERS,
