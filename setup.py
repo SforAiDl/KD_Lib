@@ -63,6 +63,6 @@ if __name__ == "__main__":
     	test_suite="tests",
     	tests_require=test_requirements,
     	url='https://github.com/SforAiDL/KD_Lib',
-    	version='0.0.26',
+    	version='0.0.27',
     	zip_safe=False,
 )
