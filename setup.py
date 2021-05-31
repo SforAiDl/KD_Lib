@@ -11,7 +11,6 @@ from setuptools import find_packages, setup
 # Basic information
 NAME = "Het Shah"
 DESCRIPTION = "A Pytorch Library to help extend all Knowledge Distillation works"
-VERSION = 'version='0.0.19''
 AUTHOR = "Het Shah"
 EMAIL = "divhet163@gmail.com"
 LICENSE = "MIT"
@@ -69,7 +68,7 @@ def get_requires(path=REQUIRE_PATH):
 # Define the configuration
 CONFIG = {
     "name": NAME,
-    "version": VERSION,
+    "version": '0.0.19',
     "description": DESCRIPTION,
     "long_description": LONG_DESCRIPTION,
     "long_description_content_type": "text/markdown",
