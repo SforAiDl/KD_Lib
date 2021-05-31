@@ -36,14 +36,6 @@ jobs:
       after_success: # Nothing to do
 
       deploy:
-        - provider: pages
-          edge: true
-          token: $GITHUB_TOKEN # Set in the settings page of your repository, as a secure variable
-          keep_history: false
-          local_dir: docs/build/html
-          on:
-            branch: master
-            tags: true
         - provider: pypi
           username: "__token__"
           password: $PYPI_TOKEN
