@@ -20,24 +20,35 @@ setup_requirements = ['pytest-runner']
 
 test_requirements = ['pytest', 'pytest-cov']
 
+requirements = [
+'pip==19.3.1',
+'transformers==4.6.1',
+'sacremoses',
+'tokenizers==0.10.1',
+'huggingface-hub==0.0.8',
+'torchtext==0.9.1',
+'bumpversion==0.5.3',
+'wheel==0.32.1',
+'watchdog==0.9.0',
+'flake8==3.5.0',
+'tox==3.5.2',
+'coverage==4.5.1',
+'Sphinx==1.8.1',
+'twine==1.12.1',
+'pytest==3.8.2',
+'pytest-runner==4.2',
+'pytest-cov==2.6.1',
+'matplotlib==3.2.1',
+'torch==1.8.1',
+'torchvision==0.9.1',
+'tensorboard==2.2.1',
+'contextlib2==0.6.0.post1',
+'pandas==1.0.1',
+'tqdm==4.42.1',
+'numpy==1.18.1',
+'sphinx-rtd-theme==0.5.0',
+]
 
-# helper functions
-def read(*parts):
-    """
-    returns contents of file
-    """
-    with codecs.open(os.path.join(PROJECT, *parts), "rb", "utf-8") as file:
-        return file.read()
-
-
-def get_requires(path=REQUIRE_PATH):
-    """
-    generates requirements from file path given as REQUIRE_PATH
-    """
-    for line in read(path).splitlines():
-        line = line.strip()
-        if line and not line.startswith("#"):
-            yield line
 
 if __name__ == "__main__":
     setup(
@@ -52,7 +63,7 @@ if __name__ == "__main__":
         	'Programming Language :: Python :: 3.7',
     	],
     	description="A Pytorch Library to help extend all Knowledge Distillation works",
-    	install_requires=list(get_requires()),
+    	install_requires=requirements,
     	license="MIT license",
     	long_description=LONG_DESCRIPTION,
     	include_package_data=True,
