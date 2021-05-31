@@ -15,6 +15,7 @@ with open("README.rst", "r") as f:
 # Define the keywords
 KEYWORDS = ["Knowledge Distillation", "Pruning", "Quantization", "pytorch", "machine learning", "deep learning"]
 REQUIRE_PATH = "requirements.txt"
+PROJECT = os.path.abspath(os.path.dirname(__file__))
 setup_requirements = ['pytest-runner']
 
 test_requirements = ['pytest', 'pytest-cov']
@@ -53,7 +54,7 @@ if __name__ == "__main__":
     	description="A Pytorch Library to help extend all Knowledge Distillation works",
     	install_requires=list(get_requires()),
     	license="MIT license",
-    	long_description=readme + '\n\n' + history,
+    	long_description=LONG_DESCRIPTION,
     	include_package_data=True,
     	keywords=KEYWORDS,
     	name='KD_Lib',
