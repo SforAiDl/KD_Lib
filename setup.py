@@ -14,6 +14,7 @@ with open("README.rst", "r") as f:
 
 # Define the keywords
 KEYWORDS = ["Knowledge Distillation", "Pruning", "Quantization", "pytorch", "machine learning", "deep learning"]
+REQUIRE_PATH = "requirements.txt"
 setup_requirements = ['pytest-runner']
 
 test_requirements = ['pytest', 'pytest-cov']
