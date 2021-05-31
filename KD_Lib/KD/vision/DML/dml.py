@@ -118,13 +118,14 @@ class DML:
                 epoch_loss += avg_student_loss
 
             epoch_acc = correct / length_of_dataset
-            if epoch_acc > best_acc:
-                best_acc = epoch_acc
-                best_student_id = (torch.Tensor(correct_preds)).argmax().item()
-                self.best_student_model_weights = deepcopy(
-                    self.student_cohort[best_student_id].state_dict()
-                )
-                self.best_student = self.student_cohort[best_student_id]
+
+            for student in self.student_cohort:
+                _, epoch_val_acc = self._evaluate_model(student)
+
+                if epoch_val_acc > best_acc:
+                    best_acc = epoch_val_acc
+                    self.best_student_model_weights = deepcopy(student.state_dict())
+                    self.best_student = student
 
             if self.log:
                 self.writer.add_scalar("Training loss/Student", epoch_loss, epochs)

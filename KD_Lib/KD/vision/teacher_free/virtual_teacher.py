@@ -115,8 +115,11 @@ class VirtualTeacher:
                 epoch_loss += loss
 
             epoch_acc = correct / length_of_dataset
-            if epoch_acc > best_acc:
-                best_acc = epoch_acc
+
+            epoch_val_acc = self.evaluate()
+
+            if epoch_val_acc > best_acc:
+                best_acc = epoch_val_acc
                 self.best_student_model_weights = deepcopy(
                     self.student_model.state_dict()
                 )
@@ -124,6 +127,9 @@ class VirtualTeacher:
             if self.log:
                 self.writer.add_scalar("Training loss/Student", epoch_loss, epochs)
                 self.writer.add_scalar("Training accuracy/Student", epoch_acc, epochs)
+                self.writer.add_scalar(
+                    "Validation accuracy/Student", epoch_val_acc, epochs
+                )
 
             loss_arr.append(epoch_loss)
             print(f"Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
@@ -173,8 +179,10 @@ class VirtualTeacher:
                 pred = output.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
+        accuracy = correct / length_of_dataset
         print("-" * 80)
-        print(f"Accuracy: {correct/length_of_dataset}")
+        print(f"Accuracy: {accuracy}")
+        return accuracy
 
     def get_parameters(self):
         """

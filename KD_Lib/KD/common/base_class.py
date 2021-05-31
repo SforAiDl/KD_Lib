@@ -125,8 +125,11 @@ class BaseClass:
                 epoch_loss += loss
 
             epoch_acc = correct / length_of_dataset
-            if epoch_acc > best_acc:
-                best_acc = epoch_acc
+
+            epoch_val_acc = self.evaluate(teacher=True)
+
+            if epoch_val_acc > best_acc:
+                best_acc = epoch_val_acc
                 self.best_teacher_model_weights = deepcopy(
                     self.teacher_model.state_dict()
                 )
@@ -134,6 +137,9 @@ class BaseClass:
             if self.log:
                 self.writer.add_scalar("Training loss/Teacher", epoch_loss, epochs)
                 self.writer.add_scalar("Training accuracy/Teacher", epoch_acc, epochs)
+                self.writer.add_scalar(
+                    "Validation accuracy/Teacher", epoch_val_acc, epochs
+                )
 
             loss_arr.append(epoch_loss)
             print(f"Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
@@ -201,8 +207,11 @@ class BaseClass:
                 epoch_loss += loss.item()
 
             epoch_acc = correct / length_of_dataset
-            if epoch_acc > best_acc:
-                best_acc = epoch_acc
+
+            epoch_val_acc = self.evaluate(teacher=False)
+
+            if epoch_val_acc > best_acc:
+                best_acc = epoch_val_acc
                 self.best_student_model_weights = deepcopy(
                     self.student_model.state_dict()
                 )
@@ -210,6 +219,9 @@ class BaseClass:
             if self.log:
                 self.writer.add_scalar("Training loss/Student", epoch_loss, epochs)
                 self.writer.add_scalar("Training accuracy/Student", epoch_acc, epochs)
+                self.writer.add_scalar(
+                    "Validation accuracy/Student", epoch_val_acc, epochs
+                )
 
             loss_arr.append(epoch_loss)
             print(f"Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
@@ -278,7 +290,7 @@ class BaseClass:
 
         if verbose:
             print("-" * 80)
-            print(f"Accuracy: {accuracy}")
+            print(f"Validation Accuracy: {accuracy}")
         return outputs, accuracy
 
     def evaluate(self, teacher=False):
