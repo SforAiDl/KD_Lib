@@ -11,7 +11,7 @@ from setuptools import find_packages, setup
 # Basic information
 NAME = "Het Shah"
 DESCRIPTION = "A Pytorch Library to help extend all Knowledge Distillation works"
-VERSION = "0.0.17"
+VERSION = "version='0.0.18'"
 AUTHOR = "Het Shah"
 EMAIL = "divhet163@gmail.com"
 LICENSE = "MIT"
