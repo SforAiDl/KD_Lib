@@ -69,11 +69,11 @@ if __name__ == "__main__":
     	include_package_data=True,
     	keywords=KEYWORDS,
     	name='KD_Lib',
-    	packages=find_packages(include=['KD_Lib']),
+    	packages=find_packages(where=PROJECT),
     	setup_requires=setup_requirements,
     	test_suite="tests",
     	tests_require=test_requirements,
-    	url='https://github.com/SforAiDL/KD_Lib',
+    	url="https://github.com/SforAiDL/KD_Lib",
     	version='0.0.28',
     	zip_safe=False,
 )
