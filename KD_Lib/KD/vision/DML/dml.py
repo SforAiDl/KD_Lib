@@ -178,14 +178,12 @@ class DML:
     def evaluate(self):
         """
         Evaluate method for printing accuracies of the trained student networks
-
         """
-
         for i, student in enumerate(self.student_cohort):
             print("-" * 80)
             model = deepcopy(student).to(self.device)
             print(f"Evaluating student {i}")
-            _ = self._evaluate_model(model)
+            _, _ = self._evaluate_model(model)
 
     def get_parameters(self):
         """
