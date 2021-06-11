@@ -1,4 +1,5 @@
 from .vision import (
+    BaseClass,    
     VanillaKD,
     VirtualTeacher,
     SelfTraining,
