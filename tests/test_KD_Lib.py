@@ -171,8 +171,8 @@ def test_VanillaKD():
         teac, stud, train_loader, test_loader, t_optimizer, s_optimizer
     )
 
-    distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate(teacher=False)
     distiller.get_parameters()
 
@@ -207,9 +207,9 @@ def test_TAKD():
         student_optimizer,
     )
 
-    distil.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    distil.train_assistants(epochs=0, plot_losses=False, save_model=False)
-    distil.train_student(epochs=0, plot_losses=False, save_model=False)
+    distil.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distil.train_assistants(epochs=1, plot_losses=False, save_model=False)
+    distil.train_student(epochs=1, plot_losses=False, save_model=False)
     distil.get_parameters()
 
 
@@ -231,8 +231,8 @@ def test_attention():
         s_optimizer,
     )
 
-    att.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    att.train_student(epochs=0, plot_losses=False, save_model=False)
+    att.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    att.train_student(epochs=1, plot_losses=False, save_model=False)
     att.evaluate(teacher=False)
     att.get_parameters()
 
@@ -258,8 +258,8 @@ def test_NoisyTeacher():
         device="cpu",
     )
 
-    experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    experiment.train_student(epochs=0, plot_losses=False, save_model=False)
+    experiment.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    experiment.train_student(epochs=1, plot_losses=False, save_model=False)
     experiment.evaluate(teacher=False)
     experiment.get_parameters()
 
@@ -271,7 +271,7 @@ def test_VirtualTeacher():
 
     distiller = VirtualTeacher(stud, train_loader, test_loader, s_optimizer)
 
-    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
 
@@ -283,7 +283,7 @@ def test_SelfTraining():
 
     distiller = SelfTraining(stud, train_loader, test_loader, s_optimizer)
 
-    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
 
@@ -306,8 +306,8 @@ def test_mean_teacher():
         s_optimizer,
     )
 
-    mt.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    mt.train_student(epochs=0, plot_losses=False, save_model=False)
+    mt.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    mt.train_student(epochs=1, plot_losses=False, save_model=False)
     mt.evaluate()
     mt.get_parameters()
 
@@ -331,8 +331,8 @@ def test_RCO():
         s_optimizer,
     )
 
-    distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
 
@@ -344,8 +344,8 @@ def test_BANN():
 
     distiller = BANN(model, train_loader, test_loader, optimizer, num_gen=2)
 
-    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
-    # distiller.evaluate()
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
+    distiller.evaluate()
 
 
 def test_PS():
@@ -366,8 +366,8 @@ def test_PS():
         s_optimizer,
     )
 
-    distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
 
@@ -390,8 +390,8 @@ def test_LSR():
         s_optimizer,
     )
 
-    distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
 
@@ -414,8 +414,8 @@ def test_soft_random():
         s_optimizer,
     )
 
-    distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
 
@@ -438,25 +438,25 @@ def test_messy_collab():
         s_optimizer,
     )
 
-    distiller.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    distiller.train_student(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
 
 
-def test_bert2lstm():
-    student_model = LSTMNet(
-        input_dim=len(text_field.vocab), num_classes=2, dropout_prob=0.5
-    )
-    optimizer = optim.Adam(student_model.parameters())
-
-    experiment = BERT2LSTM(
-        student_model, train_loader, train_loader, optimizer, train_df, val_df
-    )
-    # experiment.train_teacher(epochs=0, plot_losses=False, save_model=False)
-    experiment.train_student(epochs=0, plot_losses=False, save_model=False)
-    experiment.evaluate_student()
-    experiment.evaluate_teacher()
+# def test_bert2lstm():
+#     student_model = LSTMNet(
+#         input_dim=len(text_field.vocab), num_classes=2, dropout_prob=0.5
+#     )
+#     optimizer = optim.Adam(student_model.parameters())
+# 
+#     experiment = BERT2LSTM(
+#         student_model, train_loader, train_loader, optimizer, train_df, val_df
+#     )
+#     # experiment.train_teacher(epochs=1, plot_losses=False, save_model=False)
+#     experiment.train_student(epochs=1, plot_losses=False, save_model=False)
+#     experiment.evaluate_student()
+#     experiment.evaluate_teacher()
 
 
 def test_DML():
@@ -474,7 +474,7 @@ def test_DML():
 
     distiller = DML(student_cohort, train_loader, test_loader, student_optimizers)
 
-    distiller.train_students(epochs=0, plot_losses=False, save_model=False)
+    distiller.train_students(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
 
@@ -488,7 +488,7 @@ def test_lottery_tickets():
     teacher_params = [4, 4, 8, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10, True)
     pruner = Lottery_Tickets_Pruner(teacher_model, train_loader, test_loader)
-    pruner.prune(num_iterations=0, train_iterations=0, valid_freq=1, print_freq=1)
+    pruner.prune(num_iterations=1, train_iterations=1, valid_freq=1, print_freq=1)
 
 
 #
