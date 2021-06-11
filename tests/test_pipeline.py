@@ -5,6 +5,7 @@ from KD_Lib.Quantization import Dynamic_Quantizer
 from KD_Lib.models import Shallow
 
 import torch
+from torchvision import datasets, transforms
 
 
 train_loader = torch.utils.data.DataLoader(
