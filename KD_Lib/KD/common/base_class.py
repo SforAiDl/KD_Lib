@@ -53,28 +53,26 @@ class BaseClass:
         if self.log:
             self.writer = SummaryWriter(logdir)
 
-        try:
-            torch.Tensor(0).to(device)
-            self.device = device
-        except:
-            print(
-                "Either an invalid device or CUDA is not available. Defaulting to CPU."
-            )
+        if device == "cpu":
             self.device = torch.device("cpu")
+        elif device == "cuda":
+	    if torch.cuda.is_available():
+                self.device = torch.device("cuda")
+            else:
+                print(
+                   "Either an invalid device or CUDA is not available. Defaulting to CPU."
+                )
+                self.device = torch.device("cpu")
 
-        try:
+        if teacher_model:
             self.teacher_model = teacher_model.to(self.device)
-        except:
+        else:
             print("Warning!!! Teacher is NONE.")
+        
         self.student_model = student_model.to(self.device)
-        try:
-            self.loss_fn = loss_fn.to(self.device)
-            self.ce_fn = nn.CrossEntropyLoss().to(self.device)
-        except:
-            self.loss_fn = loss_fn
-            self.ce_fn = nn.CrossEntropyLoss()
-            print("Warning: Loss Function can't be moved to device.")
-
+        self.loss_fn = loss_fn.to(self.device)
+        self.ce_fn = nn.CrossEntropyLoss().to(self.device)
+        
     def train_teacher(
         self,
         epochs=20,
@@ -208,7 +206,7 @@ class BaseClass:
 
             epoch_acc = correct / length_of_dataset
 
-            epoch_val_acc = self.evaluate(teacher=False)
+            _, epoch_val_acc = self._evaluate_model(self.student_model, verbose=True)
 
             if epoch_val_acc > best_acc:
                 best_acc = epoch_val_acc

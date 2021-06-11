@@ -171,7 +171,9 @@ class DML:
 
         if verbose:
             print(f"Accuracy: {correct/length_of_dataset}")
-        return outputs
+
+        epoch_val_acc = correct/length_of_dataset
+        return outputs, epoch_val_acc
 
     def evaluate(self):
         """
