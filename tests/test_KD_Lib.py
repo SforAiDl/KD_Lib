@@ -23,6 +23,7 @@ from KD_Lib.KD import (
     ProbShift,
     LabelSmoothReg,
     DML,
+    BaseClass
 )
 
 from KD_Lib.models import (
@@ -94,6 +95,10 @@ def test_resnet():
     ResNet50(params)
     ResNet101(params)
     ResNet152(params)
+    ResNet34(params, att=True)
+    ResNet34(params, mean=True)
+    ResNet101(params, att=True)
+    ResNet101(params, mean=True)
 
 
 def test_attention_model():
@@ -159,6 +164,22 @@ def test_LSTMNet():
 #   Strategy TESTS
 #
 
+def test_BaseClass()
+    teac = Shallow(hidden_size=400)
+    stud = Shallow(hidden_size=100)
+
+    t_optimizer = optim.SGD(teac.parameters(), 0.01)
+    s_optimizer = optim.SGD(stud.parameters(), 0.01)
+
+    distiller = BaseClass(
+        teac, stud, train_loader, test_loader, t_optimizer, s_optimizer, log=True
+    )
+
+    distiller.train_teacher(epochs=1, plot_losses=True, save_model=True)
+    distiller.train_student(epochs=1, plot_losses=True, save_model=True)
+    distiller.evaluate(teacher=False)
+    distiller.get_parameters()
+
 
 def test_VanillaKD():
     teac = Shallow(hidden_size=400)
@@ -168,11 +189,11 @@ def test_VanillaKD():
     s_optimizer = optim.SGD(stud.parameters(), 0.01)
 
     distiller = VanillaKD(
-        teac, stud, train_loader, test_loader, t_optimizer, s_optimizer
+        teac, stud, train_loader, test_loader, t_optimizer, s_optimizer, log=True
     )
 
-    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
-    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_teacher(epochs=1, plot_losses=True, save_model=True)
+    distiller.train_student(epochs=1, plot_losses=True, save_model=True)
     distiller.evaluate(teacher=False)
     distiller.get_parameters()
 
@@ -289,8 +310,8 @@ def test_SelfTraining():
 
 
 def test_mean_teacher():
-    teacher_params = [4, 4, 8, 4, 4]
-    student_params = [4, 4, 4, 4, 4]
+    teacher_params = [16, 16, 32, 16, 16]
+    student_params = [16, 16, 16, 16, 16]
     teacher_model = ResNet50(teacher_params, 1, 10, mean=True)
     student_model = ResNet18(student_params, 1, 10, mean=True)
 
@@ -488,7 +509,7 @@ def test_lottery_tickets():
     teacher_params = [4, 4, 8, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10, True)
     pruner = Lottery_Tickets_Pruner(teacher_model, train_loader, test_loader)
-    pruner.prune(num_iterations=1, train_iterations=1, valid_freq=1, print_freq=1)
+    pruner.prune(num_iterations=2, train_iterations=2, valid_freq=1, print_freq=1)
 
 
 #
@@ -539,6 +560,6 @@ def test_qat_quantization():
     model.fc.out_features = 10
     optimizer = torch.optim.Adam(model.parameters())
     quantizer = QAT_Quantizer(model, cifar_trainloader, cifar_testloader, optimizer)
-    quantized_model = quantizer.quantize(1, 1, -1, -1)
+    quantized_model = quantizer.quantize(1, 1, 1, 1)
     quantizer.get_model_sizes()
     quantizer.get_performance_statistics()
