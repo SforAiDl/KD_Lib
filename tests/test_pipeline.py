@@ -39,8 +39,8 @@ def test_Pipeline():
     teacher = Shallow(hidden_size=400)
     student = Shallow(hidden_size=100)
 
-    t_optimizer = optim.SGD(teac.parameters(), 0.01)
-    s_optimizer = optim.SGD(stud.parameters(), 0.01)
+    t_optimizer = optim.SGD(teacher.parameters(), 0.01)
+    s_optimizer = optim.SGD(student.parameters(), 0.01)
 
     distiller = VanillaKD(
         teacher, student, train_loader, test_loader, t_optimizer, s_optimizer
