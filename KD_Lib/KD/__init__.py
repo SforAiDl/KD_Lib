@@ -1,5 +1,4 @@
 from .vision import (
-    BaseClass,    
     VanillaKD,
     VirtualTeacher,
     SelfTraining,
@@ -19,3 +18,4 @@ from .vision import (
 )
 
 from .text import BERT2LSTM, get_essentials
+from .common import BaseClass
