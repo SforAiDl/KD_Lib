@@ -68,11 +68,11 @@ class BaseClass:
             self.teacher_model = teacher_model.to(self.device)
         else:
             print("Warning!!! Teacher is NONE.")
-        
+
         self.student_model = student_model.to(self.device)
         self.loss_fn = loss_fn.to(self.device)
         self.ce_fn = nn.CrossEntropyLoss().to(self.device)
-        
+
     def train_teacher(
         self,
         epochs=20,
@@ -140,7 +140,7 @@ class BaseClass:
                 )
 
             loss_arr.append(epoch_loss)
-            print(f"Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
+            print("Epoch: {}, Loss: {}, Accuracy: {}".format(ep+1, epoch_loss, epoch_acc))
 
             self.post_epoch_call(ep)
 
@@ -222,7 +222,7 @@ class BaseClass:
                 )
 
             loss_arr.append(epoch_loss)
-            print(f"Epoch: {ep+1}, Loss: {epoch_loss}, Accuracy: {epoch_acc}")
+            print("Epoch: {}, Loss: {}, Accuracy: {}".format(ep+1, epoch_loss, epoch_acc))
 
         self.student_model.load_state_dict(self.best_student_model_weights)
         if save_model:
@@ -288,7 +288,7 @@ class BaseClass:
 
         if verbose:
             print("-" * 80)
-            print(f"Validation Accuracy: {accuracy}")
+            print("Validation Accuracy: {}".format(accuracy))
         return outputs, accuracy
 
     def evaluate(self, teacher=False):
@@ -313,8 +313,8 @@ class BaseClass:
         student_params = sum(p.numel() for p in self.student_model.parameters())
 
         print("-" * 80)
-        print(f"Total parameters for the teacher network are: {teacher_params}")
-        print(f"Total parameters for the student network are: {student_params}")
+        print("Total parameters for the teacher network are: {}".format(teacher_params))
+        print("Total parameters for the student network are: {}".format(student_params))
 
     def post_epoch_call(self, epoch):
         """
