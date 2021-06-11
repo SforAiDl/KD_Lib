@@ -181,7 +181,7 @@ class Lottery_Tickets_Pruner:
         eps = 1e-6
         self.model.train()
         correct = 0
-        training_loss = 0.0 
+        training_loss = 0.0
         step = 0
         for data, targets in self.train_loader:
             self.optimizer.zero_grad()
