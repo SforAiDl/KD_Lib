@@ -13,7 +13,7 @@ from tqdm import tqdm
 import numpy as np
 import random
 
-from torchtext import data
+from torchtext.legacy import data
 
 
 class InputExample(object):
