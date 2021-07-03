@@ -5,10 +5,11 @@ import torch.nn as nn
 
 from KD_Lib.Pruning.common import BaseIterativePruner
 
+
 class WeightThresholdPruner(BaseIterativePruner):
-	"""
+    """
     Implementation of Weight Threshold Pruning for PyTorch models.
- 	Prunes weights with magnitudes lesser than the specified threshold.
+        Prunes weights with magnitudes lesser than the specified threshold.
 
     :param model: Model that needs to be pruned
     :type model: torch.nn.Module
@@ -22,25 +23,25 @@ class WeightThresholdPruner(BaseIterativePruner):
     :type device: torch.device
     """
 
-	def __init__(
-	    self,
-	    model,
-	    train_loader,
-	    test_loader,
-	    loss_fn=nn.CrossEntropyLoss(),
-	    device="cpu",
-	):
-	    super().__init__(model, train_loader, test_loader, loss_fn, device)
+    def __init__(
+        self,
+        model,
+        train_loader,
+        test_loader,
+        loss_fn=nn.CrossEntropyLoss(),
+        device="cpu",
+    ):
+        super().__init__(model, train_loader, test_loader, loss_fn, device)
 
-	def prune_model(self, threshold):
-	    """
-	    Function used for pruning
+    def prune_model(self, threshold):
+        """
+        Function used for pruning
 
-	    :param threshold: Weight threshold. Weights with magnitudes lesser than the threshold are pruned.
-	  	:type threshold: float
-	  	"""
+        :param threshold: Weight threshold. Weights with magnitudes lesser than the threshold are pruned.
+            :type threshold: float
+        """
 
-	    for name, param in self.model.named_parameters():
-	        if "weight" in name:
-	        	param_mask = torch.abs(param) < threshold
-	        	param.data[param_mask] = 0.0
+        for name, param in self.model.named_parameters():
+            if "weight" in name:
+                param_mask = torch.abs(param) < threshold
+                param.data[param_mask] = 0.0
