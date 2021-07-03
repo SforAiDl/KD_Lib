@@ -44,7 +44,7 @@ from KD_Lib.models import (
 from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
 
-from KD_Lib.Pruning import Lottery_Tickets_Pruner
+from KD_Lib.Pruning import LotteryTicketsPruner, WeightThresholdPruner
 from KD_Lib.Quantization import Dynamic_Quantizer, Static_Quantizer, QAT_Quantizer
 
 train_loader = torch.utils.data.DataLoader(
@@ -510,9 +510,14 @@ def test_DML():
 def test_lottery_tickets():
     teacher_params = [4, 4, 8, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10, True)
-    pruner = Lottery_Tickets_Pruner(teacher_model, train_loader, test_loader)
-    pruner.prune(num_iterations=2, train_iterations=2, valid_freq=1, print_freq=1)
+    pruner = LotteryTicketsPruner(teacher_model, train_loader, test_loader)
+    pruner.prune(num_iterations=2, train_epochs=1, save_models=False, prune_percent=50)
 
+def test_weight_threshold_pruning():
+    teacher_params = [4, 4, 8, 4, 4]
+    teacher_model = ResNet50(teacher_params, 1, 10, True)
+    pruner = WeightThresholdPruner(teacher_model, train_loader, test_loader)
+    pruner.prune(num_iterations=2, train_epochs=1, save_models=False, threshold=0.1)    
 
 #
 # Quantization tests

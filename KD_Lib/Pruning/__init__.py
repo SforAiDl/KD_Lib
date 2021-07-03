@@ -1,1 +1,2 @@
-from .lottery_tickets import Lottery_Tickets_Pruner
+from .lottery_tickets import LotteryTicketsPruner
+from .weight_threshold import WeightThresholdPruner
