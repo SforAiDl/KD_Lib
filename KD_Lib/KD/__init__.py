@@ -18,3 +18,4 @@ from .vision import (
 )
 
 from .text import BERT2LSTM, get_essentials
+from .common import BaseClass
