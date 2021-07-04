@@ -80,7 +80,7 @@ df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
 train_df = df.iloc[:6, :]
 val_df = df.iloc[6:, :]
 
-text_field, train_loader = get_essentials(train_df)
+text_field, bert2lstm_train_loader = get_essentials(train_df)
 
 
 #
@@ -109,12 +109,12 @@ def test_attention_model():
     print(sample_output)
 
 
-def test_meanteacher_model():
-    params = [4, 4, 8, 8, 16]
-    sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
-    model = ResNet152(params, mean=True)
-    sample_output = model(sample_input)
-    print(sample_output)
+# def test_meanteacher_model():
+#     params = [4, 4, 8, 8, 16]
+#     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
+#     model = ResNet152(params, mean=True)
+#     sample_output = model(sample_input)
+#     print(sample_output)
 
 
 def test_NIN():
@@ -360,15 +360,15 @@ def test_RCO():
     distiller.get_parameters()
 
 
-def test_BANN():
-    params = [4, 4, 4, 4, 4]
-    model = ResNet50(params, 1, 10)
-    optimizer = optim.SGD(model.parameters(), 0.01)
+# def test_BANN():
+#     params = [4, 4, 4, 4, 4]
+#     model = ResNet50(params, 1, 10)
+#     optimizer = optim.SGD(model.parameters(), 0.01)
 
-    distiller = BANN(model, train_loader, test_loader, optimizer, num_gen=2)
+#     distiller = BANN(model, train_loader, test_loader, optimizer, num_gen=2)
 
-    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
-    distiller.evaluate()
+#     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
+#     distiller.evaluate()
 
 
 def test_PS():
@@ -474,7 +474,7 @@ def test_messy_collab():
 #     optimizer = optim.Adam(student_model.parameters())
 #
 #     experiment = BERT2LSTM(
-#         student_model, train_loader, train_loader, optimizer, train_df, val_df
+#         student_model, bert2lstm_train_loader, bert2lstm_train_loader, optimizer, train_df, val_df
 #     )
 #     # experiment.train_teacher(epochs=1, plot_losses=False, save_model=False)
 #     experiment.train_student(epochs=1, plot_losses=False, save_model=False)
@@ -509,15 +509,21 @@ def test_DML():
 
 def test_lottery_tickets():
     teacher_params = [4, 4, 8, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10, True)
+    teacher_model = ResNet50(teacher_params, 1, 10)
     pruner = LotteryTicketsPruner(teacher_model, train_loader, test_loader)
-    pruner.prune(num_iterations=2, train_epochs=1, save_models=False, prune_percent=50)
+    pruner.prune(num_iterations=2, train_epochs=1, save_models=True, prune_percent=50)
+
 
 def test_weight_threshold_pruning():
     teacher_params = [4, 4, 8, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10, True)
+    teacher_model = ResNet50(teacher_params, 1, 10)
     pruner = WeightThresholdPruner(teacher_model, train_loader, test_loader)
-    pruner.prune(num_iterations=2, train_epochs=1, save_models=False, threshold=0.1)    
+    pruner.prune(num_iterations=2, train_epochs=1, save_models=True, threshold=0.1)
+    pruner.evaluate(model_path="pruned_model_iteration_0.pt")
+    pruner.get_pruning_statistics(
+        model_path="pruned_model_iteration_0.pt", verbose=True
+    )
+
 
 #
 # Quantization tests
