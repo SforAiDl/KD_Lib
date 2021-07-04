@@ -23,7 +23,7 @@ from KD_Lib.KD import (
     ProbShift,
     LabelSmoothReg,
     DML,
-    BaseClass
+    BaseClass,
 )
 
 from KD_Lib.models import (
@@ -164,7 +164,8 @@ def test_LSTMNet():
 #   Strategy TESTS
 #
 
-def test_BaseClass()
+
+def test_BaseClass():
     teac = Shallow(hidden_size=400)
     stud = Shallow(hidden_size=100)
 

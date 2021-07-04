@@ -56,7 +56,7 @@ class BaseClass:
         if device == "cpu":
             self.device = torch.device("cpu")
         elif device == "cuda":
-	    if torch.cuda.is_available():
+            if torch.cuda.is_available():
                 self.device = torch.device("cuda")
             else:
                 print(
