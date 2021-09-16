@@ -62,6 +62,7 @@ class DML:
         save_model=True,
         save_model_path="./models/student.pth",
     ):
+
         for student in self.student_cohort:
             student.train()
 
@@ -71,6 +72,7 @@ class DML:
         best_acc = 0.0
         self.best_student_model_weights = deepcopy(self.student_cohort[0].state_dict())
         self.best_student = self.student_cohort[0]
+        best_student_id = 0
         num_students = len(self.student_cohort)
 
         print("\nTraining students...")
@@ -119,13 +121,18 @@ class DML:
 
             epoch_acc = correct / length_of_dataset
 
-            for student in self.student_cohort:
+            for student_id, student in enumerate(self.student_cohort):
                 _, epoch_val_acc = self._evaluate_model(student)
 
                 if epoch_val_acc > best_acc:
                     best_acc = epoch_val_acc
                     self.best_student_model_weights = deepcopy(student.state_dict())
                     self.best_student = student
+                    best_student_id = student_id
+
+            print(
+                f"The best student model is the model with index {best_student_id} in the cohort"
+            )
 
             if self.log:
                 self.writer.add_scalar("Training loss/Student", epoch_loss, epochs)
@@ -136,10 +143,10 @@ class DML:
 
         self.best_student.load_state_dict(self.best_student_model_weights)
         if save_model:
-            print(
-                f"The best student model is the model number {best_student_id+1} in the cohort"
-            )
             torch.save(self.best_student.state_dict(), save_model_path)
+            print(
+                f"Saved the model weights of the best performing student! (with index {best_student_id} in the cohort)"
+            )
         if plot_losses:
             plt.plot(loss_arr)
 
