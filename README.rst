@@ -1,8 +1,8 @@
 KD_Lib
 ======
 
-.. image:: https://travis-ci.com/SforAiDl/KD_Lib.svg?branch=master
-    :target: https://travis-ci.com/SforAiDl/KD_Lib
+.. image:: https://github.com/SforAiDl/KD_Lib/actions/workflows/python-package-test.yml/badge.svg
+    :target: https://github.com/SforAiDl/KD_Lib/actions/workflows/python-package-test.yml
 
 .. image:: https://readthedocs.org/projects/kd-lib/badge/?version=latest
     :target: https://kd-lib.readthedocs.io/en/latest/?badge=latest
