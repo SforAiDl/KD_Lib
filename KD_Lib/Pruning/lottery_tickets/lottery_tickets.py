@@ -181,7 +181,7 @@ class Lottery_Tickets_Pruner:
         eps = 1e-6
         self.model.train()
         correct = 0
-
+        training_loss = 0.0
         step = 0
         for data, targets in self.train_loader:
             self.optimizer.zero_grad()
@@ -192,6 +192,7 @@ class Lottery_Tickets_Pruner:
                 outputs = outputs[0]
 
             train_loss = self.loss_fn(outputs, targets)
+            training_loss += train_loss.item()
             train_loss.backward()
 
             pred = outputs.argmax(dim=1, keepdim=True)
@@ -212,7 +213,7 @@ class Lottery_Tickets_Pruner:
             step += 1
 
         train_acc = 100.0 * correct / len(self.train_loader.dataset)
-        return train_loss.item(), train_acc
+        return training_loss / len(self.train_loader), train_acc
 
     def _save_model(self, prune_it, best_weights):
         file_name = f"{os.getcwd()}/pruned_model_{prune_it}.pth.tar"

@@ -179,7 +179,6 @@ def test_BaseClass():
     distiller.train_teacher(epochs=1, plot_losses=True, save_model=True)
     distiller.train_student(epochs=1, plot_losses=True, save_model=True)
     distiller.evaluate(teacher=False)
-
     distiller.get_parameters()
 
 
