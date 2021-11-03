@@ -1,15 +1,10 @@
-KD_Lib
+KD-Lib
 ======
 
 .. image:: https://github.com/SforAiDl/KD_Lib/actions/workflows/python-package-test.yml/badge.svg
-    :target: https://github.com/SforAiDl/KD_Lib/actions/workflows/python-package-test.yml
-
-.. image:: https://readthedocs.org/projects/kd-lib/badge/?version=latest
-    :target: https://kd-lib.readthedocs.io/en/latest/?badge=latest
-    :alt: Documentation Status
 
 
-A PyTorch library to easily facilitate knowledge distillation for custom deep learning models
+A PyTorch model compression library containing easy-to-use methods for knowledge distillation, pruning, and quantization.
 
 
 Installation :
@@ -18,7 +13,7 @@ Installation :
 ==============
 Stable release
 ==============
-KD_Lib is compatible with Python 3.6 or later and also depends on pytorch. The easiest way to install KD_Lib is with pip, Python's preferred package installer.
+KD_Lib is compatible with Python 3.6 or later and also depends on PyTorch. The easiest way to install KD_Lib is with pip, Python's preferred package installer.
 
 .. code-block:: console
 
