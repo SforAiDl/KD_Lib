@@ -94,7 +94,6 @@ def test_resnet():
     params = [4, 4, 8, 8, 16]
 
     model = ResNet18(params)
-    _ = model(sample_input)
 
     # model = ResNet34(params)
     # _ = model(sample_input)
