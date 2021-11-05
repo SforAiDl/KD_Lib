@@ -56,7 +56,7 @@ train_loader = torch.utils.data.DataLoader(
             [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
         ),
     ),
-    batch_size=16,
+    batch_size=4,
     shuffle=True,
 )
 
@@ -68,7 +68,7 @@ test_loader = torch.utils.data.DataLoader(
             [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
         ),
     ),
-    batch_size=16,
+    batch_size=4,
     shuffle=True,
 )
 
@@ -96,29 +96,29 @@ def test_resnet():
     model = ResNet18(params)
     _ = model(sample_input)
 
-    model = ResNet34(params)
-    _ = model(sample_input)
+    # model = ResNet34(params)
+    # _ = model(sample_input)
 
-    model = ResNet50(params)
-    _ = model(sample_input)
+    # model = ResNet50(params)
+    # _ = model(sample_input)
 
-    model = ResNet101(params)
-    _ = model(sample_input)
+    # model = ResNet101(params)
+    # _ = model(sample_input)
 
-    model = ResNet152(params)
-    _ = model(sample_input)
+    # model = ResNet152(params)
+    # _ = model(sample_input)
 
-    model = ResNet34(params, att=True)
-    _ = model(sample_input)
+    # model = ResNet34(params, att=True)
+    # _ = model(sample_input)
 
-    model = ResNet34(params, mean=True)
-    _ = model(sample_input)
+    # model = ResNet34(params, mean=True)
+    # _ = model(sample_input)
 
-    model = ResNet101(params, att=True)
-    _ = model(sample_input)
+    # model = ResNet101(params, att=True)
+    # _ = model(sample_input)
 
-    model = ResNet101(params, mean=True)
-    _ = model(sample_input)
+    # model = ResNet101(params, mean=True)
+    # _ = model(sample_input)
 
 
 def test_attention_model():
@@ -183,26 +183,6 @@ def test_LSTMNet():
 #
 #   Strategy TESTS
 #
-
-
-def test_BaseClass():
-    teac = Shallow(hidden_size=400)
-    stud = Shallow(hidden_size=100)
-
-    t_optimizer = optim.SGD(teac.parameters(), 0.01)
-    s_optimizer = optim.SGD(stud.parameters(), 0.01)
-
-    distiller = BaseClass(
-        teac, stud, train_loader, test_loader, t_optimizer, s_optimizer, log=True
-    )
-
-    distiller.train_teacher(epochs=1, plot_losses=True, save_model=True)
-    distiller.train_student(epochs=1, plot_losses=True, save_model=True)
-    distiller.evaluate(teacher=False)
-
-    distiller.get_parameters()
-
-    del teac, stud, distiller, t_optimizer, s_optimizer
 
 
 def test_VanillaKD():
