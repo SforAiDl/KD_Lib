@@ -608,30 +608,10 @@ def test_dynamic_quantization():
     del model, quantizer, quantized_model
 
 
-transform = transforms.Compose(
-    [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
-)
-
-trainset = datasets.CIFAR10(
-    root="cifar_data", train=True, download=True, transform=transform
-)
-cifar_trainloader = torch.utils.data.DataLoader(
-    trainset, batch_size=4, shuffle=True, num_workers=2
-)
-
-
-testset = datasets.CIFAR10(
-    root="cifar_data", train=False, download=True, transform=transform
-)
-cifar_testloader = torch.utils.data.DataLoader(
-    testset, batch_size=4, shuffle=False, num_workers=2
-)
-
-
 def test_static_quantization():
     model = models.quantization.resnet18(quantize=False)
     model.fc.out_features = 10
-    quantizer = Static_Quantizer(model, cifar_trainloader, cifar_testloader)
+    quantizer = Static_Quantizer(model, train_loader, test_loader)
     quantized_model = quantizer.quantize(1)
     quantizer.get_model_sizes()
     quantizer.get_performance_statistics()
@@ -643,7 +623,7 @@ def test_qat_quantization():
     model = models.quantization.resnet18(quantize=False)
     model.fc.out_features = 10
     optimizer = torch.optim.Adam(model.parameters())
-    quantizer = QAT_Quantizer(model, cifar_trainloader, cifar_testloader, optimizer)
+    quantizer = QAT_Quantizer(model, train_loader, test_loader, optimizer)
     quantized_model = quantizer.quantize(1, 1, 1, 1)
     quantizer.get_model_sizes()
     quantizer.get_performance_statistics()
