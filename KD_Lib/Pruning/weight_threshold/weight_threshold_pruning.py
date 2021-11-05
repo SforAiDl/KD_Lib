@@ -1,14 +1,13 @@
-import copy
-import numpy as np
 import torch
 import torch.nn as nn
 
 from ..common import BaseIterativePruner
 
 
-class LotteryTicketsPruner(BaseIterativePruner):
+class WeightThresholdPruner(BaseIterativePruner):
     """
-    Implementation of Lottery Tickets Pruning for PyTorch models.
+    Implementation of Weight Threshold Pruning for PyTorch models.
+        Prunes weights with magnitudes lesser than the specified threshold.
 
     :param model: Model that needs to be pruned
     :type model: torch.nn.Module
@@ -32,24 +31,15 @@ class LotteryTicketsPruner(BaseIterativePruner):
     ):
         super().__init__(model, train_loader, test_loader, loss_fn, device)
 
-        self.initial_state_dict = copy.deepcopy(self.model.state_dict())
-
-    def prune_model(self, prune_percent=10):
+    def prune_model(self, threshold):
         """
         Function used for pruning
 
-        :param prune_percent: Pruning percent per iteration (percentage of alive weights to zero per pruning iteration)
-        :type prune_percent: int
+        :param threshold: Weight threshold. Weights with magnitudes lesser than the threshold are pruned.
+            :type threshold: float
         """
 
         for name, param in self.model.named_parameters():
             if "weight" in name:
-                param_data = param.data.cpu().numpy()
-                alive = param_data[np.nonzero(param_data)]
-                percentile = np.percentile(abs(alive), prune_percent)
-                new_param_data = np.where(
-                    abs(param_data) < percentile, 0, self.initial_state_dict[name]
-                )
-                param.data = torch.from_numpy(new_param_data).to(param.device)
-            if "bias" in name:
-                param.data = self.initial_state_dict[name]
+                param_mask = torch.abs(param) < threshold
+                param.data[param_mask] = 0.0

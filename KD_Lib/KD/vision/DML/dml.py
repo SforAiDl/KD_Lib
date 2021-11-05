@@ -192,7 +192,7 @@ class DML:
             print("-" * 80)
             model = deepcopy(student).to(self.device)
             print(f"Evaluating student {i}")
-            _ = self._evaluate_model(model)
+            _, _ = self._evaluate_model(model)
 
     def get_parameters(self):
         """
