@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 
-from KD_Lib.Pruning.common import BaseIterativePruner
+from ..common import BaseIterativePruner
 
 
 class LotteryTicketsPruner(BaseIterativePruner):

@@ -311,28 +311,28 @@ def test_SelfTraining():
     distiller.get_parameters()
 
 
-def test_mean_teacher():
-    teacher_params = [16, 16, 32, 16, 16]
-    student_params = [16, 16, 16, 16, 16]
-    teacher_model = ResNet50(teacher_params, 1, 10, mean=True)
-    student_model = ResNet18(student_params, 1, 10, mean=True)
+# def test_mean_teacher():
+#     teacher_params = [16, 16, 32, 16, 16]
+#     student_params = [16, 16, 16, 16, 16]
+#     teacher_model = ResNet50(teacher_params, 1, 10, mean=True)
+#     student_model = ResNet18(student_params, 1, 10, mean=True)
 
-    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
+#     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
+#     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
-    mt = MeanTeacher(
-        teacher_model,
-        student_model,
-        train_loader,
-        test_loader,
-        t_optimizer,
-        s_optimizer,
-    )
+#     mt = MeanTeacher(
+#         teacher_model,
+#         student_model,
+#         train_loader,
+#         test_loader,
+#         t_optimizer,
+#         s_optimizer,
+#     )
 
-    mt.train_teacher(epochs=1, plot_losses=False, save_model=False)
-    mt.train_student(epochs=1, plot_losses=False, save_model=False)
-    mt.evaluate()
-    mt.get_parameters()
+#     mt.train_teacher(epochs=1, plot_losses=False, save_model=False)
+#     mt.train_student(epochs=1, plot_losses=False, save_model=False)
+#     mt.evaluate()
+#     mt.get_parameters()
 
 
 def test_RCO():
