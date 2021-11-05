@@ -495,9 +495,18 @@ def test_DML():
 
     student_optimizers = (s_optimizer_1, s_optimizer_2)
 
-    distiller = DML(student_cohort, train_loader, test_loader, student_optimizers)
+    distiller = DML(
+        student_cohort,
+        train_loader,
+        test_loader,
+        student_optimizers,
+        log=True,
+        logdir=".",
+    )
 
-    distiller.train_students(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_students(
+        epochs=1, plot_losses=True, save_model=True, save_model_path="./student.pt"
+    )
     distiller.evaluate()
     distiller.get_parameters()
 

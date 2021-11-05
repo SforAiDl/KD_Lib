@@ -60,7 +60,7 @@ class BaseClass:
                 self.device = torch.device("cuda")
             else:
                 print(
-                   "Either an invalid device or CUDA is not available. Defaulting to CPU."
+                    "Either an invalid device or CUDA is not available. Defaulting to CPU."
                 )
                 self.device = torch.device("cpu")
 
@@ -140,7 +140,11 @@ class BaseClass:
                 )
 
             loss_arr.append(epoch_loss)
-            print("Epoch: {}, Loss: {}, Accuracy: {}".format(ep+1, epoch_loss, epoch_acc))
+            print(
+                "Epoch: {}, Loss: {}, Accuracy: {}".format(
+                    ep + 1, epoch_loss, epoch_acc
+                )
+            )
 
             self.post_epoch_call(ep)
 
@@ -222,7 +226,11 @@ class BaseClass:
                 )
 
             loss_arr.append(epoch_loss)
-            print("Epoch: {}, Loss: {}, Accuracy: {}".format(ep+1, epoch_loss, epoch_acc))
+            print(
+                "Epoch: {}, Loss: {}, Accuracy: {}".format(
+                    ep + 1, epoch_loss, epoch_acc
+                )
+            )
 
         self.student_model.load_state_dict(self.best_student_model_weights)
         if save_model:
