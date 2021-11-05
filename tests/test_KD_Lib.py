@@ -92,7 +92,7 @@ def test_resnet():
 
     sample_input = torch.ones(size=(1, 3, 224, 224), requires_grad=False)
     params = [4, 4, 8, 8, 16]
-    
+
     model = ResNet18(params)
     _ = model(sample_input)
 
@@ -120,20 +120,21 @@ def test_resnet():
     model = ResNet101(params, mean=True)
     _ = model(sample_input)
 
+
 def test_attention_model():
     params = [4, 4, 8, 8, 16]
     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
     model = ResNet152(params, att=True)
     _ = model(sample_input)
     del model
-    
+
 
 # def test_meanteacher_model():
 #     params = [4, 4, 8, 8, 16]
 #     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
 #     model = ResNet152(params, mean=True)
 #     sample_output = model(sample_input)
-#     
+#
 
 
 def test_NIN():
@@ -141,7 +142,7 @@ def test_NIN():
     model = NetworkInNetwork(10, 1)
     _ = model(sample_input)
     del model
-    
+
 
 def test_shallow():
     sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
@@ -155,7 +156,7 @@ def test_lenet():
     model = LeNet()
     _ = model(sample_input)
     del model
-    
+
 
 def test_modlenet():
     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
@@ -222,6 +223,7 @@ def test_VanillaKD():
 
     del teac, stud, distiller, t_optimizer, s_optimizer
 
+
 def test_TAKD():
     teacher = resnet_book["50"]([4, 4, 8, 8, 16], num_channel=1)
     assistants = []
@@ -257,7 +259,16 @@ def test_TAKD():
     distil.train_student(epochs=1, plot_losses=False, save_model=False)
     distil.get_parameters()
 
-    del teacher, assistants, student, distil, teacher_optimizer, assistant_optimizers, student_optimizer
+    del (
+        teacher,
+        assistants,
+        student,
+        distil,
+        teacher_optimizer,
+        assistant_optimizers,
+        student_optimizer,
+    )
+
 
 def test_attention():
     teacher_params = [4, 4, 8, 4, 4]
@@ -283,6 +294,7 @@ def test_attention():
     att.get_parameters()
 
     del teacher_model, student_model, att, t_optimizer, s_optimizer
+
 
 def test_NoisyTeacher():
     teacher_params = [4, 4, 8, 4, 4]
@@ -312,6 +324,7 @@ def test_NoisyTeacher():
 
     del teacher_model, student_model, experiment, t_optimizer, s_optimizer
 
+
 def test_VirtualTeacher():
     stud = Shallow(hidden_size=300)
 
@@ -325,6 +338,7 @@ def test_VirtualTeacher():
 
     del stud, distiller, s_optimizer
 
+
 def test_SelfTraining():
     stud = Shallow(hidden_size=300)
 
@@ -337,6 +351,7 @@ def test_SelfTraining():
     distiller.get_parameters()
 
     del stud, distiller, s_optimizer
+
 
 # def test_mean_teacher():
 #     teacher_params = [16, 16, 32, 16, 16]
@@ -388,6 +403,7 @@ def test_RCO():
 
     del teacher_model, student_model, distiller, t_optimizer, s_optimizer
 
+
 # def test_BANN():
 #     params = [4, 4, 4, 4, 4]
 #     model = ResNet50(params, 1, 10)
@@ -424,6 +440,7 @@ def test_PS():
 
     del teacher_model, student_model, distiller, t_optimizer, s_optimizer
 
+
 def test_LSR():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
@@ -448,6 +465,7 @@ def test_LSR():
     distiller.get_parameters()
 
     del teacher_model, student_model, distiller, t_optimizer, s_optimizer
+
 
 def test_soft_random():
     teacher_params = [4, 4, 8, 4, 4]
@@ -474,6 +492,7 @@ def test_soft_random():
 
     del teacher_model, student_model, distiller, t_optimizer, s_optimizer
 
+
 def test_messy_collab():
     teacher_params = [4, 4, 8, 4, 4]
     student_params = [4, 4, 4, 4, 4]
@@ -498,6 +517,7 @@ def test_messy_collab():
     distiller.get_parameters()
 
     del teacher_model, student_model, distiller, t_optimizer, s_optimizer
+
 
 # def test_bert2lstm():
 #     student_model = LSTMNet(
@@ -544,6 +564,7 @@ def test_DML():
 
     del student_model_1, student_model_2, distiller, s_optimizer_1, s_optimizer_2
 
+
 #
 # Pruning tests
 #
@@ -557,6 +578,7 @@ def test_lottery_tickets():
 
     del teacher_model, pruner
 
+
 def test_weight_threshold_pruning():
     teacher_params = [4, 4, 8, 4, 4]
     teacher_model = ResNet50(teacher_params, 1, 10)
@@ -568,6 +590,7 @@ def test_weight_threshold_pruning():
     )
 
     del teacher_model, pruner
+
 
 #
 # Quantization tests
@@ -583,6 +606,7 @@ def test_dynamic_quantization():
     quantizer.get_performance_statistics()
 
     del model, quantizer, quantized_model
+
 
 transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
@@ -613,6 +637,7 @@ def test_static_quantization():
     quantizer.get_performance_statistics()
 
     del model, quantizer, quantized_model
+
 
 def test_qat_quantization():
     model = models.quantization.resnet18(quantize=False)
