@@ -1,9 +1,6 @@
 KD-Lib
 ======
 
-.. image:: https://github.com/SforAiDl/KD_Lib/actions/workflows/python-package-test.yml/badge.svg
-
-
 A PyTorch model compression library containing easy-to-use methods for knowledge distillation, pruning, and quantization.
 
 
