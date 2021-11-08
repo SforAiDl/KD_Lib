@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-"""Tests for `KD_Lib` package."""
-
 import pandas as pd
-
 import torch
 import torch.optim as optim
 from torchvision import datasets, transforms
-import torchvision.models as models
 
 from KD_Lib.KD import (
     TAKD,
@@ -26,26 +21,11 @@ from KD_Lib.KD import (
     BaseClass,
 )
 
-from KD_Lib.models import (
-    ResNet18,
-    ResNet34,
-    ResNet50,
-    ResNet101,
-    ResNet152,
-    LeNet,
-    ModLeNet,
-    NetworkInNetwork,
-    Shallow,
-    LSTMNet,
-    resnet_book,
-)
-
-
 from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
 
-from KD_Lib.Pruning import LotteryTicketsPruner, WeightThresholdPruner
-from KD_Lib.Quantization import Dynamic_Quantizer, Static_Quantizer, QAT_Quantizer
+from KD_Lib.models import ResNet18, ResNet50, Shallow, resnet_book
+
 
 train_loader = torch.utils.data.DataLoader(
     datasets.MNIST(
@@ -73,6 +53,7 @@ test_loader = torch.utils.data.DataLoader(
 )
 
 ## BERT to LSTM data
+
 # data_csv = "./KD_Lib/KD/text/BERT2LSTM/IMDB_Dataset.csv"
 # df = pd.read_csv(data_csv)
 # df["sentiment"].replace({"negative": 0, "positive": 1}, inplace=True)
@@ -81,107 +62,6 @@ test_loader = torch.utils.data.DataLoader(
 # val_df = df.iloc[6:, :]
 
 # text_field, bert2lstm_train_loader = get_essentials(train_df)
-
-
-#
-#   MODEL TESTS
-#
-
-
-def test_resnet():
-
-    sample_input = torch.ones(size=(1, 3, 224, 224), requires_grad=False)
-    params = [4, 4, 8, 8, 16]
-
-    model = ResNet18(params)
-
-    # model = ResNet34(params)
-    # _ = model(sample_input)
-
-    # model = ResNet50(params)
-    # _ = model(sample_input)
-
-    # model = ResNet101(params)
-    # _ = model(sample_input)
-
-    # model = ResNet152(params)
-    # _ = model(sample_input)
-
-    # model = ResNet34(params, att=True)
-    # _ = model(sample_input)
-
-    # model = ResNet34(params, mean=True)
-    # _ = model(sample_input)
-
-    # model = ResNet101(params, att=True)
-    # _ = model(sample_input)
-
-    # model = ResNet101(params, mean=True)
-    # _ = model(sample_input)
-
-
-def test_attention_model():
-    params = [4, 4, 8, 8, 16]
-    sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
-    model = ResNet152(params, att=True)
-    _ = model(sample_input)
-    del model
-
-
-# def test_meanteacher_model():
-#     params = [4, 4, 8, 8, 16]
-#     sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
-#     model = ResNet152(params, mean=True)
-#     sample_output = model(sample_input)
-#
-
-
-def test_NIN():
-    sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
-    model = NetworkInNetwork(10, 1)
-    _ = model(sample_input)
-    del model
-
-
-def test_shallow():
-    sample_input = torch.ones(size=(1, 1, 32, 32), requires_grad=False)
-    model = Shallow(32)
-    _ = model(sample_input)
-    del model
-
-
-def test_lenet():
-    sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
-    model = LeNet()
-    _ = model(sample_input)
-    del model
-
-
-def test_modlenet():
-    sample_input = torch.ones(size=(1, 3, 32, 32), requires_grad=False)
-    model = ModLeNet()
-    _ = model(sample_input)
-    del model
-
-
-def test_LSTMNet():
-    sample_input = torch.tensor([[1, 2, 8, 3, 2], [2, 4, 99, 1, 7]])
-    sample_lengths = torch.tensor([5, 5])
-
-    # Simple LSTM
-    model = LSTMNet(num_classes=2, dropout_prob=0.5)
-    _ = model(sample_input, sample_lengths)
-    del model
-
-    # Bidirectional LSTM
-    model = LSTMNet(num_classes=2, dropout_prob=0.5, bidirectional=True)
-    _ = model(sample_input, sample_lengths)
-    del model
-
-
-#
-#   Strategy TESTS
-#
 
 
 def test_VanillaKD():
@@ -542,69 +422,3 @@ def test_DML():
     distiller.get_parameters()
 
     del student_model_1, student_model_2, distiller, s_optimizer_1, s_optimizer_2
-
-
-#
-# Pruning tests
-#
-
-
-def test_lottery_tickets():
-    teacher_params = [4, 4, 8, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10)
-    pruner = LotteryTicketsPruner(teacher_model, train_loader, test_loader)
-    pruner.prune(num_iterations=2, train_epochs=1, save_models=True, prune_percent=50)
-
-    del teacher_model, pruner
-
-
-def test_weight_threshold_pruning():
-    teacher_params = [4, 4, 8, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10)
-    pruner = WeightThresholdPruner(teacher_model, train_loader, test_loader)
-    pruner.prune(num_iterations=2, train_epochs=1, save_models=True, threshold=0.1)
-    pruner.evaluate(model_path="pruned_model_iteration_0.pt")
-    pruner.get_pruning_statistics(
-        model_path="pruned_model_iteration_0.pt", verbose=True
-    )
-
-    del teacher_model, pruner
-
-
-#
-# Quantization tests
-#
-
-
-def test_dynamic_quantization():
-    model_params = [4, 4, 8, 4, 4]
-    model = ResNet50(model_params, 1, 10, True)
-    quantizer = Dynamic_Quantizer(model, test_loader, {torch.nn.Linear})
-    quantized_model = quantizer.quantize()
-    quantizer.get_model_sizes()
-    quantizer.get_performance_statistics()
-
-    del model, quantizer, quantized_model
-
-
-def test_static_quantization():
-    model = models.quantization.resnet18(quantize=False)
-    model.fc.out_features = 10
-    quantizer = Static_Quantizer(model, train_loader, test_loader)
-    quantized_model = quantizer.quantize(1)
-    quantizer.get_model_sizes()
-    quantizer.get_performance_statistics()
-
-    del model, quantizer, quantized_model
-
-
-def test_qat_quantization():
-    model = models.quantization.resnet18(quantize=False)
-    model.fc.out_features = 10
-    optimizer = torch.optim.Adam(model.parameters())
-    quantizer = QAT_Quantizer(model, train_loader, test_loader, optimizer)
-    quantized_model = quantizer.quantize(1, 1, 1, 1)
-    quantizer.get_model_sizes()
-    quantizer.get_performance_statistics()
-
-    del model, quantizer, quantized_model
