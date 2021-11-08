@@ -3,7 +3,7 @@ KD-Lib
 
 A PyTorch model compression library containing easy-to-use methods for knowledge distillation, pruning, and quantization.
 
-
+==============
 Installation :
 ==============
 
@@ -34,7 +34,7 @@ If you intend to install the latest unreleased version of the library (i.e from 
     $ cd KD_Lib
     $ python setup.py install
 
-
+======
 Usage
 ======
 
@@ -149,7 +149,7 @@ and log training details to Tensorboard
     distiller.evaluate()
     distiller.get_parameters()
 
-
+===========================
 Currently implemented works
 ===========================
 
