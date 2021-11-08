@@ -1,18 +1,15 @@
 KD-Lib
 ======
 
-.. image:: https://github.com/SforAiDl/KD_Lib/actions/workflows/python-package-test.yml/badge.svg
-
-
 A PyTorch model compression library containing easy-to-use methods for knowledge distillation, pruning, and quantization.
 
-
-Installation :
+==============
+Installation
 ==============
 
-==============
-Stable release
-==============
+
+**Stable release**
+
 KD_Lib is compatible with Python 3.6 or later and also depends on PyTorch. The easiest way to install KD_Lib is with pip, Python's preferred package installer.
 
 .. code-block:: console
@@ -25,9 +22,8 @@ Note that KD_Lib is an active project and routinely publishes new releases. In o
 
     $ pip install -U KD-Lib
 
-=================
-Build from source
-=================
+
+**Building from source**
 
 If you intend to install the latest unreleased version of the library (i.e from source), you can simply do:
 
@@ -37,7 +33,7 @@ If you intend to install the latest unreleased version of the library (i.e from 
     $ cd KD_Lib
     $ python setup.py install
 
-
+======
 Usage
 ======
 
@@ -152,8 +148,8 @@ and log training details to Tensorboard
     distiller.evaluate()
     distiller.get_parameters()
 
-
-Currently implemented works
+===========================
+Implemented works
 ===========================
 
 Some benchmark results can be found in the `logs <./logs.rst>`_ file.
