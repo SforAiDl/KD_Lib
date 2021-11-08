@@ -7,6 +7,16 @@ A PyTorch model compression library containing easy-to-use methods for knowledge
 Installation
 ==============
 
+**Building from source (recommended)**
+
+If you intend to install the latest unreleased version of the library (i.e from source), you can simply do:
+
+.. code-block:: console
+
+    $ git clone https://github.com/SforAiDl/KD_Lib.git
+    $ cd KD_Lib
+    $ python setup.py install
+
 
 **Stable release**
 
@@ -22,16 +32,6 @@ Note that KD_Lib is an active project and routinely publishes new releases. In o
 
     $ pip install -U KD-Lib
 
-
-**Building from source**
-
-If you intend to install the latest unreleased version of the library (i.e from source), you can simply do:
-
-.. code-block:: console
-
-    $ git clone https://github.com/SforAiDl/KD_Lib.git
-    $ cd KD_Lib
-    $ python setup.py install
 
 ======
 Usage
