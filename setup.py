@@ -28,7 +28,7 @@ setup_requirements = ["pytest-runner"]
 test_requirements = ["pytest", "pytest-cov"]
 
 requirements = [
-    "pip==19.3.1",
+    "pip==21.1",
     "transformers==4.6.1",
     "sacremoses",
     "tokenizers==0.10.1",
