@@ -1,9 +1,7 @@
 KD-Lib
-======
+=======
 
 A PyTorch model compression library containing easy-to-use methods for knowledge distillation, pruning, and quantization.
-
-`Documentation <https://kd-lib.readthedocs.io/en/latest/>`_ | `Tutorials <https://kd-lib.readthedocs.io/en/latest/usage/tutorials/index.html>`_
 
 ==============
 Installation

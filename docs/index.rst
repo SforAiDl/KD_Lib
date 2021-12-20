@@ -10,7 +10,7 @@ Welcome to KD_Lib's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   usage/about
+   about
    usage/install
    usage/tutorials/index
 
