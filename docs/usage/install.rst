@@ -17,7 +17,7 @@ If you intend to install the latest unreleased version of the library (i.e from 
 Stable release
 -----------------------
 
-KD_Lib is compatible with Python 3.6 or later and also depends on pytorch. The easiest way to install KD_Lib is with pip, Python's preferred package installer.
+KD_Lib is compatible with Python 3.6 or later and also depends on PyTorch. KD-Lib can be installed from PyPI via pip, 
 
 .. code-block:: console
 
