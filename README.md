@@ -170,13 +170,13 @@ Please cite our pre-print if you find KD_Lib useful in any way :)
 
 ```bibtex
 
-    @misc{shah2020kdlib,
-      title={KD-Lib: A PyTorch library for Knowledge Distillation, Pruning and Quantization}, 
-      author={Het Shah and Avishree Khare and Neelay Shah and Khizir Siddiqui},
-      year={2020},
-      eprint={2011.14691},
-      archivePrefix={arXiv},
-      primaryClass={cs.LG}
-    }
+@misc{shah2020kdlib,
+  title={KD-Lib: A PyTorch library for Knowledge Distillation, Pruning and Quantization}, 
+  author={Het Shah and Avishree Khare and Neelay Shah and Khizir Siddiqui},
+  year={2020},
+  eprint={2011.14691},
+  archivePrefix={arXiv},
+  primaryClass={cs.LG}
+}
 
 ```
