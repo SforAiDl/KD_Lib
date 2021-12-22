@@ -13,8 +13,8 @@
 
 ```shell
 
-git clone https://github.com/neu-vig/ezflow
-cd ezflow/
+https://github.com/SforAiDl/KD_Lib.git
+cd KD_Lib
 python setup.py install
 
 ```
@@ -166,7 +166,7 @@ Some benchmark results can be found in the [logs](./logs.rst) file.
 
 <br>
 
-Please cite our pre-print if you find KD_Lib useful in any way :)
+Please cite our pre-print if you find `KD-Lib` useful in any way :)
 
 ```bibtex
 
