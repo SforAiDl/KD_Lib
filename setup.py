@@ -9,7 +9,7 @@ import os
 from setuptools import find_packages, setup
 
 # Basic information
-with open("README.rst", "r") as f:
+with open("README.md", "r") as f:
     LONG_DESCRIPTION = f.read()
 
 # Define the keywords
