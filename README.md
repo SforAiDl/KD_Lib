@@ -3,6 +3,8 @@
 
 <div align='center'>
 
+[![Downloads](https://pepy.tech/badge/kd-lib)](https://pepy.tech/project/kd-lib)
+    
 **[Documentation](https://kd-lib.readthedocs.io/en/latest/)** | **[Tutorials](https://kd-lib.readthedocs.io/en/latest/usage/tutorials/index.html)**
 
 </div>
