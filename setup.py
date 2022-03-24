@@ -69,7 +69,7 @@ if __name__ == "__main__":
             "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7",
         ],
-        description="A Pytorch Library to help extend all Knowledge Distillation works",
+        description="A PyTorch model compression library containing easy-to-use methods for knowledge distillation, pruning, and quantization",
         install_requires=requirements,
         license="MIT license",
         long_description=LONG_DESCRIPTION,
