@@ -139,7 +139,7 @@ class BaseClass:
                     "Validation accuracy/Teacher", epoch_val_acc, epochs
                 )
 
-            loss_arr.append(epoch_loss)
+            loss_arr.append(epoch_loss.item())
             print(
                 "Epoch: {}, Loss: {}, Accuracy: {}".format(
                     ep + 1, epoch_loss, epoch_acc
@@ -152,7 +152,7 @@ class BaseClass:
         if save_model:
             torch.save(self.teacher_model.state_dict(), save_model_pth)
         if plot_losses:
-            plt.plot(loss_arr.detach().numpy())
+            plt.plot(loss_arr)
 
     def _train_student(
         self,
@@ -225,7 +225,7 @@ class BaseClass:
                     "Validation accuracy/Student", epoch_val_acc, epochs
                 )
 
-            loss_arr.append(epoch_loss)
+            loss_arr.append(epoch_loss.item())
             print(
                 "Epoch: {}, Loss: {}, Accuracy: {}".format(
                     ep + 1, epoch_loss, epoch_acc
@@ -236,7 +236,7 @@ class BaseClass:
         if save_model:
             torch.save(self.student_model.state_dict(), save_model_pth)
         if plot_losses:
-            plt.plot(loss_arr.detach().numpy())
+            plt.plot(loss_arr)
 
     def train_student(
         self,
