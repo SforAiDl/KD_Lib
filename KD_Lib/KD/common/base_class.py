@@ -152,7 +152,7 @@ class BaseClass:
         if save_model:
             torch.save(self.teacher_model.state_dict(), save_model_pth)
         if plot_losses:
-            plt.plot(loss_arr)
+            plt.plot(loss_arr.detach().numpy())
 
     def _train_student(
         self,
@@ -236,7 +236,7 @@ class BaseClass:
         if save_model:
             torch.save(self.student_model.state_dict(), save_model_pth)
         if plot_losses:
-            plt.plot(loss_arr)
+            plt.plot(loss_arr.detach().numpy())
 
     def train_student(
         self,
