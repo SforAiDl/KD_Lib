@@ -67,7 +67,7 @@ class Attention(BaseClass):
         loss = (
             (1.0 - self.distil_weight)
             * self.temp
-            * F.cross_entropy(y_pred_student[0] / self.temp, y_true)
+            * F.cross_entropy(y_pred_student / self.temp, y_true)
         )
         loss += self.distil_weight * self.loss_fn(y_pred_teacher, y_pred_student)
         return loss

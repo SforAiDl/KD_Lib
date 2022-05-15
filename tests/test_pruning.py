@@ -38,7 +38,6 @@ def test_weight_threshold_pruning():
 
     pruner = WeightThresholdPruner(model, train_loader, test_loader)
     pruner.prune(num_iterations=2, train_epochs=1, save_models=True, threshold=0.1)
-    pruner.evaluate(model_path="pruned_model_iteration_0.pt")
     pruner.get_pruning_statistics(
         model_path="pruned_model_iteration_0.pt", verbose=True
     )

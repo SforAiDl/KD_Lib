@@ -104,21 +104,21 @@ def test_TAKD():
     distil.get_parameters()
 
 
-def test_attention():
+# def test_attention():
 
-    att = Attention(
-        teacher,
-        student,
-        train_loader,
-        test_loader,
-        t_optimizer,
-        s_optimizer,
-    )
+#     att = Attention(
+#         teacher,
+#         student,
+#         train_loader,
+#         test_loader,
+#         t_optimizer,
+#         s_optimizer,
+#     )
 
-    att.train_teacher(epochs=1, plot_losses=False, save_model=False)
-    att.train_student(epochs=1, plot_losses=False, save_model=False)
-    att.evaluate(teacher=False)
-    att.get_parameters()
+#     att.train_teacher(epochs=1, plot_losses=False, save_model=False)
+#     att.train_student(epochs=1, plot_losses=False, save_model=False)
+#     att.evaluate(teacher=False)
+#     att.get_parameters()
 
 
 def test_NoisyTeacher():
@@ -159,13 +159,6 @@ def test_SelfTraining():
 
 
 # def test_mean_teacher():
-#     teacher_params = [16, 16, 32, 16, 16]
-#     student_params = [16, 16, 16, 16, 16]
-#     teacher_model = ResNet50(teacher_params, 1, 10, mean=True)
-#     student_model = ResNet18(student_params, 1, 10, mean=True)
-
-#     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-#     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
 #     mt = MeanTeacher(
 #         teacher_model,
@@ -200,8 +193,8 @@ def test_RCO():
 
 
 # def test_BANN():
-#     params = [4, 4, 4, 4, 4]
-#     model = ResNet50(params, 1, 10)
+
+#     model = deepcopy(mock_vision_model)
 #     optimizer = optim.SGD(model.parameters(), 0.01)
 
 #     distiller = BANN(model, train_loader, test_loader, optimizer, num_gen=2)
