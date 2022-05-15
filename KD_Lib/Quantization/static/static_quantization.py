@@ -47,6 +47,7 @@ class Static_Quantizer(Quantizer):
 
         self.quantized_model = deepcopy(self.model)
         self.quantized_model.eval()
+        self.quantized_model.fuse_model()
         self.quantized_model.qconfig = self.qconfig
 
         torch.quantization.prepare(self.quantized_model, inplace=True)
