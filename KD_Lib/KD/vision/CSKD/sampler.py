@@ -1,17 +1,21 @@
-import csv, torchvision, numpy as np, random, os
-from PIL import Image
+import csv
+import os
+import random
+from collections import defaultdict
 
+import numpy as np
+import torchvision
+from PIL import Image
 from torch.utils.data import (
-    Sampler,
-    Dataset,
-    DataLoader,
     BatchSampler,
-    SequentialSampler,
+    DataLoader,
+    Dataset,
     RandomSampler,
+    Sampler,
+    SequentialSampler,
     Subset,
 )
-from torchvision import transforms, datasets
-from collections import defaultdict
+from torchvision import datasets, transforms
 
 
 class PairBatchSampler(Sampler):

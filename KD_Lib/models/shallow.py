@@ -20,7 +20,7 @@ class Shallow(nn.Module):
         self.img_size = img_size
         self.num_channels = num_channels
 
-        self.fc1 = nn.Linear(self.img_size ** 2 * self.num_channels, self.hidden_size)
+        self.fc1 = nn.Linear(self.img_size**2 * self.num_channels, self.hidden_size)
         self.fc2 = nn.Linear(self.hidden_size, self.hidden_size)
         self.fc3 = nn.Linear(self.hidden_size, self.num_classes)
 

@@ -1,9 +1,15 @@
+from copy import deepcopy
+
+import matplotlib.pyplot as plt
 import numpy as np
 import torch
-import matplotlib.pyplot as plt
-from copy import deepcopy
-from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, random_split
-from torch.utils.data import TensorDataset
+from torch.utils.data import (
+    DataLoader,
+    RandomSampler,
+    SequentialSampler,
+    TensorDataset,
+    random_split,
+)
 
 """
 DATALOADER UTILITIES

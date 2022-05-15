@@ -1,10 +1,10 @@
+import os
+from copy import deepcopy
+
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
-
-import matplotlib.pyplot as plt
-from copy import deepcopy
-import os
 
 
 class BaseClass:

@@ -1,10 +1,10 @@
+from copy import deepcopy
+
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-
-import matplotlib.pyplot as plt
-from copy import deepcopy
 
 from KD_Lib.KD.common import BaseClass
 
@@ -77,7 +77,7 @@ class CSKD(BaseClass):
         q = torch.softmax(y_pred_pair_2 / self.temp, dim=1)
         loss = (
             nn.KLDivLoss(reduction="sum")(log_p, q)
-            * (self.temp ** 2)
+            * (self.temp**2)
             / y_pred_pair_1.size(0)
         )
 

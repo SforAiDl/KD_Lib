@@ -1,19 +1,23 @@
 # coding: utf-8
 
-from __future__ import unicode_literals, print_function
+from __future__ import print_function, unicode_literals
 
+import random
 from contextlib import closing
 from multiprocessing import Pool
 
+import numpy as np
 import pandas as pd
 import torch
-from torch.utils.data import TensorDataset
-from torch.utils.data import DataLoader, RandomSampler, SequentialSampler, random_split
-from tqdm import tqdm
-import numpy as np
-import random
-
+from torch.utils.data import (
+    DataLoader,
+    RandomSampler,
+    SequentialSampler,
+    TensorDataset,
+    random_split,
+)
 from torchtext.legacy import data
+from tqdm import tqdm
 
 
 class InputExample(object):

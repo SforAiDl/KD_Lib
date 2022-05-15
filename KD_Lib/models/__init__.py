@@ -1,3 +1,6 @@
+from .lenet import LeNet, ModLeNet
+from .lstm import LSTMNet
+from .nin import NetworkInNetwork
 from .resnet import (
     ResNet,
     ResNet18,
@@ -7,7 +10,4 @@ from .resnet import (
     ResNet152,
     resnet_book,
 )
-from .lenet import LeNet, ModLeNet
-from .nin import NetworkInNetwork
 from .shallow import Shallow
-from .lstm import LSTMNet

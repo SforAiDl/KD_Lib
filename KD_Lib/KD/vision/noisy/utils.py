@@ -9,4 +9,4 @@ def add_noise(x, variance=0.1):
     :param variance (float): Variance for adding noise
     """
 
-    return x * (1 + (variance ** 0.5) * torch.randn_like(x))
+    return x * (1 + (variance**0.5) * torch.randn_like(x))

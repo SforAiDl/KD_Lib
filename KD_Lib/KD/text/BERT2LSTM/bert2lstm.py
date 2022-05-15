@@ -1,13 +1,12 @@
+import random
+from copy import deepcopy
+
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import random
-
-import numpy as np
-import matplotlib.pyplot as plt
-from copy import deepcopy
-
-from transformers import BertForSequenceClassification, AdamW, BertTokenizer
+from transformers import AdamW, BertForSequenceClassification, BertTokenizer
 
 from KD_Lib.KD.common import BaseClass
 from KD_Lib.KD.text.utils import get_bert_dataloader

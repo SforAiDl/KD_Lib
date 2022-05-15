@@ -1,16 +1,16 @@
 import torch
 
 from KD_Lib.models import (
+    LeNet,
+    LSTMNet,
+    ModLeNet,
+    NetworkInNetwork,
     ResNet18,
     ResNet34,
     ResNet50,
     ResNet101,
     ResNet152,
-    LeNet,
-    ModLeNet,
-    NetworkInNetwork,
     Shallow,
-    LSTMNet,
     resnet_book,
 )
 
