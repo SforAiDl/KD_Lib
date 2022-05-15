@@ -117,7 +117,7 @@ class DML:
 
                 correct += max(correct_preds)
 
-                epoch_loss += avg_student_loss
+                epoch_loss += avg_student_loss.item()
 
             epoch_acc = correct / length_of_dataset
 

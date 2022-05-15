@@ -120,7 +120,7 @@ class BaseClass:
                 loss.backward()
                 self.optimizer_teacher.step()
 
-                epoch_loss += loss
+                epoch_loss += loss.item()
 
             epoch_acc = correct / length_of_dataset
 
