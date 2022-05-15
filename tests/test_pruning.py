@@ -14,7 +14,7 @@ batch_size = 2
 
 train_loader = test_loader = DataLoader(
     MockVisionDataset(
-        size=img_size, n_classes=n_classes, length=len_dataset, n_channel=img_channels
+        size=img_size, n_classes=n_classes, length=len_dataset, n_channels=img_channels
     ),
     batch_size=batch_size,
 )
