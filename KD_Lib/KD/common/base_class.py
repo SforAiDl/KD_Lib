@@ -139,7 +139,7 @@ class BaseClass:
                     "Validation accuracy/Teacher", epoch_val_acc, epochs
                 )
 
-            loss_arr.append(epoch_loss.item())
+            loss_arr.append(epoch_loss)
             print(
                 "Epoch: {}, Loss: {}, Accuracy: {}".format(
                     ep + 1, epoch_loss, epoch_acc
@@ -225,7 +225,7 @@ class BaseClass:
                     "Validation accuracy/Student", epoch_val_acc, epochs
                 )
 
-            loss_arr.append(epoch_loss.item())
+            loss_arr.append(epoch_loss)
             print(
                 "Epoch: {}, Loss: {}, Accuracy: {}".format(
                     ep + 1, epoch_loss, epoch_acc
