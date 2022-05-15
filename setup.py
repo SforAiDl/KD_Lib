@@ -73,6 +73,7 @@ if __name__ == "__main__":
         install_requires=requirements,
         license="MIT license",
         long_description=LONG_DESCRIPTION,
+        long_description_content_type="text/markdown",
         include_package_data=True,
         keywords=KEYWORDS,
         name="KD_Lib",
