@@ -43,6 +43,12 @@ mock_vision_model = MockImageClassifier(
     size=img_size, n_classes=n_classes, n_channels=img_channels
 )
 
+teacher = deepcopy(mock_vision_model)
+student = deepcopy(mock_vision_model)
+
+t_optimizer = optim.SGD(teacher.parameters(), 0.01)
+s_optimizer = optim.SGD(student.parameters(), 0.01)
+
 
 ## BERT to LSTM data
 
@@ -58,12 +64,6 @@ mock_vision_model = MockImageClassifier(
 
 def test_VanillaKD():
 
-    teacher = deepcopy(mock_vision_model)
-    student = deepcopy(mock_vision_model)
-
-    t_optimizer = optim.SGD(teacher.parameters(), 0.01)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
-
     distiller = VanillaKD(
         teacher, student, train_loader, test_loader, t_optimizer, s_optimizer, log=True
     )
@@ -75,9 +75,6 @@ def test_VanillaKD():
 
 
 def test_TAKD():
-
-    teacher = deepcopy(mock_vision_model)
-    student = deepcopy(mock_vision_model)
 
     assistants = [deepcopy(mock_vision_model) for _ in range(2)]
 
@@ -109,12 +106,6 @@ def test_TAKD():
 
 def test_attention():
 
-    teacher = deepcopy(mock_vision_model)
-    student = deepcopy(mock_vision_model)
-
-    t_optimizer = optim.SGD(teacher.parameters(), 0.01)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
-
     att = Attention(
         teacher,
         student,
@@ -131,12 +122,6 @@ def test_attention():
 
 
 def test_NoisyTeacher():
-
-    teacher = deepcopy(mock_vision_model)
-    student = deepcopy(mock_vision_model)
-
-    t_optimizer = optim.SGD(teacher.parameters(), 0.01)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
 
     experiment = NoisyTeacher(
         teacher,
@@ -158,9 +143,6 @@ def test_NoisyTeacher():
 
 def test_VirtualTeacher():
 
-    student = deepcopy(mock_vision_model)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
-
     distiller = VirtualTeacher(student, train_loader, test_loader, s_optimizer)
     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
@@ -168,9 +150,6 @@ def test_VirtualTeacher():
 
 
 def test_SelfTraining():
-
-    student = deepcopy(mock_vision_model)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
 
     distiller = SelfTraining(student, train_loader, test_loader, s_optimizer)
 
@@ -205,12 +184,6 @@ def test_SelfTraining():
 
 def test_RCO():
 
-    teacher = deepcopy(mock_vision_model)
-    student = deepcopy(mock_vision_model)
-
-    t_optimizer = optim.SGD(teacher.parameters(), 0.01)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
-
     distiller = RCO(
         teacher,
         student,
@@ -239,12 +212,6 @@ def test_RCO():
 
 def test_PS():
 
-    teacher = deepcopy(mock_vision_model)
-    student = deepcopy(mock_vision_model)
-
-    t_optimizer = optim.SGD(teacher.parameters(), 0.01)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
-
     distiller = ProbShift(
         teacher,
         student,
@@ -261,12 +228,6 @@ def test_PS():
 
 
 def test_LSR():
-
-    teacher = deepcopy(mock_vision_model)
-    student = deepcopy(mock_vision_model)
-
-    t_optimizer = optim.SGD(teacher.parameters(), 0.01)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
 
     distiller = LabelSmoothReg(
         teacher,
@@ -285,12 +246,6 @@ def test_LSR():
 
 def test_soft_random():
 
-    teacher = deepcopy(mock_vision_model)
-    student = deepcopy(mock_vision_model)
-
-    t_optimizer = optim.SGD(teacher.parameters(), 0.01)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
-
     distiller = SoftRandom(
         teacher,
         student,
@@ -307,12 +262,6 @@ def test_soft_random():
 
 
 def test_messy_collab():
-
-    teacher = deepcopy(mock_vision_model)
-    student = deepcopy(mock_vision_model)
-
-    t_optimizer = optim.SGD(teacher.parameters(), 0.01)
-    s_optimizer = optim.SGD(student.parameters(), 0.01)
 
     distiller = MessyCollab(
         teacher,
