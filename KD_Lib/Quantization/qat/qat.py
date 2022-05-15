@@ -1,6 +1,8 @@
-import torch
-from KD_Lib.Quantization.common import Quantizer
 from copy import deepcopy
+
+import torch
+
+from KD_Lib.Quantization.common import Quantizer
 
 
 class QAT_Quantizer(Quantizer):
@@ -60,7 +62,6 @@ class QAT_Quantizer(Quantizer):
         qat_model = deepcopy(self.model)
         qat_model.fuse_model()
 
-        # optimizer = torch.optim.SGD(qat_model.parameters(), lr=1e-4)
         optimizer = deepcopy(self.optimizer)
         optimizer.params = qat_model.parameters()
 

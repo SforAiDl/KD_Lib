@@ -1,6 +1,7 @@
-import torch
 import os
 import time
+
+import torch
 
 
 class Quantizer:

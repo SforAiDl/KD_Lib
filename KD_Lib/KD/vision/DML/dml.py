@@ -1,12 +1,12 @@
+import os
+from copy import deepcopy
+
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
-
-import matplotlib.pyplot as plt
-from copy import deepcopy
-import os
 
 
 class DML:
@@ -117,7 +117,7 @@ class DML:
 
                 correct += max(correct_preds)
 
-                epoch_loss += avg_student_loss
+                epoch_loss += avg_student_loss.item()
 
             epoch_acc = correct / length_of_dataset
 

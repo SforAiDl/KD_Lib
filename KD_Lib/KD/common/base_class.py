@@ -1,10 +1,10 @@
+import os
+from copy import deepcopy
+
+import matplotlib.pyplot as plt
 import torch
 import torch.nn as nn
 from torch.utils.tensorboard import SummaryWriter
-
-import matplotlib.pyplot as plt
-from copy import deepcopy
-import os
 
 
 class BaseClass:
@@ -120,7 +120,7 @@ class BaseClass:
                 loss.backward()
                 self.optimizer_teacher.step()
 
-                epoch_loss += loss
+                epoch_loss += loss.item()
 
             epoch_acc = correct / length_of_dataset
 

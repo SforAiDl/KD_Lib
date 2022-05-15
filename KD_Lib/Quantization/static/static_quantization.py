@@ -1,6 +1,8 @@
-import torch
-from KD_Lib.Quantization.common import Quantizer
 from copy import deepcopy
+
+import torch
+
+from KD_Lib.Quantization.common import Quantizer
 
 
 class Static_Quantizer(Quantizer):

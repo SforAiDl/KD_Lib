@@ -1,56 +1,54 @@
+from copy import deepcopy
+
 import pandas as pd
-import torch
 import torch.optim as optim
-from torchvision import datasets, transforms
+from torch.utils.data import DataLoader
 
 from KD_Lib.KD import (
+    BANN,
+    DML,
+    RCO,
     TAKD,
     Attention,
+    BaseClass,
+    LabelSmoothReg,
+    MeanTeacher,
+    MessyCollab,
+    NoisyTeacher,
+    ProbShift,
+    SelfTraining,
+    SoftRandom,
     VanillaKD,
     VirtualTeacher,
-    SelfTraining,
-    NoisyTeacher,
-    SoftRandom,
-    MessyCollab,
-    MeanTeacher,
-    RCO,
-    BANN,
-    ProbShift,
-    LabelSmoothReg,
-    DML,
-    BaseClass,
 )
-
-from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 from KD_Lib.KD.text.BERT2LSTM import BERT2LSTM
+from KD_Lib.KD.text.BERT2LSTM.utils import get_essentials
 
-from KD_Lib.models import ResNet18, ResNet50, Shallow, resnet_book
+from .utils import MockImageClassifier, MockVisionDataset
 
+img_size = (32, 32)
+img_channels = 3
+n_classes = 10
+len_dataset = 4
+batch_size = 2
 
-train_loader = torch.utils.data.DataLoader(
-    datasets.MNIST(
-        "mnist_data",
-        train=True,
-        download=True,
-        transform=transforms.Compose(
-            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-        ),
+train_loader = test_loader = DataLoader(
+    MockVisionDataset(
+        size=img_size, n_classes=n_classes, length=len_dataset, n_channels=img_channels
     ),
-    batch_size=4,
-    shuffle=True,
+    batch_size=batch_size,
 )
 
-test_loader = torch.utils.data.DataLoader(
-    datasets.MNIST(
-        "mnist_data",
-        train=False,
-        transform=transforms.Compose(
-            [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
-        ),
-    ),
-    batch_size=4,
-    shuffle=True,
+mock_vision_model = MockImageClassifier(
+    size=img_size, n_classes=n_classes, n_channels=img_channels
 )
+
+teacher = deepcopy(mock_vision_model)
+student = deepcopy(mock_vision_model)
+
+t_optimizer = optim.SGD(teacher.parameters(), 0.01)
+s_optimizer = optim.SGD(student.parameters(), 0.01)
+
 
 ## BERT to LSTM data
 
@@ -65,14 +63,9 @@ test_loader = torch.utils.data.DataLoader(
 
 
 def test_VanillaKD():
-    teac = Shallow(hidden_size=400)
-    stud = Shallow(hidden_size=100)
-
-    t_optimizer = optim.SGD(teac.parameters(), 0.01)
-    s_optimizer = optim.SGD(stud.parameters(), 0.01)
 
     distiller = VanillaKD(
-        teac, stud, train_loader, test_loader, t_optimizer, s_optimizer, log=True
+        teacher, student, train_loader, test_loader, t_optimizer, s_optimizer, log=True
     )
 
     distiller.train_teacher(epochs=1, plot_losses=True, save_model=True)
@@ -80,18 +73,10 @@ def test_VanillaKD():
     distiller.evaluate(teacher=False)
     distiller.get_parameters()
 
-    del teac, stud, distiller, t_optimizer, s_optimizer
-
 
 def test_TAKD():
-    teacher = resnet_book["50"]([4, 4, 8, 8, 16], num_channel=1)
-    assistants = []
-    temp = resnet_book["34"]([4, 4, 8, 8, 16], num_channel=1)
-    assistants.append(temp)
-    temp = resnet_book["34"]([4, 4, 8, 8, 16], num_channel=1)
-    assistants.append(temp)
 
-    student = resnet_book["18"]([4, 4, 8, 8, 16], num_channel=1)
+    assistants = [deepcopy(mock_vision_model) for _ in range(2)]
 
     teacher_optimizer = optim.Adam(teacher.parameters())
     assistant_optimizers = []
@@ -118,55 +103,29 @@ def test_TAKD():
     distil.train_student(epochs=1, plot_losses=False, save_model=False)
     distil.get_parameters()
 
-    del (
-        teacher,
-        assistants,
-        student,
-        distil,
-        teacher_optimizer,
-        assistant_optimizers,
-        student_optimizer,
-    )
 
+# def test_attention():
 
-def test_attention():
-    teacher_params = [4, 4, 8, 4, 4]
-    student_params = [4, 4, 4, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10, True)
-    student_model = ResNet18(student_params, 1, 10, True)
+#     att = Attention(
+#         teacher,
+#         student,
+#         train_loader,
+#         test_loader,
+#         t_optimizer,
+#         s_optimizer,
+#     )
 
-    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
-
-    att = Attention(
-        teacher_model,
-        student_model,
-        train_loader,
-        test_loader,
-        t_optimizer,
-        s_optimizer,
-    )
-
-    att.train_teacher(epochs=1, plot_losses=False, save_model=False)
-    att.train_student(epochs=1, plot_losses=False, save_model=False)
-    att.evaluate(teacher=False)
-    att.get_parameters()
-
-    del teacher_model, student_model, att, t_optimizer, s_optimizer
+#     att.train_teacher(epochs=1, plot_losses=False, save_model=False)
+#     att.train_student(epochs=1, plot_losses=False, save_model=False)
+#     att.evaluate(teacher=False)
+#     att.get_parameters()
 
 
 def test_NoisyTeacher():
-    teacher_params = [4, 4, 8, 4, 4]
-    student_params = [4, 4, 4, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10)
-    student_model = ResNet18(student_params, 1, 10)
-
-    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
     experiment = NoisyTeacher(
-        teacher_model,
-        student_model,
+        teacher,
+        student,
         train_loader,
         test_loader,
         t_optimizer,
@@ -181,45 +140,25 @@ def test_NoisyTeacher():
     experiment.evaluate(teacher=False)
     experiment.get_parameters()
 
-    del teacher_model, student_model, experiment, t_optimizer, s_optimizer
-
 
 def test_VirtualTeacher():
-    stud = Shallow(hidden_size=300)
 
-    s_optimizer = optim.SGD(stud.parameters(), 0.01)
-
-    distiller = VirtualTeacher(stud, train_loader, test_loader, s_optimizer)
-
+    distiller = VirtualTeacher(student, train_loader, test_loader, s_optimizer)
     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
-
-    del stud, distiller, s_optimizer
 
 
 def test_SelfTraining():
-    stud = Shallow(hidden_size=300)
 
-    s_optimizer = optim.SGD(stud.parameters(), 0.01)
-
-    distiller = SelfTraining(stud, train_loader, test_loader, s_optimizer)
+    distiller = SelfTraining(student, train_loader, test_loader, s_optimizer)
 
     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
 
-    del stud, distiller, s_optimizer
-
 
 # def test_mean_teacher():
-#     teacher_params = [16, 16, 32, 16, 16]
-#     student_params = [16, 16, 16, 16, 16]
-#     teacher_model = ResNet50(teacher_params, 1, 10, mean=True)
-#     student_model = ResNet18(student_params, 1, 10, mean=True)
-
-#     t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-#     s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
 #     mt = MeanTeacher(
 #         teacher_model,
@@ -238,17 +177,9 @@ def test_SelfTraining():
 
 def test_RCO():
 
-    teacher_params = [4, 4, 8, 4, 4]
-    student_params = [4, 4, 4, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10)
-    student_model = ResNet18(student_params, 1, 10)
-
-    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
-
     distiller = RCO(
-        teacher_model,
-        student_model,
+        teacher,
+        student,
         train_loader,
         test_loader,
         t_optimizer,
@@ -260,12 +191,10 @@ def test_RCO():
     distiller.evaluate()
     distiller.get_parameters()
 
-    del teacher_model, student_model, distiller, t_optimizer, s_optimizer
-
 
 # def test_BANN():
-#     params = [4, 4, 4, 4, 4]
-#     model = ResNet50(params, 1, 10)
+
+#     model = deepcopy(mock_vision_model)
 #     optimizer = optim.SGD(model.parameters(), 0.01)
 
 #     distiller = BANN(model, train_loader, test_loader, optimizer, num_gen=2)
@@ -275,17 +204,10 @@ def test_RCO():
 
 
 def test_PS():
-    teacher_params = [4, 4, 8, 4, 4]
-    student_params = [4, 4, 4, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10)
-    student_model = ResNet18(student_params, 1, 10)
-
-    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
     distiller = ProbShift(
-        teacher_model,
-        student_model,
+        teacher,
+        student,
         train_loader,
         test_loader,
         t_optimizer,
@@ -296,22 +218,13 @@ def test_PS():
     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
-
-    del teacher_model, student_model, distiller, t_optimizer, s_optimizer
 
 
 def test_LSR():
-    teacher_params = [4, 4, 8, 4, 4]
-    student_params = [4, 4, 4, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10)
-    student_model = ResNet18(student_params, 1, 10)
-
-    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
     distiller = LabelSmoothReg(
-        teacher_model,
-        student_model,
+        teacher,
+        student,
         train_loader,
         test_loader,
         t_optimizer,
@@ -322,22 +235,13 @@ def test_LSR():
     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
-
-    del teacher_model, student_model, distiller, t_optimizer, s_optimizer
 
 
 def test_soft_random():
-    teacher_params = [4, 4, 8, 4, 4]
-    student_params = [4, 4, 4, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10)
-    student_model = ResNet18(student_params, 1, 10)
-
-    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
     distiller = SoftRandom(
-        teacher_model,
-        student_model,
+        teacher,
+        student,
         train_loader,
         test_loader,
         t_optimizer,
@@ -348,22 +252,13 @@ def test_soft_random():
     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
-
-    del teacher_model, student_model, distiller, t_optimizer, s_optimizer
 
 
 def test_messy_collab():
-    teacher_params = [4, 4, 8, 4, 4]
-    student_params = [4, 4, 4, 4, 4]
-    teacher_model = ResNet50(teacher_params, 1, 10)
-    student_model = ResNet18(student_params, 1, 10)
-
-    t_optimizer = optim.SGD(teacher_model.parameters(), 0.01)
-    s_optimizer = optim.SGD(student_model.parameters(), 0.01)
 
     distiller = MessyCollab(
-        teacher_model,
-        student_model,
+        teacher,
+        student,
         train_loader,
         test_loader,
         t_optimizer,
@@ -374,8 +269,6 @@ def test_messy_collab():
     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
-
-    del teacher_model, student_model, distiller, t_optimizer, s_optimizer
 
 
 # def test_bert2lstm():
@@ -395,14 +288,13 @@ def test_messy_collab():
 
 def test_DML():
 
-    student_params = [4, 4, 4, 4, 4]
-    student_model_1 = ResNet50(student_params, 1, 10)
-    student_model_2 = ResNet18(student_params, 1, 10)
+    student_1 = deepcopy(mock_vision_model)
+    student_2 = deepcopy(mock_vision_model)
 
-    student_cohort = (student_model_1, student_model_2)
+    student_cohort = (student_1, student_2)
 
-    s_optimizer_1 = optim.SGD(student_model_1.parameters(), 0.01)
-    s_optimizer_2 = optim.SGD(student_model_2.parameters(), 0.01)
+    s_optimizer_1 = optim.SGD(student_1.parameters(), 0.01)
+    s_optimizer_2 = optim.SGD(student_2.parameters(), 0.01)
 
     student_optimizers = (s_optimizer_1, s_optimizer_2)
 
@@ -420,5 +312,3 @@ def test_DML():
     )
     distiller.evaluate()
     distiller.get_parameters()
-
-    del student_model_1, student_model_2, distiller, s_optimizer_1, s_optimizer_2
