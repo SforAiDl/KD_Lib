@@ -21,17 +21,20 @@ class ATLoss(nn.Module):
         :param student_output (torch.FloatTensor): Prediction made by the student model
         """
 
-        A_t = teacher_output[1:]
-        A_s = student_output[1:]
+        A_t = teacher_output  # [1:]
+        A_s = student_output  # [1:]
+
         loss = 0.0
         for (layerT, layerS) in zip(A_t, A_s):
+
             xT = self.single_at_loss(layerT)
             xS = self.single_at_loss(layerS)
             loss += (xS - xT).pow(self.p).mean()
+
         return loss
 
     def single_at_loss(self, activation):
         """
         Function for calculating single attention loss
         """
-        return F.normalize(activation.pow(self.p).mean(1).view(activation.size(0), -1))
+        return F.normalize(activation.pow(self.p).view(activation.size(0), -1))
