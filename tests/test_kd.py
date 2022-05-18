@@ -10,7 +10,6 @@ from KD_Lib.KD import (
     RCO,
     TAKD,
     Attention,
-    BaseClass,
     LabelSmoothReg,
     MeanTeacher,
     MessyCollab,
@@ -29,7 +28,7 @@ from .utils import MockImageClassifier, MockVisionDataset
 img_size = (32, 32)
 img_channels = 3
 n_classes = 10
-len_dataset = 4
+len_dataset = 8
 batch_size = 2
 
 train_loader = test_loader = DataLoader(
@@ -86,7 +85,7 @@ def test_TAKD():
 
     assistant_train_order = [[-1], [-1, 0]]
 
-    distil = TAKD(
+    distiller = TAKD(
         teacher,
         assistants,
         student,
@@ -98,32 +97,32 @@ def test_TAKD():
         student_optimizer,
     )
 
-    distil.train_teacher(epochs=1, plot_losses=False, save_model=False)
-    distil.train_assistants(epochs=1, plot_losses=False, save_model=False)
-    distil.train_student(epochs=1, plot_losses=False, save_model=False)
-    distil.get_parameters()
+    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_assistants(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
+    distiller.get_parameters()
 
 
-# def test_attention():
+def test_Attention():
 
-#     att = Attention(
-#         teacher,
-#         student,
-#         train_loader,
-#         test_loader,
-#         t_optimizer,
-#         s_optimizer,
-#     )
+    distiller = Attention(
+        teacher,
+        student,
+        train_loader,
+        test_loader,
+        t_optimizer,
+        s_optimizer,
+    )
 
-#     att.train_teacher(epochs=1, plot_losses=False, save_model=False)
-#     att.train_student(epochs=1, plot_losses=False, save_model=False)
-#     att.evaluate(teacher=False)
-#     att.get_parameters()
+    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
+    distiller.evaluate(teacher=False)
+    distiller.get_parameters()
 
 
 def test_NoisyTeacher():
 
-    experiment = NoisyTeacher(
+    distiller = NoisyTeacher(
         teacher,
         student,
         train_loader,
@@ -135,10 +134,10 @@ def test_NoisyTeacher():
         device="cpu",
     )
 
-    experiment.train_teacher(epochs=1, plot_losses=False, save_model=False)
-    experiment.train_student(epochs=1, plot_losses=False, save_model=False)
-    experiment.evaluate(teacher=False)
-    experiment.get_parameters()
+    distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
+    distiller.evaluate(teacher=False)
+    distiller.get_parameters()
 
 
 def test_VirtualTeacher():
@@ -158,21 +157,21 @@ def test_SelfTraining():
     distiller.get_parameters()
 
 
-# def test_mean_teacher():
+# def test_MeanTeacher():
 
-#     mt = MeanTeacher(
-#         teacher_model,
-#         student_model,
+#     distiller = MeanTeacher(
+#         teacher,
+#         student,
 #         train_loader,
 #         test_loader,
 #         t_optimizer,
 #         s_optimizer,
 #     )
 
-#     mt.train_teacher(epochs=1, plot_losses=False, save_model=False)
-#     mt.train_student(epochs=1, plot_losses=False, save_model=False)
-#     mt.evaluate()
-#     mt.get_parameters()
+#     distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+#     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
+#     distiller.evaluate()
+#     distiller.get_parameters()
 
 
 def test_RCO():
@@ -192,15 +191,15 @@ def test_RCO():
     distiller.get_parameters()
 
 
-# def test_BANN():
+def test_BANN():
 
-#     model = deepcopy(mock_vision_model)
-#     optimizer = optim.SGD(model.parameters(), 0.01)
+    model = deepcopy(mock_vision_model)
+    optimizer = optim.SGD(model.parameters(), 0.01)
 
-#     distiller = BANN(model, train_loader, test_loader, optimizer, num_gen=2)
+    distiller = BANN(model, train_loader, test_loader, optimizer, num_gen=2)
 
-#     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
-#     distiller.evaluate()
+    distiller.train_student(epochs=1, plot_losses=False, save_model=False)
+    # distiller.evaluate()
 
 
 def test_PS():
@@ -237,7 +236,7 @@ def test_LSR():
     distiller.get_parameters()
 
 
-def test_soft_random():
+def test_SoftRandom():
 
     distiller = SoftRandom(
         teacher,
@@ -254,7 +253,7 @@ def test_soft_random():
     distiller.get_parameters()
 
 
-def test_messy_collab():
+def test_MessyCollab():
 
     distiller = MessyCollab(
         teacher,
@@ -269,21 +268,6 @@ def test_messy_collab():
     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
     distiller.evaluate()
     distiller.get_parameters()
-
-
-# def test_bert2lstm():
-#     student_model = LSTMNet(
-#         input_dim=len(text_field.vocab), num_classes=2, dropout_prob=0.5
-#     )
-#     optimizer = optim.Adam(student_model.parameters())
-#
-#     experiment = BERT2LSTM(
-#         student_model, bert2lstm_train_loader, bert2lstm_train_loader, optimizer, train_df, val_df
-#     )
-#     # experiment.train_teacher(epochs=1, plot_losses=False, save_model=False)
-#     experiment.train_student(epochs=1, plot_losses=False, save_model=False)
-#     experiment.evaluate_student()
-#     experiment.evaluate_teacher()
 
 
 def test_DML():
@@ -312,3 +296,18 @@ def test_DML():
     )
     distiller.evaluate()
     distiller.get_parameters()
+
+
+# def test_BERT2LSTM():
+#     student_model = LSTMNet(
+#         input_dim=len(text_field.vocab), num_classes=2, dropout_prob=0.5
+#     )
+#     optimizer = optim.Adam(student_model.parameters())
+#
+#     distiller = BERT2LSTM(
+#         student_model, bert2lstm_train_loader, bert2lstm_train_loader, optimizer, train_df, val_df
+#     )
+#     # distiller.train_teacher(epochs=1, plot_losses=False, save_model=False)
+#     distiller.train_student(epochs=1, plot_losses=False, save_model=False)
+#     distiller.evaluate_student()
+#     distiller.evaluate_teacher()
