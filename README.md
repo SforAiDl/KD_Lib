@@ -4,7 +4,9 @@
 <div align='center'>
 
 [![Downloads](https://pepy.tech/badge/kd-lib)](https://pepy.tech/project/kd-lib)
-    
+[![Tests](https://github.com/SforAiDl/KD_Lib/actions/workflows/python-package-test.yml/badge.svg)](https://github.com/SforAiDl/KD_Lib/actions/workflows/python-package-test.yml)
+[![Docs](https://readthedocs.org/projects/kd-lib/badge/?version=latest)](https://kd-lib.readthedocs.io/en/latest/?badge=latest)
+
 **[Documentation](https://kd-lib.readthedocs.io/en/latest/)** | **[Tutorials](https://kd-lib.readthedocs.io/en/latest/usage/tutorials/index.html)**
 
 </div>
