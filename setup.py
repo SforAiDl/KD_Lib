@@ -35,7 +35,7 @@ requirements = [
     "huggingface-hub==0.0.8",
     "torchtext==0.9.1",
     "bumpversion==0.5.3",
-    "wheel==0.32.1",
+    "wheel==0.38.1",
     "watchdog==0.9.0",
     "flake8==3.5.0",
     "tox==3.5.2",
